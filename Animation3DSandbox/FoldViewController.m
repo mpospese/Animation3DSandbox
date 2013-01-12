@@ -9,6 +9,7 @@
 #import "FoldViewController.h"
 #import <QuartzCore/QuartzCore.h>
 #import "MPAnimation.h"
+#import "CMSSettingsController.h"
 
 #define DEFAULT_DURATION 0.3
 #define FOLD_SHADOW_OPACITY 0.25
@@ -52,6 +53,7 @@
 
 @property (nonatomic, strong) UISwipeGestureRecognizer *swipe;
 @property (nonatomic, strong) UITapGestureRecognizer *settingsTap;
+@property (nonatomic, strong) UISwipeGestureRecognizer *settingsSwipe;
 @property (nonatomic, strong) UIViewController *settingsController;
 
 @end
@@ -60,10 +62,8 @@
 
 - (void)doInit
 {
+    _settings = [CMSSettingsInfo new];
 	_durationMultiplier = 1;
-    _foldComponents = FoldComponentTransform | FoldComponentOpacity | FoldComponentBounds;
-    _anchorPointType = AnchorPointCenter;
-    _useDropShadow = YES;
 }
 
 - (id)init
@@ -116,13 +116,15 @@
 	tapGesture.delegate = self;
 	[self.contentView addGestureRecognizer:tapGesture];
 	
-	self.settingsTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSettingsTap:)];
+	self.settingsTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closeSettingsPanel:)];
+    self.settingsSwipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(closeSettingsPanel:)];
+    self.settingsSwipe.direction = UISwipeGestureRecognizerDirectionLeft;
 	//[self.view addGestureRecognizer:self.settingsTap];
 	
 	// Add our pinch gesture recognizer
 	UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinch:)];
 	pinchGesture.delegate = self;
-	[self.view addGestureRecognizer:pinchGesture];
+	[self.mainView addGestureRecognizer:pinchGesture];
     
     // render some images
     UIEdgeInsets insets = UIEdgeInsetsMake(10, 10, 10, 10);
@@ -140,7 +142,7 @@
     UISwipeGestureRecognizer *swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipe:)];
     swipe.direction = UISwipeGestureRecognizerDirectionRight;
     swipe.delegate = self;
-    [self.view addGestureRecognizer:swipe];
+    [self.mainView addGestureRecognizer:swipe];
     self.swipe = swipe;
 }
 
@@ -227,7 +229,7 @@
 
 - (void)setDropShadowForLayer:(CALayer *)layer
 {
-    if (self.useDropShadow)
+    if (self.settings.useDropShadows)
     {
         layer.shadowOpacity = 0.5;
         layer.shadowOffset = CGSizeMake(0, 3);
@@ -243,28 +245,15 @@
 	[self animateFold:YES];
 }
 
-- (void)handleSettingsTap:(UITapGestureRecognizer *)gestureRecognizer
+- (void)closeSettingsPanel:(UIGestureRecognizer *)gestureRecognizer
 {
     if ([gestureRecognizer state] != UIGestureRecognizerStateEnded)
         return;
     
-    [self.mainView removeGestureRecognizer:gestureRecognizer];
+    [self.mainView removeGestureRecognizer:self.settingsTap];
+    [self.mainView removeGestureRecognizer:self.settingsSwipe];
     
-    // TODO: CA with custom timing curve
-    //UIViewController *settings = self.settingsController;
-    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-        //CGPoint settingsCenter = settings.view.center;
-        //settingsCenter.x -= 320;
-        //settings.view.center = settingsCenter;
-        CGPoint center = self.mainView.center;
-        center.x -= 320;
-        self.mainView.center = center;
-    } completion:^(BOOL finished) {
-        [self.settingsController willMoveToParentViewController:nil];
-        [self.settingsController.view removeFromSuperview];
-        [self.settingsController removeFromParentViewController];
-    }];
-    
+    [self showSettings:NO];
 }
 
 - (void)handlePinch:(UIPinchGestureRecognizer *)gestureRecognizer {
@@ -319,26 +308,22 @@
         return;
     
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPad" bundle:nil];
-    UIViewController *settings = [storyboard instantiateViewControllerWithIdentifier:@"SettingsID"];
-    settings.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-    [self addChildViewController:settings];
-    [settings.view setFrame:CGRectMake(0, 0, 320, CGRectGetHeight(self.view.bounds))];
-    [self.view insertSubview:settings.view belowSubview:self.mainView];
-    [settings didMoveToParentViewController:self];
-    self.settingsController = settings;
-    [self.mainView addGestureRecognizer:self.settingsTap];
+    CMSSettingsController *settings = [storyboard instantiateViewControllerWithIdentifier:@"SettingsID"];
+    settings.settings = self.settings;
     
-    // TODO: CA with custom timing curve
-    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-        //CGPoint settingsCenter = settings.view.center;
-        //settingsCenter.x += 320;
-        //settings.view.center = settingsCenter;
-        CGPoint center = self.mainView.center;
-        center.x += 320;
-        self.mainView.center = center;
-    } completion:^(BOOL finished) {
-        
-    }];
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:settings];
+    navController.navigationBar.barStyle = UIBarStyleBlack;
+    
+    navController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+    [self addChildViewController:navController];
+    [navController.view setFrame:CGRectMake(0, 0, 320, CGRectGetHeight(self.view.bounds))];
+    [self.view insertSubview:navController.view belowSubview:self.mainView];
+    [navController didMoveToParentViewController:self];
+    self.settingsController = navController;
+    [self.mainView addGestureRecognizer:self.settingsTap];
+    [self.view addGestureRecognizer:self.settingsSwipe];
+    
+    [self showSettings:YES];
 }
 
 - (IBAction)skewValueChanged:(UISegmentedControl *)sender {
@@ -425,6 +410,37 @@
     return YES;
 }
 
+#pragma mark - Other Animations
+
+- (void)showSettings:(BOOL)show
+{
+
+	[CATransaction begin];
+	[CATransaction setAnimationDuration:self.settings.duration];
+	[CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithControlPoints:self.settings.cp1.x :self.settings.cp1.y :self.settings.cp2.x :self.settings.cp2.y]];
+    
+    if (!show)
+    {
+        [CATransaction setCompletionBlock:^{
+            [self.settingsController willMoveToParentViewController:nil];
+            [self.settingsController.view removeFromSuperview];
+            [self.settingsController removeFromParentViewController];
+            self.settingsController = nil;
+        }];
+    }
+    
+    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"position.x"];
+    CGPoint position = self.mainView.layer.position;
+    position.x += (show? 1 : -1) * (CGRectGetWidth(self.settingsController.view.bounds));
+    animation.fromValue = @([self.mainView.layer.presentationLayer position].x);
+    animation.toValue = @(position.x);
+    animation.fillMode = kCAFillModeForwards;
+    self.mainView.layer.position = position;
+    [self.mainView.layer addAnimation:animation forKey:@"position"];
+    
+    [CATransaction commit];
+}
+
 #pragma mark - Animations
 
 - (void)startFold
@@ -461,7 +477,7 @@
 	[CATransaction begin];
     [CATransaction setAnimationDuration:0.15];
 	
-    if (self.foldComponents & FoldComponentTransform)
+    if (self.settings.components & FoldComponentTransform)
     {
         self.firstJointLayer.transform = CATransform3DMakeRotation(-1*angle, 1, 0, 0);
         self.secondJointLayer.transform = CATransform3DMakeRotation(2*angle, 1, 0, 0);
@@ -469,13 +485,13 @@
         self.bottomSleeve.transform = CATransform3DMakeRotation(-1*angle, 1, 0, 0);
 	}
     
-    if (self.foldComponents & FoldComponentOpacity)
+    if (self.settings.components & FoldComponentOpacity)
     {
         self.upperFoldShadow.opacity = FOLD_SHADOW_OPACITY * (1- cosine);
         self.lowerFoldShadow.opacity = FOLD_SHADOW_OPACITY * (1 - cosine);
 	}
     
-    if (self.foldComponents & FoldComponentBounds)
+    if (self.settings.components & FoldComponentBounds)
         self.perspectiveLayer.bounds = (CGRect){CGPointZero, CGSizeMake(self.perspectiveLayer.bounds.size.width, foldHeight)};
 
 	[CATransaction commit];
@@ -523,7 +539,7 @@
 	
 	if ([self isFolded])
 	{
-        if (self.foldComponents & FoldComponentBounds)
+        if (self.settings.components & FoldComponentBounds)
         {
             CGPoint anchorPoint = [self anchorPoint];
             self.topBar.transform = CGAffineTransformMakeTranslation(0, anchorPoint.y * self.foldHeight);
@@ -558,7 +574,7 @@
 	// Create a transaction
 	[CATransaction begin];
 	[CATransaction setAnimationDuration:duration];
-	[CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionDefault]];
+	[CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithControlPoints:self.settings.cp1.x :self.settings.cp1.y :self.settings.cp2.x :self.settings.cp2.y]];
 	[CATransaction setCompletionBlock:^{
 		[self postFold:finish];
 	}];
@@ -572,7 +588,7 @@
     if (!forwards)
         fromProgress = 1 - fromProgress;
 
-    if (self.foldComponents & FoldComponentTransform)
+    if (self.settings.components & FoldComponentTransform)
     {
         // fold the first (top) joint away from us
         CABasicAnimation* animation = [CABasicAnimation animationWithKeyPath:rotationKey];
@@ -632,7 +648,7 @@
 	// Since there's no built-in sine timing curve, we'll use CAKeyframeAnimation to achieve it
 	CAKeyframeAnimation *keyAnimation;
     
-    if (self.foldComponents & FoldComponentBounds)
+    if (self.settings.components & FoldComponentBounds)
     {
         keyAnimation = [CAKeyframeAnimation animationWithKeyPath:@"bounds.size.height"];
         [keyAnimation setValues:[NSArray arrayWithArray:arrayHeight]];
@@ -641,7 +657,7 @@
         [self.perspectiveLayer addAnimation:keyAnimation forKey:nil];
 	}
     
-    if (self.foldComponents & FoldComponentOpacity)
+    if (self.settings.components & FoldComponentOpacity)
     {
         // Dim the 2 folding panels as they fold away from us
         keyAnimation = [CAKeyframeAnimation animationWithKeyPath:@"opacity"];
@@ -665,7 +681,7 @@
 {
     CGPoint anchorPoint;
     
-    switch (self.anchorPointType) {
+    switch (self.settings.anchorPoint) {
         case AnchorPointTopLeft:
             anchorPoint = CGPointMake(-0.25, -0.25);
             break;
@@ -807,7 +823,7 @@
 	self.firstJointLayer.position = CGPointMake(width/2, 0);
 	
 	// Shadow layers to add shadowing to the 2 folding panels
-    if (self.foldComponents & FoldComponentOpacity)
+    if (self.settings.components & FoldComponentOpacity)
     {
         self.upperFoldShadow = [CAGradientLayer layer];
         [upperFold addSublayer:self.upperFoldShadow];

@@ -7,12 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "Enumerations.h"
+#import "CMSSettingsInfo.h"
 
 @interface FoldViewController : UIViewController
 
-@property (nonatomic, assign) FoldComponent foldComponents;
-@property (nonatomic, assign) BOOL useDropShadow;
-@property (nonatomic, assign) AnchorPointLocation anchorPointType;
+@property (nonatomic, strong) CMSSettingsInfo *settings;
 
 @end

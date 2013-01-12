@@ -1,5 +1,5 @@
 //
-//  CMSSettingsController.h
+//  CMSTimingCurveView.h
 //  Animation3DSandbox
 //
 //  Created by Crazy Milk Software on 1/12/13.
@@ -7,10 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "CMSSettingsInfo.h"
 
-@interface CMSSettingsController : UITableViewController
-
-@property (nonatomic, strong) CMSSettingsInfo *settings;
+@interface CMSTimingCurveView : UIView
 
 @end

@@ -4,26 +4,52 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="1930"/>
     </dependencies>
     <scenes>
-        <!--Navigation Controller-->
-        <scene sceneID="AfN-Ok-jME">
+        <!--Timing Curve Controller - Timing Curve-->
+        <scene sceneID="weH-f8-Mfy">
             <objects>
-                <navigationController storyboardIdentifier="SettingsID" definesPresentationContext="YES" id="4XQ-79-4cD" sceneMemberID="viewController">
-                    <splitViewMasterSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="blackOpaque" id="giS-5g-BWf">
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
+                <viewController id="kP6-x6-qfV" customClass="CMSTimingCurveController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="kLa-EQ-zL2">
+                        <rect key="frame" x="0.0" y="64" width="320" height="320"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" id="9Ov-Md-J6Q">
+                                <rect key="frame" x="24" y="85" width="272" height="150"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="time" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Ord-Yk-ekA">
+                                <rect key="frame" x="144" y="243" width="33" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="property" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="yx1-HC-ro7">
+                                <rect key="frame" x="-22" y="149" width="65" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Timing Curve" id="VVc-Qc-fDR"/>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <connections>
-                        <segue destination="MdZ-9o-4Hd" kind="relationship" relationship="rootViewController" id="coN-um-c06"/>
+                        <outlet property="curveContainer" destination="9Ov-Md-J6Q" id="fPz-Cl-yup"/>
+                        <outlet property="propertyLabel" destination="yx1-HC-ro7" id="lBH-h6-YEL"/>
+                        <outlet property="timeLabel" destination="Ord-Yk-ekA" id="F48-w4-HcR"/>
                     </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="HT6-f2-pzG" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="9Sh-op-nFr" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3844" y="5399"/>
+            <point key="canvasLocation" x="4390" y="4790"/>
         </scene>
-        <!--Table View Controller - Settings-->
+        <!--Settings Controller - Settings-->
         <scene sceneID="9oK-gP-PbD">
             <objects>
-                <tableViewController id="MdZ-9o-4Hd" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="SettingsID" id="MdZ-9o-4Hd" customClass="CMSSettingsController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="2Q8-0W-F3N">
                         <rect key="frame" x="0.0" y="64" width="320" height="788"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -80,6 +106,9 @@
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
+                                        <connections>
+                                            <segue destination="kP6-x6-qfV" kind="push" id="RC4-oC-LgI"/>
+                                        </connections>
                                     </tableViewCell>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="6SF-8A-2hc" detailTextLabel="qCH-NR-Qtb" style="IBUITableViewCellStyleValue1" id="TVw-fe-nYB">
                                         <rect key="frame" x="0.0" y="110" width="320" height="44"/>
@@ -220,11 +249,12 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Settings" id="Hge-F7-f6f"/>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" barStyle="blackOpaque" prompted="NO"/>
                     <splitViewMasterSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="e0Q-jf-eFn" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4233" y="5399"/>
+            <point key="canvasLocation" x="3859" y="5480"/>
         </scene>
         <!--Fold View Controller-->
         <scene sceneID="KgR-Pq-DqW">
@@ -326,7 +356,7 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             </view>
                         </subviews>
-                        <color key="backgroundColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
                     </view>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
@@ -348,6 +378,17 @@
         <image name="RenaissanceIcon.png" width="512" height="512"/>
     </resources>
     <classes>
+        <class className="CMSSettingsController" superclassName="UITableViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/CMSSettingsController.h"/>
+        </class>
+        <class className="CMSTimingCurveController" superclassName="UIViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/CMSTimingCurveController.h"/>
+            <relationships>
+                <relationship kind="outlet" name="curveContainer" candidateClass="UIView"/>
+                <relationship kind="outlet" name="propertyLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="timeLabel" candidateClass="UILabel"/>
+            </relationships>
+        </class>
         <class className="FoldViewController" superclassName="UIViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/FoldViewController.h"/>
             <relationships>
