@@ -14,10 +14,12 @@
 // Animations
 
 @property (nonatomic, assign) CFTimeInterval duration;
+@property (nonatomic, assign) CFTimeInterval delay;
 
 // Timing Curve
 @property (nonatomic, assign) CGPoint cp1;
 @property (nonatomic, assign) CGPoint cp2;
+@property (nonatomic, assign) TimingCurve timingCurve;
 
 // Components
 

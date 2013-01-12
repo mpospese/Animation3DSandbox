@@ -101,6 +101,47 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
 	
+    CAMediaTimingFunction *easeIn = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
+    float* point1 = (float *)malloc(2 * sizeof(float));
+    float* point2 = (float *)malloc(2 * sizeof(float));
+    float* point3 = (float *)malloc(2 * sizeof(float));
+    float* point4 = (float *)malloc(2 * sizeof(float));
+    
+    [easeIn getControlPointAtIndex:0 values:point1];
+    [easeIn getControlPointAtIndex:1 values:point2];
+    [easeIn getControlPointAtIndex:2 values:point3];
+    [easeIn getControlPointAtIndex:3 values:point4];
+    NSLog(@"Ease In = {%.2f, %.2f}, {%.2f, %.2f}", point2[0], point2[1], point3[0], point3[1]);
+    
+    easeIn = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
+    [easeIn getControlPointAtIndex:0 values:point1];
+    [easeIn getControlPointAtIndex:1 values:point2];
+    [easeIn getControlPointAtIndex:2 values:point3];
+    [easeIn getControlPointAtIndex:3 values:point4];
+    NSLog(@"Ease Out = {%.2f, %.2f}, {%.2f, %.2f}", point2[0], point2[1], point3[0], point3[1]);
+    
+    easeIn = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    [easeIn getControlPointAtIndex:0 values:point1];
+    [easeIn getControlPointAtIndex:1 values:point2];
+    [easeIn getControlPointAtIndex:2 values:point3];
+    [easeIn getControlPointAtIndex:3 values:point4];
+    NSLog(@"Ease In Ease Out = {%.2f, %.2f}, {%.2f, %.2f}", point2[0], point2[1], point3[0], point3[1]);
+    
+    easeIn = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
+    [easeIn getControlPointAtIndex:0 values:point1];
+    [easeIn getControlPointAtIndex:1 values:point2];
+    [easeIn getControlPointAtIndex:2 values:point3];
+    [easeIn getControlPointAtIndex:3 values:point4];
+    NSLog(@"Linear = {%.2f, %.2f}, {%.2f, %.2f}", point2[0], point2[1], point3[0], point3[1]);
+    
+    easeIn = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionDefault];
+    [easeIn getControlPointAtIndex:0 values:point1];
+    [easeIn getControlPointAtIndex:1 values:point2];
+    [easeIn getControlPointAtIndex:2 values:point3];
+    [easeIn getControlPointAtIndex:3 values:point4];
+    NSLog(@"Default = {%.2f, %.2f}, {%.2f, %.2f}", point2[0], point2[1], point3[0], point3[1]);
+    
+   
 	// Set drop shadows and shadow paths on views
 	self.controlFrame.layer.cornerRadius = 5;
 	[self setDropShadow:self.controlFrame];
@@ -596,6 +637,7 @@
         [animation setToValue:forwards? [NSNumber numberWithDouble:-90*factor] : [NSNumber numberWithDouble:0]];
         [animation setFillMode:kCAFillModeForwards];
         [animation setRemovedOnCompletion:NO];
+        animation.speed = 1;
         [self.firstJointLayer addAnimation:animation forKey:nil];
         
         // fold the second joint back towards us at twice the angle (since it's connected to the first fold we're folding away)
@@ -604,6 +646,7 @@
         [animation setToValue:forwards? [NSNumber numberWithDouble:180*factor] : [NSNumber numberWithDouble:0]];
         [animation setFillMode:kCAFillModeForwards];
         [animation setRemovedOnCompletion:NO];
+        animation.speed = 1;
         [self.secondJointLayer addAnimation:animation forKey:nil];
         
         // fold the bottom sleeve (3rd joint) away from us, so that net result is it lays flat from user's perspective
@@ -612,6 +655,7 @@
         [animation setToValue:forwards? [NSNumber numberWithDouble:-90*factor] : [NSNumber numberWithDouble:0]];
         [animation setFillMode:kCAFillModeForwards];
         [animation setRemovedOnCompletion:NO];
+        animation.speed = 1;
         [self.bottomSleeve addAnimation:animation forKey:nil];
         
         // fold top sleeve towards us, so that net result is it lays flat from user's perspective
@@ -620,6 +664,7 @@
         [animation setToValue:forwards? [NSNumber numberWithDouble:90*factor] : [NSNumber numberWithDouble:0]];
         [animation setFillMode:kCAFillModeForwards];
         [animation setRemovedOnCompletion:NO];
+        animation.speed = 1;
         [self.topSleeve addAnimation:animation forKey:nil];
     }
     
@@ -654,6 +699,7 @@
         [keyAnimation setValues:[NSArray arrayWithArray:arrayHeight]];
         [keyAnimation setFillMode:kCAFillModeForwards];
         [keyAnimation setRemovedOnCompletion:NO];
+        keyAnimation.speed = 1;
         [self.perspectiveLayer addAnimation:keyAnimation forKey:nil];
 	}
     
@@ -664,12 +710,14 @@
         [keyAnimation setValues:arrayShadow];
         [keyAnimation setFillMode:kCAFillModeForwards];
         [keyAnimation setRemovedOnCompletion:NO];
+        keyAnimation.speed = 1;
         [self.upperFoldShadow addAnimation:keyAnimation forKey:nil];
         
         keyAnimation = [CAKeyframeAnimation animationWithKeyPath:@"opacity"];
         [keyAnimation setValues:arrayShadow];
         [keyAnimation setFillMode:kCAFillModeForwards];
         [keyAnimation setRemovedOnCompletion:NO];
+        keyAnimation.speed = 1;
         [self.lowerFoldShadow addAnimation:keyAnimation forKey:nil];
     }
 				

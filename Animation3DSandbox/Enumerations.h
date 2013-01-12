@@ -47,6 +47,15 @@ typedef enum {
 	DurationMultiplier10x
 } DurationMultiplier;
 
+typedef enum {
+    TimingCurveLinear,
+    TimingCurveEaseIn,
+    TimingCurveEaseOut,
+    TimingCurveEaseInOut,
+    TimingCurveDefault,
+    TimingCurveCustom
+} TimingCurve;
+
 enum {
     FoldComponentNone = 0,
     FoldComponentTransform = 1 << 0,
