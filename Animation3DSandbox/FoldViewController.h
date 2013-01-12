@@ -7,7 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Enumerations.h"
 
 @interface FoldViewController : UIViewController
+
+@property (nonatomic, assign) FoldComponent foldComponents;
+@property (nonatomic, assign) BOOL useDropShadow;
+@property (nonatomic, assign) AnchorPointLocation anchorPointType;
 
 @end

@@ -47,5 +47,12 @@ typedef enum {
 	DurationMultiplier10x
 } DurationMultiplier;
 
+enum {
+    FoldComponentNone = 0,
+    FoldComponentTransform = 1 << 0,
+    FoldComponentBounds = 1 << 1,
+    FoldComponentOpacity = 1 << 2
+};
+typedef NSUInteger FoldComponent;
 
 #endif

@@ -9,7 +9,6 @@
 #import "FoldViewController.h"
 #import <QuartzCore/QuartzCore.h>
 #import "MPAnimation.h"
-#import "Enumerations.h"
 
 #define DEFAULT_DURATION 0.3
 #define FOLD_SHADOW_OPACITY 0.25
@@ -22,6 +21,7 @@
 @property (weak, nonatomic) IBOutlet UIView *bottomBar;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *skewSegment;
 @property (weak, nonatomic) IBOutlet UIView *controlFrame;
+@property (weak, nonatomic) IBOutlet UIView *mainView;
 
 @property (readonly) CGFloat skew;
 
@@ -50,6 +50,10 @@
 
 @property (nonatomic, readonly) CGFloat foldHeight;
 
+@property (nonatomic, strong) UISwipeGestureRecognizer *swipe;
+@property (nonatomic, strong) UITapGestureRecognizer *settingsTap;
+@property (nonatomic, strong) UIViewController *settingsController;
+
 @end
 
 @implementation FoldViewController
@@ -57,6 +61,9 @@
 - (void)doInit
 {
 	_durationMultiplier = 1;
+    _foldComponents = FoldComponentTransform | FoldComponentOpacity | FoldComponentBounds;
+    _anchorPointType = AnchorPointCenter;
+    _useDropShadow = YES;
 }
 
 - (id)init
@@ -100,11 +107,17 @@
 	[[self.controlFrame layer] setShadowPath:[[UIBezierPath bezierPathWithRoundedRect:[self.controlFrame bounds] cornerRadius:5] CGPath]];
 	[self setDropShadow:self.contentView];
 	[[self.contentView layer] setShadowPath:[[UIBezierPath bezierPathWithRect:[self.contentView bounds]] CGPath]];
-	
+	self.mainView.layer.shadowOpacity = 0.5;
+    self.mainView.layer.shadowOffset = CGSizeMake(-3, 0);
+    self.mainView.layer.shadowPath = [[UIBezierPath bezierPathWithRect:self.mainView.bounds] CGPath];
+    
 	// Add our tap gesture recognizer
 	UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
 	tapGesture.delegate = self;
 	[self.contentView addGestureRecognizer:tapGesture];
+	
+	self.settingsTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSettingsTap:)];
+	//[self.view addGestureRecognizer:self.settingsTap];
 	
 	// Add our pinch gesture recognizer
 	UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinch:)];
@@ -123,6 +136,12 @@
     self.foldLowerImage = [MPAnimation renderImage:entire withRect:CGRectMake(0, yOffset, entire.size.width, self.centerBar.bounds.size.height/2)];
     yOffset += self.foldLowerImage.size.height;
 	self.slideLowerImage = [MPAnimation renderImage:entire withRect:CGRectMake(0, yOffset, entire.size.width, self.bottomBar.bounds.size.height + insets.bottom)];
+    
+    UISwipeGestureRecognizer *swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipe:)];
+    swipe.direction = UISwipeGestureRecognizerDirectionRight;
+    swipe.delegate = self;
+    [self.view addGestureRecognizer:swipe];
+    self.swipe = swipe;
 }
 
 - (void)viewDidUnload
@@ -208,8 +227,11 @@
 
 - (void)setDropShadowForLayer:(CALayer *)layer
 {
-	layer.shadowOpacity = 0.5;
-	layer.shadowOffset = CGSizeMake(0, 3);
+    if (self.useDropShadow)
+    {
+        layer.shadowOpacity = 0.5;
+        layer.shadowOffset = CGSizeMake(0, 3);
+    }
 }
 
 #pragma mark - Gesture handlers
@@ -219,6 +241,30 @@
 	[self setLastProgress:0];
 	[self startFold];
 	[self animateFold:YES];
+}
+
+- (void)handleSettingsTap:(UITapGestureRecognizer *)gestureRecognizer
+{
+    if ([gestureRecognizer state] != UIGestureRecognizerStateEnded)
+        return;
+    
+    [self.mainView removeGestureRecognizer:gestureRecognizer];
+    
+    // TODO: CA with custom timing curve
+    //UIViewController *settings = self.settingsController;
+    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        //CGPoint settingsCenter = settings.view.center;
+        //settingsCenter.x -= 320;
+        //settings.view.center = settingsCenter;
+        CGPoint center = self.mainView.center;
+        center.x -= 320;
+        self.mainView.center = center;
+    } completion:^(BOOL finished) {
+        [self.settingsController willMoveToParentViewController:nil];
+        [self.settingsController.view removeFromSuperview];
+        [self.settingsController removeFromParentViewController];
+    }];
+    
 }
 
 - (void)handlePinch:(UIPinchGestureRecognizer *)gestureRecognizer {
@@ -265,6 +311,34 @@
 		
 		[self doFold:currentGap - [self pinchStartGap]];
 	}
+}
+
+- (void)handleSwipe:(UISwipeGestureRecognizer *)gestureRecognizer
+{
+    if ([gestureRecognizer state] != UIGestureRecognizerStateEnded)
+        return;
+    
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPad" bundle:nil];
+    UIViewController *settings = [storyboard instantiateViewControllerWithIdentifier:@"SettingsID"];
+    settings.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+    [self addChildViewController:settings];
+    [settings.view setFrame:CGRectMake(0, 0, 320, CGRectGetHeight(self.view.bounds))];
+    [self.view insertSubview:settings.view belowSubview:self.mainView];
+    [settings didMoveToParentViewController:self];
+    self.settingsController = settings;
+    [self.mainView addGestureRecognizer:self.settingsTap];
+    
+    // TODO: CA with custom timing curve
+    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        //CGPoint settingsCenter = settings.view.center;
+        //settingsCenter.x += 320;
+        //settings.view.center = settingsCenter;
+        CGPoint center = self.mainView.center;
+        center.x += 320;
+        self.mainView.center = center;
+    } completion:^(BOOL finished) {
+        
+    }];
 }
 
 - (IBAction)skewValueChanged:(UISegmentedControl *)sender {
@@ -338,7 +412,17 @@
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
-	return ![self isFolding];
+	if ([self isFolding])
+        return NO;
+    
+    if ([gestureRecognizer isEqual:self.swipe])
+    {
+        CGPoint point = [gestureRecognizer locationInView:self.view];
+        if (point.x > 44)
+            return NO;
+    }
+    
+    return YES;
 }
 
 #pragma mark - Animations
@@ -377,15 +461,22 @@
 	[CATransaction begin];
     [CATransaction setAnimationDuration:0.15];
 	
-	self.firstJointLayer.transform = CATransform3DMakeRotation(-1*angle, 1, 0, 0);
-	self.secondJointLayer.transform = CATransform3DMakeRotation(2*angle, 1, 0, 0);
-	self.topSleeve.transform = CATransform3DMakeRotation(1*angle, 1, 0, 0);
-	self.bottomSleeve.transform = CATransform3DMakeRotation(-1*angle, 1, 0, 0);
-	
-	self.upperFoldShadow.opacity = FOLD_SHADOW_OPACITY * (1- cosine);
-	self.lowerFoldShadow.opacity = FOLD_SHADOW_OPACITY * (1 - cosine);
-	
-	self.perspectiveLayer.bounds = (CGRect){CGPointZero, CGSizeMake(self.perspectiveLayer.bounds.size.width, foldHeight)};
+    if (self.foldComponents & FoldComponentTransform)
+    {
+        self.firstJointLayer.transform = CATransform3DMakeRotation(-1*angle, 1, 0, 0);
+        self.secondJointLayer.transform = CATransform3DMakeRotation(2*angle, 1, 0, 0);
+        self.topSleeve.transform = CATransform3DMakeRotation(1*angle, 1, 0, 0);
+        self.bottomSleeve.transform = CATransform3DMakeRotation(-1*angle, 1, 0, 0);
+	}
+    
+    if (self.foldComponents & FoldComponentOpacity)
+    {
+        self.upperFoldShadow.opacity = FOLD_SHADOW_OPACITY * (1- cosine);
+        self.lowerFoldShadow.opacity = FOLD_SHADOW_OPACITY * (1 - cosine);
+	}
+    
+    if (self.foldComponents & FoldComponentBounds)
+        self.perspectiveLayer.bounds = (CGRect){CGPointZero, CGSizeMake(self.perspectiveLayer.bounds.size.width, foldHeight)};
 
 	[CATransaction commit];
 }
@@ -432,10 +523,19 @@
 	
 	if ([self isFolded])
 	{
-		self.topBar.transform = CGAffineTransformMakeTranslation(0, self.foldHeight/2);
-		self.bottomBar.transform = CGAffineTransformMakeTranslation(0, -self.foldHeight/2);
+        if (self.foldComponents & FoldComponentBounds)
+        {
+            CGPoint anchorPoint = [self anchorPoint];
+            self.topBar.transform = CGAffineTransformMakeTranslation(0, anchorPoint.y * self.foldHeight);
+            self.bottomBar.transform = CGAffineTransformMakeTranslation(0, (anchorPoint.y - 1) * self.foldHeight);
+            self.contentView.layer.shadowPath = [UIBezierPath bezierPathWithRect:CGRectMake(0, anchorPoint.y * self.foldHeight, self.contentView.bounds.size.width, self.contentView.bounds.size.height - self.foldHeight)].CGPath;
+        }
+        else
+        {
+            self.bottomBar.transform = CGAffineTransformMakeTranslation(0, -self.foldHeight);
+            self.contentView.layer.shadowPath = [UIBezierPath bezierPathWithRect:CGRectMake(0, 0, self.contentView.bounds.size.width, self.contentView.bounds.size.height - self.foldHeight)].CGPath;
+        }
 		[self.centerBar setHidden:YES];
-        self.contentView.layer.shadowPath = [UIBezierPath bezierPathWithRect:CGRectMake(0, self.foldHeight / 2, self.contentView.bounds.size.width, self.contentView.bounds.size.height - self.foldHeight)].CGPath;
 	}
 	else 
 	{
@@ -472,38 +572,41 @@
     if (!forwards)
         fromProgress = 1 - fromProgress;
 
-	// fold the first (top) joint away from us
-	CABasicAnimation* animation = [CABasicAnimation animationWithKeyPath:rotationKey];
-	//[animation setFromValue:forwards? [NSNumber numberWithDouble:-90*factor*fromProgress] : [NSNumber numberWithDouble:-90*factor*(1-fromProgress)]];
-	[animation setToValue:forwards? [NSNumber numberWithDouble:-90*factor] : [NSNumber numberWithDouble:0]];
-	[animation setFillMode:kCAFillModeForwards];
-	[animation setRemovedOnCompletion:NO];
-	[self.firstJointLayer addAnimation:animation forKey:nil];
-	
-	// fold the second joint back towards us at twice the angle (since it's connected to the first fold we're folding away)
-	animation = [CABasicAnimation animationWithKeyPath:rotationKey];
-	//[animation setFromValue:forwards? [NSNumber numberWithDouble:180*factor*fromProgress] : [NSNumber numberWithDouble:180*factor*(1-fromProgress)]];
-	[animation setToValue:forwards? [NSNumber numberWithDouble:180*factor] : [NSNumber numberWithDouble:0]];
-	[animation setFillMode:kCAFillModeForwards];
-	[animation setRemovedOnCompletion:NO];
-	[self.secondJointLayer addAnimation:animation forKey:nil];
-	
-	// fold the bottom sleeve (3rd joint) away from us, so that net result is it lays flat from user's perspective
-	animation = [CABasicAnimation animationWithKeyPath:rotationKey];
-	//[animation setFromValue:forwards? [NSNumber numberWithDouble:-90*factor*fromProgress] : [NSNumber numberWithDouble:-90*factor*(1-fromProgress)]];
-	[animation setToValue:forwards? [NSNumber numberWithDouble:-90*factor] : [NSNumber numberWithDouble:0]];
-	[animation setFillMode:kCAFillModeForwards];
-	[animation setRemovedOnCompletion:NO];
-	[self.bottomSleeve addAnimation:animation forKey:nil];
-	
-	// fold top sleeve towards us, so that net result is it lays flat from user's perspective
-	animation = [CABasicAnimation animationWithKeyPath:rotationKey];
-	//[animation setFromValue:forwards? [NSNumber numberWithDouble:90*factor*fromProgress] : [NSNumber numberWithDouble:90*factor*(1-fromProgress)]];
-	[animation setToValue:forwards? [NSNumber numberWithDouble:90*factor] : [NSNumber numberWithDouble:0]];
-	[animation setFillMode:kCAFillModeForwards];
-	[animation setRemovedOnCompletion:NO];
-	[self.topSleeve addAnimation:animation forKey:nil];
-
+    if (self.foldComponents & FoldComponentTransform)
+    {
+        // fold the first (top) joint away from us
+        CABasicAnimation* animation = [CABasicAnimation animationWithKeyPath:rotationKey];
+        //[animation setFromValue:forwards? [NSNumber numberWithDouble:-90*factor*fromProgress] : [NSNumber numberWithDouble:-90*factor*(1-fromProgress)]];
+        [animation setToValue:forwards? [NSNumber numberWithDouble:-90*factor] : [NSNumber numberWithDouble:0]];
+        [animation setFillMode:kCAFillModeForwards];
+        [animation setRemovedOnCompletion:NO];
+        [self.firstJointLayer addAnimation:animation forKey:nil];
+        
+        // fold the second joint back towards us at twice the angle (since it's connected to the first fold we're folding away)
+        animation = [CABasicAnimation animationWithKeyPath:rotationKey];
+        //[animation setFromValue:forwards? [NSNumber numberWithDouble:180*factor*fromProgress] : [NSNumber numberWithDouble:180*factor*(1-fromProgress)]];
+        [animation setToValue:forwards? [NSNumber numberWithDouble:180*factor] : [NSNumber numberWithDouble:0]];
+        [animation setFillMode:kCAFillModeForwards];
+        [animation setRemovedOnCompletion:NO];
+        [self.secondJointLayer addAnimation:animation forKey:nil];
+        
+        // fold the bottom sleeve (3rd joint) away from us, so that net result is it lays flat from user's perspective
+        animation = [CABasicAnimation animationWithKeyPath:rotationKey];
+        //[animation setFromValue:forwards? [NSNumber numberWithDouble:-90*factor*fromProgress] : [NSNumber numberWithDouble:-90*factor*(1-fromProgress)]];
+        [animation setToValue:forwards? [NSNumber numberWithDouble:-90*factor] : [NSNumber numberWithDouble:0]];
+        [animation setFillMode:kCAFillModeForwards];
+        [animation setRemovedOnCompletion:NO];
+        [self.bottomSleeve addAnimation:animation forKey:nil];
+        
+        // fold top sleeve towards us, so that net result is it lays flat from user's perspective
+        animation = [CABasicAnimation animationWithKeyPath:rotationKey];
+        //[animation setFromValue:forwards? [NSNumber numberWithDouble:90*factor*fromProgress] : [NSNumber numberWithDouble:90*factor*(1-fromProgress)]];
+        [animation setToValue:forwards? [NSNumber numberWithDouble:90*factor] : [NSNumber numberWithDouble:0]];
+        [animation setFillMode:kCAFillModeForwards];
+        [animation setRemovedOnCompletion:NO];
+        [self.topSleeve addAnimation:animation forKey:nil];
+    }
+    
 	// Build an array of keyframes for perspectiveLayer.bounds.size.height
 	NSMutableArray* arrayHeight = [NSMutableArray arrayWithCapacity:frameCount + 1];
 	NSMutableArray* arrayShadow = [NSMutableArray arrayWithCapacity:frameCount + 1];
@@ -527,27 +630,80 @@
 	
 	// resize height of the 2 folding panels along a cosine curve.  This is necessary to maintain the 2nd joint in the center
 	// Since there's no built-in sine timing curve, we'll use CAKeyframeAnimation to achieve it
-	CAKeyframeAnimation *keyAnimation = [CAKeyframeAnimation animationWithKeyPath:@"bounds.size.height"];
-	[keyAnimation setValues:[NSArray arrayWithArray:arrayHeight]];
-	[keyAnimation setFillMode:kCAFillModeForwards];
-	[keyAnimation setRemovedOnCompletion:NO];
-	[self.perspectiveLayer addAnimation:keyAnimation forKey:nil];
-	
-	// Dim the 2 folding panels as they fold away from us
-	keyAnimation = [CAKeyframeAnimation animationWithKeyPath:@"opacity"];
-	[keyAnimation setValues:arrayShadow];
-	[keyAnimation setFillMode:kCAFillModeForwards];
-	[keyAnimation setRemovedOnCompletion:NO];
-	[self.upperFoldShadow addAnimation:keyAnimation forKey:nil];
-	
-	keyAnimation = [CAKeyframeAnimation animationWithKeyPath:@"opacity"];
-	[keyAnimation setValues:arrayShadow];
-	[keyAnimation setFillMode:kCAFillModeForwards];
-	[keyAnimation setRemovedOnCompletion:NO];
-	[self.lowerFoldShadow addAnimation:keyAnimation forKey:nil];
-					
+	CAKeyframeAnimation *keyAnimation;
+    
+    if (self.foldComponents & FoldComponentBounds)
+    {
+        keyAnimation = [CAKeyframeAnimation animationWithKeyPath:@"bounds.size.height"];
+        [keyAnimation setValues:[NSArray arrayWithArray:arrayHeight]];
+        [keyAnimation setFillMode:kCAFillModeForwards];
+        [keyAnimation setRemovedOnCompletion:NO];
+        [self.perspectiveLayer addAnimation:keyAnimation forKey:nil];
+	}
+    
+    if (self.foldComponents & FoldComponentOpacity)
+    {
+        // Dim the 2 folding panels as they fold away from us
+        keyAnimation = [CAKeyframeAnimation animationWithKeyPath:@"opacity"];
+        [keyAnimation setValues:arrayShadow];
+        [keyAnimation setFillMode:kCAFillModeForwards];
+        [keyAnimation setRemovedOnCompletion:NO];
+        [self.upperFoldShadow addAnimation:keyAnimation forKey:nil];
+        
+        keyAnimation = [CAKeyframeAnimation animationWithKeyPath:@"opacity"];
+        [keyAnimation setValues:arrayShadow];
+        [keyAnimation setFillMode:kCAFillModeForwards];
+        [keyAnimation setRemovedOnCompletion:NO];
+        [self.lowerFoldShadow addAnimation:keyAnimation forKey:nil];
+    }
+				
 	// commit the transaction
 	[CATransaction commit];
+}
+
+- (CGPoint)anchorPoint
+{
+    CGPoint anchorPoint;
+    
+    switch (self.anchorPointType) {
+        case AnchorPointTopLeft:
+            anchorPoint = CGPointMake(-0.25, -0.25);
+            break;
+            
+        case AnchorPointTopCenter:
+            anchorPoint = CGPointMake(0.5, -0.25);
+            break;
+            
+        case AnchorPointTopRight:
+            anchorPoint = CGPointMake(1.25, -0.25);
+            break;
+            
+        case AnchorPointMiddleLeft:
+            anchorPoint = CGPointMake(-0.25, 0.5);
+            break;
+            
+        case AnchorPointCenter:
+            anchorPoint = CGPointMake(0.5, 0.5);
+            break;
+            
+        case AnchorPointMiddleRight:
+            anchorPoint = CGPointMake(1.25, 0.5);
+            break;
+            
+        case AnchorPointBottomLeft:
+            anchorPoint = CGPointMake(-0.25, 1.25);
+            break;
+            
+        case AnchorPointBottomCenter:
+            anchorPoint = CGPointMake(0.5, 1.25);
+            break;
+            
+        case AnchorPointBottomRight:
+            anchorPoint = CGPointMake(1.25, 1.25);
+            break;
+    }
+
+    return anchorPoint;
 }
 
 - (void)buildLayers
@@ -558,6 +714,7 @@
 	CGRect bounds = self.centerBar.bounds;
 	CGFloat scale = [[UIScreen mainScreen] scale];
 	
+    
 	// we inset the folding panels 1 point on each side with a transparent margin to antialiase the edges
 	UIEdgeInsets foldInsets = UIEdgeInsetsMake(0, 10, 0, 10);
 	// insets on top/bottom are only needed if we're transforming the entire view (in which case these edges need
@@ -593,8 +750,10 @@
 	[self setAnimationCenter:[self.animationView center]];
 	
 	// layer that covers the 2 folding panels in the middle
+    CGPoint anchorPoint = [self anchorPoint];
 	self.perspectiveLayer = [CALayer layer];
-	self.perspectiveLayer.frame = CGRectMake(0, 0, width, height * 2);
+	self.perspectiveLayer.frame = CGRectMake(0 + ((anchorPoint.x - 0.5) * width), 0 + ((anchorPoint.y - 0.5) * height * 2), width, height * 2);
+    self.perspectiveLayer.anchorPoint = anchorPoint;
 	[self.animationView.layer addSublayer:self.perspectiveLayer];
 	
 	// layer that encapsulates the join between the top sleeve (remains flat) and upper folding panel
@@ -648,23 +807,26 @@
 	self.firstJointLayer.position = CGPointMake(width/2, 0);
 	
 	// Shadow layers to add shadowing to the 2 folding panels
-	self.upperFoldShadow = [CAGradientLayer layer];
-	[upperFold addSublayer:self.upperFoldShadow];
-	self.upperFoldShadow.frame = CGRectInset(upperFold.bounds, foldInsets.left, foldInsets.top);
-	//self.upperFoldShadow.backgroundColor = [UIColor blackColor].CGColor;
-	self.upperFoldShadow.colors = [NSArray arrayWithObjects:(id)[UIColor blackColor].CGColor, (id)[[UIColor clearColor] CGColor], nil];	
-	self.upperFoldShadow.startPoint = CGPointMake(0.5, 0);
-	self.upperFoldShadow.endPoint = CGPointMake(0.5, 1);
-	self.upperFoldShadow.opacity = 0;
-	
-	self.lowerFoldShadow = [CAGradientLayer layer];
-	[lowerFold addSublayer:self.lowerFoldShadow];
-	self.lowerFoldShadow.frame = CGRectInset(lowerFold.bounds, foldInsets.left, foldInsets.top);
-	//self.lowerFoldShadow.backgroundColor = [UIColor blackColor].CGColor;
-	self.lowerFoldShadow.colors = [NSArray arrayWithObjects:(id)[UIColor blackColor].CGColor, (id)[[UIColor blackColor] colorWithAlphaComponent:0.2].CGColor, nil];	
-	self.lowerFoldShadow.startPoint = CGPointMake(0.5, 0);
-	self.lowerFoldShadow.endPoint = CGPointMake(0.5, 1);
-	self.lowerFoldShadow.opacity = 0;
+    if (self.foldComponents & FoldComponentOpacity)
+    {
+        self.upperFoldShadow = [CAGradientLayer layer];
+        [upperFold addSublayer:self.upperFoldShadow];
+        self.upperFoldShadow.frame = CGRectInset(upperFold.bounds, foldInsets.left, foldInsets.top);
+        //self.upperFoldShadow.backgroundColor = [UIColor blackColor].CGColor;
+        self.upperFoldShadow.colors = [NSArray arrayWithObjects:(id)[UIColor blackColor].CGColor, (id)[[UIColor clearColor] CGColor], nil];	
+        self.upperFoldShadow.startPoint = CGPointMake(0.5, 0);
+        self.upperFoldShadow.endPoint = CGPointMake(0.5, 1);
+        self.upperFoldShadow.opacity = 0;
+        
+        self.lowerFoldShadow = [CAGradientLayer layer];
+        [lowerFold addSublayer:self.lowerFoldShadow];
+        self.lowerFoldShadow.frame = CGRectInset(lowerFold.bounds, foldInsets.left, foldInsets.top);
+        //self.lowerFoldShadow.backgroundColor = [UIColor blackColor].CGColor;
+        self.lowerFoldShadow.colors = [NSArray arrayWithObjects:(id)[UIColor blackColor].CGColor, (id)[[UIColor blackColor] colorWithAlphaComponent:0.2].CGColor, nil];	
+        self.lowerFoldShadow.startPoint = CGPointMake(0.5, 0);
+        self.lowerFoldShadow.endPoint = CGPointMake(0.5, 1);
+        self.lowerFoldShadow.opacity = 0;
+    }
 			
 	// Perspective is best proportional to the height of the pieces being folded away, rather than a fixed value
 	// the larger the piece being folded, the more perspective distance (zDistance) is needed.
