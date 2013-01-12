@@ -19,6 +19,13 @@
 		0CEF496216A05B040091E9EF /* MainStoryboard_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0CEF496016A05B040091E9EF /* MainStoryboard_iPhone.storyboard */; };
 		0CEF496516A05B040091E9EF /* MainStoryboard_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0CEF496316A05B040091E9EF /* MainStoryboard_iPad.storyboard */; };
 		0CEF496816A05B040091E9EF /* CMSViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CEF496716A05B040091E9EF /* CMSViewController.m */; };
+		0CEF496F16A05B240091E9EF /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CEF496E16A05B240091E9EF /* QuartzCore.framework */; };
+		0CEF497416A05B980091E9EF /* FoldViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CEF497316A05B980091E9EF /* FoldViewController.m */; };
+		0CEF497516A05B9E0091E9EF /* MPAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CEF497116A05B8A0091E9EF /* MPAnimation.m */; };
+		0CEF497A16A05D1B0091E9EF /* matrix_02.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CEF497816A05D1B0091E9EF /* matrix_02.png */; };
+		0CEF497B16A05D1B0091E9EF /* matrix_02@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CEF497916A05D1B0091E9EF /* matrix_02@2x.png */; };
+		0CEF497E16A062250091E9EF /* RenaissanceIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CEF497C16A062250091E9EF /* RenaissanceIcon.png */; };
+		0CEF497F16A062250091E9EF /* RenaissanceIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CEF497D16A062250091E9EF /* RenaissanceIcon@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +46,16 @@
 		0CEF496416A05B040091E9EF /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard_iPad.storyboard; sourceTree = "<group>"; };
 		0CEF496616A05B040091E9EF /* CMSViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CMSViewController.h; sourceTree = "<group>"; };
 		0CEF496716A05B040091E9EF /* CMSViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CMSViewController.m; sourceTree = "<group>"; };
+		0CEF496E16A05B240091E9EF /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		0CEF497016A05B8A0091E9EF /* MPAnimation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MPAnimation.h; sourceTree = "<group>"; };
+		0CEF497116A05B8A0091E9EF /* MPAnimation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MPAnimation.m; sourceTree = "<group>"; };
+		0CEF497216A05B980091E9EF /* FoldViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FoldViewController.h; sourceTree = "<group>"; };
+		0CEF497316A05B980091E9EF /* FoldViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FoldViewController.m; sourceTree = "<group>"; };
+		0CEF497616A05BC80091E9EF /* Enumerations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Enumerations.h; sourceTree = "<group>"; };
+		0CEF497816A05D1B0091E9EF /* matrix_02.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = matrix_02.png; sourceTree = "<group>"; };
+		0CEF497916A05D1B0091E9EF /* matrix_02@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "matrix_02@2x.png"; sourceTree = "<group>"; };
+		0CEF497C16A062250091E9EF /* RenaissanceIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = RenaissanceIcon.png; sourceTree = "<group>"; };
+		0CEF497D16A062250091E9EF /* RenaissanceIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "RenaissanceIcon@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,6 +63,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0CEF496F16A05B240091E9EF /* QuartzCore.framework in Frameworks */,
 				0CEF494916A05B030091E9EF /* UIKit.framework in Frameworks */,
 				0CEF494B16A05B030091E9EF /* Foundation.framework in Frameworks */,
 				0CEF494D16A05B030091E9EF /* CoreGraphics.framework in Frameworks */,
@@ -75,6 +93,7 @@
 		0CEF494716A05B030091E9EF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0CEF496E16A05B240091E9EF /* QuartzCore.framework */,
 				0CEF494816A05B030091E9EF /* UIKit.framework */,
 				0CEF494A16A05B030091E9EF /* Foundation.framework */,
 				0CEF494C16A05B030091E9EF /* CoreGraphics.framework */,
@@ -91,6 +110,12 @@
 				0CEF496316A05B040091E9EF /* MainStoryboard_iPad.storyboard */,
 				0CEF496616A05B040091E9EF /* CMSViewController.h */,
 				0CEF496716A05B040091E9EF /* CMSViewController.m */,
+				0CEF497216A05B980091E9EF /* FoldViewController.h */,
+				0CEF497316A05B980091E9EF /* FoldViewController.m */,
+				0CEF497016A05B8A0091E9EF /* MPAnimation.h */,
+				0CEF497116A05B8A0091E9EF /* MPAnimation.m */,
+				0CEF497616A05BC80091E9EF /* Enumerations.h */,
+				0CEF497716A05D0E0091E9EF /* images */,
 				0CEF494F16A05B030091E9EF /* Supporting Files */,
 			);
 			path = Animation3DSandbox;
@@ -108,6 +133,17 @@
 				0CEF495E16A05B040091E9EF /* Default-568h@2x.png */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		0CEF497716A05D0E0091E9EF /* images */ = {
+			isa = PBXGroup;
+			children = (
+				0CEF497C16A062250091E9EF /* RenaissanceIcon.png */,
+				0CEF497D16A062250091E9EF /* RenaissanceIcon@2x.png */,
+				0CEF497816A05D1B0091E9EF /* matrix_02.png */,
+				0CEF497916A05D1B0091E9EF /* matrix_02@2x.png */,
+			);
+			name = images;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -168,6 +204,10 @@
 				0CEF495F16A05B040091E9EF /* Default-568h@2x.png in Resources */,
 				0CEF496216A05B040091E9EF /* MainStoryboard_iPhone.storyboard in Resources */,
 				0CEF496516A05B040091E9EF /* MainStoryboard_iPad.storyboard in Resources */,
+				0CEF497A16A05D1B0091E9EF /* matrix_02.png in Resources */,
+				0CEF497B16A05D1B0091E9EF /* matrix_02@2x.png in Resources */,
+				0CEF497E16A062250091E9EF /* RenaissanceIcon.png in Resources */,
+				0CEF497F16A062250091E9EF /* RenaissanceIcon@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -181,6 +221,8 @@
 				0CEF495516A05B030091E9EF /* main.m in Sources */,
 				0CEF495916A05B030091E9EF /* CMSAppDelegate.m in Sources */,
 				0CEF496816A05B040091E9EF /* CMSViewController.m in Sources */,
+				0CEF497416A05B980091E9EF /* FoldViewController.m in Sources */,
+				0CEF497516A05B9E0091E9EF /* MPAnimation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -273,6 +315,7 @@
 				GCC_PREFIX_HEADER = "Animation3DSandbox/Animation3DSandbox-Prefix.pch";
 				INFOPLIST_FILE = "Animation3DSandbox/Animation3DSandbox-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 2;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -284,6 +327,7 @@
 				GCC_PREFIX_HEADER = "Animation3DSandbox/Animation3DSandbox-Prefix.pch";
 				INFOPLIST_FILE = "Animation3DSandbox/Animation3DSandbox-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 2;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

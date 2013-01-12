@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="2519" systemVersion="12A206j" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="2">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="2844" systemVersion="12C3012" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" initialViewController="OrE-V7-wWD">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="1856"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="1930"/>
     </dependencies>
     <scenes>
-        <!--class Prefix:identifier View Controller-->
+        <!--View Controller-->
         <scene sceneID="4">
             <objects>
                 <viewController id="2" customClass="CMSViewController" sceneMemberID="viewController">
@@ -17,7 +17,145 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3" sceneMemberID="firstResponder"/>
             </objects>
         </scene>
+        <!--Fold View Controller - Fold Animation-->
+        <scene sceneID="KgR-Pq-DqW">
+            <objects>
+                <viewController id="OrE-V7-wWD" customClass="FoldViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="LXF-Hh-q4S">
+                        <rect key="frame" x="0.0" y="20" width="768" height="955"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" id="dGe-j3-OZO">
+                                <rect key="frame" x="118" y="212" width="512" height="512"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" id="kkl-cC-8CA">
+                                        <rect key="frame" x="0.0" y="0.0" width="512" height="170"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="top" image="RenaissanceIcon.png" id="Dle-aw-FSW">
+                                                <rect key="frame" x="0.0" y="0.0" width="512" height="170"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            </imageView>
+                                        </subviews>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    </view>
+                                    <view contentMode="scaleToFill" id="Mhg-uV-yNB">
+                                        <rect key="frame" x="0.0" y="170" width="512" height="172"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" image="RenaissanceIcon.png" id="3Hx-qn-cBs">
+                                                <rect key="frame" x="0.0" y="0.0" width="512" height="172"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            </imageView>
+                                        </subviews>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    </view>
+                                    <view contentMode="scaleToFill" id="Cbk-Gv-PAa">
+                                        <rect key="frame" x="0.0" y="342" width="512" height="170"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="bottom" image="RenaissanceIcon.png" id="tNY-Sd-IMp">
+                                                <rect key="frame" x="0.0" y="0.0" width="512" height="170"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            </imageView>
+                                        </subviews>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <gestureRecognizers/>
+                            </view>
+                            <view contentMode="scaleToFill" id="u2D-pp-ngz">
+                                <rect key="frame" x="20" y="20" width="485" height="120"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="3" id="sAp-tO-ba2">
+                                        <rect key="frame" x="105" y="70" width="360" height="30"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                        <segments>
+                                            <segment title="Inverse"/>
+                                            <segment title="None"/>
+                                            <segment title="Low"/>
+                                            <segment title="Normal"/>
+                                            <segment title="High"/>
+                                            <segment title="Side"/>
+                                        </segments>
+                                        <connections>
+                                            <action selector="skewValueChanged:" destination="OrE-V7-wWD" eventType="valueChanged" id="Dh9-k3-Ety"/>
+                                        </connections>
+                                    </segmentedControl>
+                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Skew" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="goE-KV-LUT">
+                                        <rect key="frame" x="20" y="74" width="42" height="21"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Duration" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="fMb-Qf-3bs">
+                                        <rect key="frame" x="20" y="24" width="65" height="21"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="Y5w-Vo-AD6">
+                                        <rect key="frame" x="105" y="20" width="360" height="30"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                        <segments>
+                                            <segment title="1x"/>
+                                            <segment title="2x"/>
+                                            <segment title="5x"/>
+                                            <segment title="10x"/>
+                                        </segments>
+                                        <connections>
+                                            <action selector="durationValueChanged:" destination="OrE-V7-wWD" eventType="valueChanged" id="VPG-jI-Ufb"/>
+                                        </connections>
+                                    </segmentedControl>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Fold Animation" image="PaperAirplane.png" id="Hve-E3-8rV"/>
+                    <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
+                    <connections>
+                        <outlet property="bottomBar" destination="Cbk-Gv-PAa" id="mug-gq-ND9"/>
+                        <outlet property="centerBar" destination="Mhg-uV-yNB" id="Qhb-Fw-Ig3"/>
+                        <outlet property="contentView" destination="dGe-j3-OZO" id="kVP-8x-fK6"/>
+                        <outlet property="controlFrame" destination="u2D-pp-ngz" id="bTB-Kr-xTc"/>
+                        <outlet property="skewSegment" destination="sAp-tO-ba2" id="QOe-nh-2nn"/>
+                        <outlet property="topBar" destination="kkl-cC-8CA" id="llA-Ke-1lk"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="t1b-WN-Vbf" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3001" y="5917"/>
+        </scene>
     </scenes>
+    <resources>
+        <image name="PaperAirplane.png" width="16" height="16"/>
+        <image name="RenaissanceIcon.png" width="512" height="512"/>
+    </resources>
+    <classes>
+        <class className="CMSViewController" superclassName="UIViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/CMSViewController.h"/>
+        </class>
+        <class className="FoldViewController" superclassName="UIViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/FoldViewController.h"/>
+            <relationships>
+                <relationship kind="action" name="durationValueChanged:" candidateClass="UISegmentedControl"/>
+                <relationship kind="action" name="skewValueChanged:" candidateClass="UISegmentedControl"/>
+                <relationship kind="outlet" name="bottomBar" candidateClass="UIView"/>
+                <relationship kind="outlet" name="centerBar" candidateClass="UIView"/>
+                <relationship kind="outlet" name="contentView" candidateClass="UIView"/>
+                <relationship kind="outlet" name="controlFrame" candidateClass="UIView"/>
+                <relationship kind="outlet" name="skewSegment" candidateClass="UISegmentedControl"/>
+                <relationship kind="outlet" name="topBar" candidateClass="UIView"/>
+            </relationships>
+        </class>
+    </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar" statusBarStyle="blackTranslucent"/>
         <simulatedOrientationMetrics key="orientation"/>
