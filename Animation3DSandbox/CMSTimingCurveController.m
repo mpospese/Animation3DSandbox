@@ -8,8 +8,9 @@
 
 #import "CMSTimingCurveController.h"
 #import <QuartzCore/QuartzCore.h>
+#import "CMSTimingCurveTable.h"
 
-@interface CMSTimingCurveController()
+@interface CMSTimingCurveController()<CMSTimingCurveDelegate>
 
 @property (nonatomic, strong) CAShapeLayer *curve;
 @property (nonatomic, strong) CAShapeLayer *graphInner;
@@ -21,6 +22,7 @@
 @property (weak, nonatomic) IBOutlet UIView *curveContainer;
 @property (weak, nonatomic) IBOutlet UILabel *propertyLabel;
 @property (weak, nonatomic) IBOutlet UILabel *timeLabel;
+@property (nonatomic, strong) UIPopoverController *resetPopover;
 
 @end
 
@@ -142,13 +144,22 @@
     [pathOuter addLineToPoint:CGPointMake(CGRectGetMaxX(rect) - 0.5, CGRectGetMaxY(rect))];
     self.graphOuter.path = pathOuter.CGPath;
     
-    UIBezierPath *newPath = [UIBezierPath bezierPath];
-    [newPath moveToPoint:CGPointMake(CGRectGetMinX(rect), CGRectGetMaxY(rect))];
+    self.propertyLabel.center = CGPointMake(CGRectGetMinX(rect) / 2 - 3, CGRectGetMidY(rect));
+    self.timeLabel.center = CGPointMake(CGRectGetMidX(rect), CGRectGetMaxY(rect) + 8 + CGRectGetHeight(self.timeLabel.bounds)/2);
+    
+    [self updatePaths:0.1 animateLines:NO];
+}
+
+- (void)updatePaths:(CGFloat)duration animateLines:(BOOL)animateLines
+{
+    CGRect rect = [self curveRect];
+    UIBezierPath *pathCurve = [UIBezierPath bezierPath];
+    [pathCurve moveToPoint:CGPointMake(CGRectGetMinX(rect), CGRectGetMaxY(rect))];
     
     CGPoint cp1 = CGPointMake(CGRectGetMinX(rect) + self.settings.cp1.x * CGRectGetWidth(rect), CGRectGetMaxY(rect) - (self.settings.cp1.y * CGRectGetHeight(rect)));
     CGPoint cp2 = CGPointMake(CGRectGetMinX(rect) + self.settings.cp2.x * CGRectGetWidth(rect), CGRectGetMaxY(rect) - (self.settings.cp2.y * CGRectGetHeight(rect)));
     
-    [newPath addCurveToPoint:CGPointMake(CGRectGetMaxX(rect), CGRectGetMinY(rect)) controlPoint1:cp1 controlPoint2:cp2];
+    [pathCurve addCurveToPoint:CGPointMake(CGRectGetMaxX(rect), CGRectGetMinY(rect)) controlPoint1:cp1 controlPoint2:cp2];
     
     UIBezierPath *pathLine1 = [UIBezierPath bezierPath];
     [pathLine1 moveToPoint:CGPointMake(CGRectGetMinX(rect), CGRectGetMaxY(rect))];
@@ -161,33 +172,53 @@
     CABasicAnimation *animation;
     
     [CATransaction begin];
-    [CATransaction setAnimationDuration:0.1];
+    [CATransaction setAnimationDuration:duration];
     
     animation = [CABasicAnimation animationWithKeyPath:@"path"];
     animation.fromValue = [self.curve.presentationLayer path];
-    animation.toValue = (id)newPath.CGPath;
-    self.curve.path = newPath.CGPath;
+    animation.toValue = (id)pathCurve.CGPath;
+    self.curve.path = pathCurve.CGPath;
     [self.curve addAnimation:animation forKey:@"path"];
     
-    /*animation = [CABasicAnimation animationWithKeyPath:@"path"];
-    animation.fromValue = [self.line1.presentationLayer path];
-    animation.toValue = (id)pathLine1.CGPath;
-    [self.line1 addAnimation:animation forKey:@"path"];*/
+    if (animateLines)
+    {
+        animation = [CABasicAnimation animationWithKeyPath:@"path"];
+        animation.fromValue = [self.line1.presentationLayer path];
+        animation.toValue = (id)pathLine1.CGPath;
+        [self.line1 addAnimation:animation forKey:@"path"];
+        
+        animation = [CABasicAnimation animationWithKeyPath:@"path"];
+        animation.fromValue = [self.line2.presentationLayer path];
+        animation.toValue = (id)pathLine2.CGPath;
+        [self.line2 addAnimation:animation forKey:@"path"];
+        
+        animation = [CABasicAnimation animationWithKeyPath:@"position"];
+        animation.fromValue = [NSValue valueWithCGPoint:self.pointView1.layer.position];
+        animation.toValue = [NSValue valueWithCGPoint:cp1];
+        animation.fillMode = kCAFillModeForwards;
+        [self.pointView1.layer addAnimation:animation forKey:@"position"];
+        
+        animation = [CABasicAnimation animationWithKeyPath:@"position"];
+        animation.fromValue = [NSValue valueWithCGPoint:self.pointView2.layer.position];
+        animation.toValue = [NSValue valueWithCGPoint:cp2];
+        animation.fillMode = kCAFillModeForwards;
+        [self.pointView2.layer addAnimation:animation forKey:@"position"];
+        
+        [CATransaction setCompletionBlock:^{
+            self.pointView1.center = cp1;
+            self.pointView2.center = cp2;
+        }];
+    }
+    else
+    {
+        self.pointView1.center = cp1;
+        self.pointView2.center = cp2;
+    }
+
     self.line1.path = pathLine1.CGPath;
-    
-    /*animation = [CABasicAnimation animationWithKeyPath:@"path"];
-    animation.fromValue = [self.line2.presentationLayer path];
-    animation.toValue = (id)pathLine2.CGPath;
-    [self.line2 addAnimation:animation forKey:@"path"];*/
     self.line2.path = pathLine2.CGPath;
     
     [CATransaction commit];
-    
-    self.pointView1.center = cp1;
-    self.pointView2.center = cp2;
-    
-    self.propertyLabel.center = CGPointMake(CGRectGetMinX(rect) / 2 - 3, CGRectGetMidY(rect));
-    self.timeLabel.center = CGPointMake(CGRectGetMidX(rect), CGRectGetMaxY(rect) + 8 + CGRectGetHeight(self.timeLabel.bounds)/2);
 }
 
 - (void)handlePan:(UIPanGestureRecognizer *)gestureRecognizer
@@ -212,6 +243,36 @@
         self.settings.cp2 = cp;
 
     [self.view setNeedsLayout];
+}
+
+- (IBAction)resetTimingCurve:(id)sender {
+    if (self.resetPopover)
+    {
+        [self.resetPopover dismissPopoverAnimated:YES];
+        self.resetPopover = nil;
+        return;
+    }
+    
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPad" bundle:nil];
+    CMSTimingCurveTable *resetTable = [storyboard instantiateViewControllerWithIdentifier:@"TimingCurveDefaults"];
+    resetTable.timingCurve = self.settings.timingCurve;
+    resetTable.delegate = self;
+    
+    self.resetPopover = [[UIPopoverController alloc] initWithContentViewController:resetTable];
+    [self.resetPopover presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+}
+
+#pragma mark - CMSTimingCurveDelegate
+
+- (void)timingCurveSelected:(TimingCurve)timingCurve
+{
+    self.settings.timingCurve = timingCurve;
+    [self updatePaths:0.25 animateLines:YES];
+    if (self.resetPopover)
+    {
+        [self.resetPopover dismissPopoverAnimated:YES];
+        self.resetPopover = nil;
+    }
 }
 
 @end
