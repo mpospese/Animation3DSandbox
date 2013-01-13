@@ -51,10 +51,6 @@
 
 @property (nonatomic, readonly) CGFloat foldHeight;
 
-@property (nonatomic, strong) UISwipeGestureRecognizer *swipe;
-@property (nonatomic, strong) UITapGestureRecognizer *settingsTap;
-@property (nonatomic, strong) UISwipeGestureRecognizer *settingsSwipe;
-@property (nonatomic, strong) UIViewController *settingsController;
 
 @end
 
@@ -157,11 +153,6 @@
 	tapGesture.delegate = self;
 	[self.contentView addGestureRecognizer:tapGesture];
 	
-	self.settingsTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closeSettingsPanel:)];
-    self.settingsSwipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(closeSettingsPanel:)];
-    self.settingsSwipe.direction = UISwipeGestureRecognizerDirectionLeft;
-	//[self.view addGestureRecognizer:self.settingsTap];
-	
 	// Add our pinch gesture recognizer
 	UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinch:)];
 	pinchGesture.delegate = self;
@@ -179,24 +170,6 @@
     self.foldLowerImage = [MPAnimation renderImage:entire withRect:CGRectMake(0, yOffset, entire.size.width, self.centerBar.bounds.size.height/2)];
     yOffset += self.foldLowerImage.size.height;
 	self.slideLowerImage = [MPAnimation renderImage:entire withRect:CGRectMake(0, yOffset, entire.size.width, self.bottomBar.bounds.size.height + insets.bottom)];
-    
-    UISwipeGestureRecognizer *swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipe:)];
-    swipe.direction = UISwipeGestureRecognizerDirectionRight;
-    swipe.delegate = self;
-    [self.mainView addGestureRecognizer:swipe];
-    self.swipe = swipe;
-}
-
-- (void)viewDidUnload
-{
-	[self setContentView:nil];
-	[self setTopBar:nil];
-	[self setCenterBar:nil];
-	[self setBottomBar:nil];
-	[self setSkewSegment:nil];
-	[self setControlFrame:nil];
-	[super viewDidUnload];
-	// Release any retained subviews of the main view.
 }
 
 - (CGFloat)foldHeight
@@ -286,17 +259,6 @@
 	[self animateFold:YES];
 }
 
-- (void)closeSettingsPanel:(UIGestureRecognizer *)gestureRecognizer
-{
-    if ([gestureRecognizer state] != UIGestureRecognizerStateEnded)
-        return;
-    
-    [self.mainView removeGestureRecognizer:self.settingsTap];
-    [self.mainView removeGestureRecognizer:self.settingsSwipe];
-    
-    [self showSettings:NO];
-}
-
 - (void)handlePinch:(UIPinchGestureRecognizer *)gestureRecognizer {
     UIGestureRecognizerState state = [gestureRecognizer state];
 	
@@ -341,30 +303,6 @@
 		
 		[self doFold:currentGap - [self pinchStartGap]];
 	}
-}
-
-- (void)handleSwipe:(UISwipeGestureRecognizer *)gestureRecognizer
-{
-    if ([gestureRecognizer state] != UIGestureRecognizerStateEnded)
-        return;
-    
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPad" bundle:nil];
-    CMSSettingsController *settings = [storyboard instantiateViewControllerWithIdentifier:@"SettingsID"];
-    settings.settings = self.settings;
-    
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:settings];
-    navController.navigationBar.barStyle = UIBarStyleBlack;
-    
-    navController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-    [self addChildViewController:navController];
-    [navController.view setFrame:CGRectMake(0, 0, 320, CGRectGetHeight(self.view.bounds))];
-    [self.view insertSubview:navController.view belowSubview:self.mainView];
-    [navController didMoveToParentViewController:self];
-    self.settingsController = navController;
-    [self.mainView addGestureRecognizer:self.settingsTap];
-    [self.view addGestureRecognizer:self.settingsSwipe];
-    
-    [self showSettings:YES];
 }
 
 - (IBAction)skewValueChanged:(UISegmentedControl *)sender {
@@ -441,46 +379,10 @@
 	if ([self isFolding])
         return NO;
     
-    if ([gestureRecognizer isEqual:self.swipe])
-    {
-        CGPoint point = [gestureRecognizer locationInView:self.view];
-        if (point.x > 44)
-            return NO;
-    }
-    
     return YES;
 }
 
 #pragma mark - Other Animations
-
-- (void)showSettings:(BOOL)show
-{
-
-	[CATransaction begin];
-	[CATransaction setAnimationDuration:self.settings.duration];
-	[CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithControlPoints:self.settings.cp1.x :self.settings.cp1.y :self.settings.cp2.x :self.settings.cp2.y]];
-    
-    if (!show)
-    {
-        [CATransaction setCompletionBlock:^{
-            [self.settingsController willMoveToParentViewController:nil];
-            [self.settingsController.view removeFromSuperview];
-            [self.settingsController removeFromParentViewController];
-            self.settingsController = nil;
-        }];
-    }
-    
-    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"position.x"];
-    CGPoint position = self.mainView.layer.position;
-    position.x += (show? 1 : -1) * (CGRectGetWidth(self.settingsController.view.bounds));
-    animation.fromValue = @([self.mainView.layer.presentationLayer position].x);
-    animation.toValue = @(position.x);
-    animation.fillMode = kCAFillModeForwards;
-    self.mainView.layer.position = position;
-    [self.mainView.layer addAnimation:animation forKey:@"position"];
-    
-    [CATransaction commit];
-}
 
 #pragma mark - Animations
 

@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0C707C2F16A333DB004A1657 /* RedBall.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C707C2D16A333DB004A1657 /* RedBall.png */; };
+		0C707C3016A333DB004A1657 /* RedBall@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C707C2E16A333DB004A1657 /* RedBall@2x.png */; };
+		0C707C3816A37E28004A1657 /* CMSAnimationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C707C3716A37E28004A1657 /* CMSAnimationController.m */; };
 		0C750B5B16A202B200095CA1 /* CMSAnchorPointTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C750B5A16A202B200095CA1 /* CMSAnchorPointTable.m */; };
 		0C750B6616A21EF700095CA1 /* CMSTimingCurveTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C750B6516A21EF700095CA1 /* CMSTimingCurveTable.m */; };
 		0CD8517F16A19F8000020B42 /* CMSSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CD8517E16A19F8000020B42 /* CMSSettingsController.m */; };
@@ -35,6 +38,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0C707C2D16A333DB004A1657 /* RedBall.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = RedBall.png; sourceTree = "<group>"; };
+		0C707C2E16A333DB004A1657 /* RedBall@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "RedBall@2x.png"; sourceTree = "<group>"; };
+		0C707C3616A37E28004A1657 /* CMSAnimationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMSAnimationController.h; sourceTree = "<group>"; };
+		0C707C3716A37E28004A1657 /* CMSAnimationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMSAnimationController.m; sourceTree = "<group>"; };
 		0C750B5916A202B200095CA1 /* CMSAnchorPointTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMSAnchorPointTable.h; sourceTree = "<group>"; };
 		0C750B5A16A202B200095CA1 /* CMSAnchorPointTable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMSAnchorPointTable.m; sourceTree = "<group>"; };
 		0C750B6416A21EF700095CA1 /* CMSTimingCurveTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMSTimingCurveTable.h; sourceTree = "<group>"; };
@@ -128,6 +135,8 @@
 				0CEF495816A05B030091E9EF /* CMSAppDelegate.m */,
 				0CEF496016A05B040091E9EF /* MainStoryboard_iPhone.storyboard */,
 				0CEF496316A05B040091E9EF /* MainStoryboard_iPad.storyboard */,
+				0C707C3616A37E28004A1657 /* CMSAnimationController.h */,
+				0C707C3716A37E28004A1657 /* CMSAnimationController.m */,
 				0CEF497216A05B980091E9EF /* FoldViewController.h */,
 				0CEF497316A05B980091E9EF /* FoldViewController.m */,
 				0CEF497016A05B8A0091E9EF /* MPAnimation.h */,
@@ -168,6 +177,8 @@
 			children = (
 				0CEF497C16A062250091E9EF /* RenaissanceIcon.png */,
 				0CEF497D16A062250091E9EF /* RenaissanceIcon@2x.png */,
+				0C707C2D16A333DB004A1657 /* RedBall.png */,
+				0C707C2E16A333DB004A1657 /* RedBall@2x.png */,
 			);
 			name = images;
 			sourceTree = "<group>";
@@ -236,6 +247,8 @@
 				0CD8518416A1A07900020B42 /* Icon-72@2x.png in Resources */,
 				0CD8518616A1A08E00020B42 /* Icon.png in Resources */,
 				0CD8518816A1A09200020B42 /* Icon@2x.png in Resources */,
+				0C707C2F16A333DB004A1657 /* RedBall.png in Resources */,
+				0C707C3016A333DB004A1657 /* RedBall@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -255,6 +268,7 @@
 				0CD8519116A1C47000020B42 /* CMSSettingsInfo.m in Sources */,
 				0C750B5B16A202B200095CA1 /* CMSAnchorPointTable.m in Sources */,
 				0C750B6616A21EF700095CA1 /* CMSTimingCurveTable.m in Sources */,
+				0C707C3816A37E28004A1657 /* CMSAnimationController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
