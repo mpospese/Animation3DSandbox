@@ -7,10 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "CMSSettingsInfo.h"
+#import "CMSBaseAnimationController.h"
 
-@interface FoldViewController : UIViewController
+@interface FoldViewController : CMSBaseAnimationController
 
-@property (nonatomic, strong) CMSSettingsInfo *settings;
 
 @end

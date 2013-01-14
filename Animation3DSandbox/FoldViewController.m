@@ -58,7 +58,6 @@
 
 - (void)doInit
 {
-    _settings = [CMSSettingsInfo new];
 	_durationMultiplier = 1;
 }
 

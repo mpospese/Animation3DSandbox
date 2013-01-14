@@ -10,6 +10,7 @@
 #import "CMSSettingsController.h"
 #import <QuartzCore/QuartzCore.h>
 #import "FoldViewController.h"
+#import "CMSBallController.h"
 
 @interface CMSAnimationController()<UIGestureRecognizerDelegate>
 
@@ -64,7 +65,7 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     
-    [self loadFoldController];
+    [self loadBallController];
     
 	self.settingsTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closeSettingsPanel:)];
     self.settingsSwipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(closeSettingsPanel:)];
@@ -90,6 +91,20 @@
     foldController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.view addSubview:foldController.view];
     [foldController didMoveToParentViewController:self];
+}
+
+- (void)loadBallController
+{
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPad" bundle:nil];
+    CMSBallController *ballController = [storyboard instantiateViewControllerWithIdentifier:[CMSBallController storyboardID]];
+    ballController.settings = self.settings;
+    self.mainView = ballController.view;
+    
+    [self addChildViewController:ballController];
+    ballController.view.frame = self.view.bounds;
+    ballController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.view addSubview:ballController.view];
+    [ballController didMoveToParentViewController:self];
 }
 
 #pragma mark - Gesture handlers
