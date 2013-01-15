@@ -13,7 +13,6 @@
 @interface CMSSettingsController()
 @property (weak, nonatomic) IBOutlet UILabel *durationLabel;
 @property (weak, nonatomic) IBOutlet UILabel *timingCurveLabel;
-@property (weak, nonatomic) IBOutlet UILabel *delayLabel;
 @property (weak, nonatomic) IBOutlet UITableViewCell *componentTransformCell;
 @property (weak, nonatomic) IBOutlet UITableViewCell *componentBoundsCell;
 @property (weak, nonatomic) IBOutlet UITableViewCell *componentOpacityCell;
@@ -37,14 +36,19 @@
 {
     [super viewDidLoad];
     
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+
     [self updateDurationLabel];
-    [self updateDelayLabel];
     [self updateTimingCurveLabel];
     
     [self updateComponents];
-
+    
     [self updateDropShadowsLabel];
-    [self updateAnchorPointLabel];
+    [self updateAnchorPointLabel];    
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -69,9 +73,7 @@
             case CMSSettingsSectionAnimation:
                 switch (indexPath.row) {
                     case CMSSettingsAnimationRowDuration:
-                        break;
-                        
-                    case CMSSettingsAnimationRowDelay:
+                        [self setNextDuration];
                         break;
                         
                     case CMSSettingsAnimationRowTimingCurve:
@@ -118,9 +120,6 @@
         case CMSSettingsSectionAnimation:
             switch (indexPath.row) {
                 /*case CMSSettingsAnimationRowDuration:
-                    break;
-                    
-                case CMSSettingsAnimationRowDelay:
                     break;*/
                     
                 case CMSSettingsAnimationRowTimingCurve:
@@ -144,14 +143,44 @@
 
 #pragma mark - Animation section
 
-- (void)updateDurationLabel
+- (void)setNextDuration
 {
-    [self.durationLabel setText:[NSString stringWithFormat:@"%.3f sec", self.settings.duration]];
+    if (self.settings.duration <= 0.01)
+        self.settings.duration = 0.1;
+    else if (self.settings.duration <= 0.1)
+        self.settings.duration = 0.2;
+    else if (self.settings.duration <= 0.2)
+        self.settings.duration = 0.25;
+    else if (self.settings.duration <= 0.25)
+        self.settings.duration = 0.3;
+    else if (self.settings.duration <= 0.3)
+        self.settings.duration = 0.5;
+    else if (self.settings.duration <= 0.5)
+        self.settings.duration = 0.75;
+    else if (self.settings.duration <= 0.75)
+        self.settings.duration = 1;
+    else if (self.settings.duration <= 1)
+        self.settings.duration = 1.5;
+    else if (self.settings.duration <= 1.5)
+        self.settings.duration = 2;
+    else if (self.settings.duration <= 2)
+        self.settings.duration = 2.5;
+    else if (self.settings.duration <= 2.5)
+        self.settings.duration = 3;
+    else if (self.settings.duration <= 3)
+        self.settings.duration = 5;
+    else if (self.settings.duration <= 5)
+        self.settings.duration = 7.5;
+    else if (self.settings.duration <= 7.5)
+        self.settings.duration = 10;
+    else if (self.settings.duration <= 10)
+        self.settings.duration = 0.01;
+    [self updateDurationLabel];
 }
 
-- (void)updateDelayLabel
+- (void)updateDurationLabel
 {
-    [self.delayLabel setText:[NSString stringWithFormat:@"%.3f sec", self.settings.delay]];
+    [self.durationLabel setText:[NSString stringWithFormat:@"%.2f sec", self.settings.duration]];
 }
 
 - (void)updateTimingCurveLabel

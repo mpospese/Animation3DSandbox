@@ -14,7 +14,6 @@
 // Animations
 
 @property (nonatomic, assign) CFTimeInterval duration;
-@property (nonatomic, assign) CFTimeInterval delay;
 
 // Timing Curve
 @property (nonatomic, assign) CGPoint cp1;

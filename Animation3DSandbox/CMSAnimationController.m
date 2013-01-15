@@ -86,6 +86,10 @@
     foldController.settings = self.settings;
     self.mainView = foldController.view;
     
+    foldController.view.layer.shadowOpacity = 0.5;
+    foldController.view.layer.shadowOffset = CGSizeMake(-3, 0);
+    foldController.view.layer.shadowPath = [UIBezierPath bezierPathWithRect:foldController.view.bounds].CGPath;
+    
     [self addChildViewController:foldController];
     foldController.view.frame = self.view.bounds;
     foldController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -99,6 +103,10 @@
     CMSBallController *ballController = [storyboard instantiateViewControllerWithIdentifier:[CMSBallController storyboardID]];
     ballController.settings = self.settings;
     self.mainView = ballController.view;
+    
+    ballController.view.layer.shadowOpacity = 0.5;
+    ballController.view.layer.shadowOffset = CGSizeMake(-3, 0);
+    ballController.view.layer.shadowPath = [UIBezierPath bezierPathWithRect:ballController.view.bounds].CGPath;
     
     [self addChildViewController:ballController];
     ballController.view.frame = self.view.bounds;
@@ -159,7 +167,7 @@
 - (void)showSettings:(BOOL)show
 {
 	[CATransaction begin];
-	[CATransaction setAnimationDuration:self.settings.duration];
+	[CATransaction setAnimationDuration:0.3];//self.settings.duration];
 	[CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithControlPoints:self.settings.cp1.x :self.settings.cp1.y :self.settings.cp2.x :self.settings.cp2.y]];
     
     if (!show)

@@ -19,7 +19,6 @@ typedef enum
 typedef enum
 {
     CMSSettingsAnimationRowDuration,
-    CMSSettingsAnimationRowDelay,
     CMSSettingsAnimationRowTimingCurve
 } CMSSettingsAnimationRow;
 

@@ -18,7 +18,7 @@
 {
     self = [super init];
     if (self) {
-        _duration = 0.3;
+        _duration = 1.5;
         
         [self setTimingCurve:TimingCurveDefault];
         
