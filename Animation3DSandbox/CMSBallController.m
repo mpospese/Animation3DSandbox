@@ -59,6 +59,7 @@
     
     self.redBall.layer.shadowPath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(20, CGRectGetHeight(self.redBall.bounds) - 13, CGRectGetWidth(self.redBall.bounds) - 40, 25)].CGPath;
     self.redBall.layer.shadowOffset = CGSizeMake(0, 0);
+    self.redBall.layer.shadowRadius = 10;
     [self updateDropShadow:NO];
     
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
@@ -202,8 +203,8 @@
     
 	[CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithControlPoints:self.settings.cp1.x :self.settings.cp1.y :self.settings.cp2.x :self.settings.cp2.y]];
     CGFloat targetX = self.isLeft? CGRectGetWidth(self.view.bounds) - 50 - (CGRectGetWidth(self.redBall.bounds)/2) : 50 + (CGRectGetWidth(self.redBall.bounds)/2);
-    CALayer *presentationLayer = self.redBall.layer.presentationLayer;
-    CATransform3D targetTransform = self.isLeft? CATransform3DMakeScale(0.50, 0.50, 0) : CATransform3DIdentity;
+    //CALayer *presentationLayer = self.redBall.layer.presentationLayer;
+    //CATransform3D targetTransform = self.isLeft? CATransform3DMakeScale(0.50, 0.50, 0) : CATransform3DIdentity;
     
     CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"position.x"];
     animation.fromValue = @(self.redBall.layer.position.x);
@@ -211,15 +212,15 @@
     animation.fillMode = kCAFillModeForwards;
     [self.redBall.layer addAnimation:animation forKey:@"position"];
     
-    animation = [CABasicAnimation animationWithKeyPath:@"transform"];
+    /*animation = [CABasicAnimation animationWithKeyPath:@"transform"];
     animation.fromValue = [NSValue valueWithCATransform3D:presentationLayer.transform];
     animation.toValue = [NSValue valueWithCATransform3D:targetTransform];
     animation.fillMode = kCAFillModeForwards;
-    [self.redBall.layer addAnimation:animation forKey:@"transform"];
+    [self.redBall.layer addAnimation:animation forKey:@"transform"];*/
     
 	[CATransaction setCompletionBlock:^{
         self.redBall.center = CGPointMake(targetX, self.redBall.center.y);
-        self.redBall.transform = CATransform3DGetAffineTransform(targetTransform);
+        //self.redBall.transform = CATransform3DGetAffineTransform(targetTransform);
 		self.left = !self.isLeft;
         [self.redBall setUserInteractionEnabled:YES];
 	}];

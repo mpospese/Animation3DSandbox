@@ -10,6 +10,7 @@
 #import "CMSSettingsController.h"
 #import <QuartzCore/QuartzCore.h>
 #import "FoldViewController.h"
+#import "FlipViewController.h"
 #import "CMSBallController.h"
 
 @interface CMSAnimationController()<UIGestureRecognizerDelegate>
@@ -65,7 +66,7 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     
-    [self loadBallController];
+    [self loadFlipController];
     
 	self.settingsTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closeSettingsPanel:)];
     self.settingsSwipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(closeSettingsPanel:)];
@@ -95,6 +96,24 @@
     foldController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.view addSubview:foldController.view];
     [foldController didMoveToParentViewController:self];
+}
+
+- (void)loadFlipController
+{
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPad" bundle:nil];
+    FlipViewController *flipController = [storyboard instantiateViewControllerWithIdentifier:@"FlipID"];
+    flipController.settings = self.settings;
+    self.mainView = flipController.view;
+    
+    flipController.view.layer.shadowOpacity = 0.5;
+    flipController.view.layer.shadowOffset = CGSizeMake(-3, 0);
+    flipController.view.layer.shadowPath = [UIBezierPath bezierPathWithRect:flipController.view.bounds].CGPath;
+    
+    [self addChildViewController:flipController];
+    flipController.view.frame = self.view.bounds;
+    flipController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.view addSubview:flipController.view];
+    [flipController didMoveToParentViewController:self];
 }
 
 - (void)loadBallController

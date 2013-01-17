@@ -96,7 +96,7 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
 	
-    CAMediaTimingFunction *easeIn = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
+    /*CAMediaTimingFunction *easeIn = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
     float* point1 = (float *)malloc(2 * sizeof(float));
     float* point2 = (float *)malloc(2 * sizeof(float));
     float* point3 = (float *)malloc(2 * sizeof(float));
@@ -134,7 +134,7 @@
     [easeIn getControlPointAtIndex:1 values:point2];
     [easeIn getControlPointAtIndex:2 values:point3];
     [easeIn getControlPointAtIndex:3 values:point4];
-    NSLog(@"Default = {%.2f, %.2f}, {%.2f, %.2f}", point2[0], point2[1], point3[0], point3[1]);
+    NSLog(@"Default = {%.2f, %.2f}, {%.2f, %.2f}", point2[0], point2[1], point3[0], point3[1]);*/
     
    
 	// Set drop shadows and shadow paths on views

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0C4709BF16A79ECC001CA999 /* FlipViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C4709BE16A79ECC001CA999 /* FlipViewController.m */; };
 		0C707C2F16A333DB004A1657 /* RedBall.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C707C2D16A333DB004A1657 /* RedBall.png */; };
 		0C707C3016A333DB004A1657 /* RedBall@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C707C2E16A333DB004A1657 /* RedBall@2x.png */; };
 		0C707C3816A37E28004A1657 /* CMSAnimationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C707C3716A37E28004A1657 /* CMSAnimationController.m */; };
@@ -40,6 +41,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0C4709BD16A79ECC001CA999 /* FlipViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlipViewController.h; sourceTree = "<group>"; };
+		0C4709BE16A79ECC001CA999 /* FlipViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FlipViewController.m; sourceTree = "<group>"; };
 		0C707C2D16A333DB004A1657 /* RedBall.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = RedBall.png; sourceTree = "<group>"; };
 		0C707C2E16A333DB004A1657 /* RedBall@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "RedBall@2x.png"; sourceTree = "<group>"; };
 		0C707C3616A37E28004A1657 /* CMSAnimationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMSAnimationController.h; sourceTree = "<group>"; };
@@ -149,6 +152,8 @@
 				0C707C3D16A3A67D004A1657 /* CMSBallController.m */,
 				0CEF497216A05B980091E9EF /* FoldViewController.h */,
 				0CEF497316A05B980091E9EF /* FoldViewController.m */,
+				0C4709BD16A79ECC001CA999 /* FlipViewController.h */,
+				0C4709BE16A79ECC001CA999 /* FlipViewController.m */,
 				0CEF497016A05B8A0091E9EF /* MPAnimation.h */,
 				0CEF497116A05B8A0091E9EF /* MPAnimation.m */,
 				0CEF497616A05BC80091E9EF /* Enumerations.h */,
@@ -281,6 +286,7 @@
 				0C707C3816A37E28004A1657 /* CMSAnimationController.m in Sources */,
 				0C707C3B16A3A5EA004A1657 /* CMSBaseAnimationController.m in Sources */,
 				0C707C3E16A3A67D004A1657 /* CMSBallController.m in Sources */,
+				0C4709BF16A79ECC001CA999 /* FlipViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
