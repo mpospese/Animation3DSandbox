@@ -158,4 +158,28 @@
 	return renderedImage;
 }
 
++ (UIImage *)renderImage:(UIImage *)image withRect:(CGRect)frame transparentInsets:(UIEdgeInsets)insets
+{
+	CGSize imageSizeWithBorder = CGSizeMake(frame.size.width + insets.left + insets.right, frame.size.height + insets.top + insets.bottom);
+    // Create a new context of the desired size to render the image
+	UIGraphicsBeginImageContextWithOptions(imageSizeWithBorder, UIEdgeInsetsEqualToEdgeInsets(insets, UIEdgeInsetsZero), 0);
+	CGContextRef context = UIGraphicsGetCurrentContext();
+	
+	// Clip the context to the portion of the view we will draw
+	CGContextClipToRect(context, (CGRect){{insets.left, insets.top}, frame.size});
+	// Translate it, to the desired position
+	CGContextTranslateCTM(context, -frame.origin.x + insets.left, -frame.origin.y + insets.top);
+    
+	// Render the view as image
+	[image drawInRect:(CGRect){CGPointZero, [image size]}];
+    
+	// Fetch the image
+	UIImage *renderedImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+	// Cleanup
+	UIGraphicsEndImageContext();
+    
+	return renderedImage;
+}
+
 @end

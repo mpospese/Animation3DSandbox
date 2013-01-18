@@ -691,7 +691,6 @@
                     <connections>
                         <outlet property="contentView" destination="gPr-B4-ulq" id="xLo-2U-uRQ"/>
                         <outlet property="controlFrame" destination="PWC-Ar-S6Q" id="rJp-Wb-80d"/>
-                        <outlet property="imageView" destination="gPr-B4-ulq" id="pUm-HJ-OzV"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="skn-H4-ZIh" userLabel="First Responder" sceneMemberID="firstResponder"/>

@@ -24,7 +24,6 @@
 @interface FlipViewController()<UIGestureRecognizerDelegate>
 
 @property (weak, nonatomic) IBOutlet UIImageView *contentView;
-@property (weak, nonatomic) IBOutlet UIImageView *imageView;
 @property (weak, nonatomic) IBOutlet UIView *controlFrame;
 
 @property(assign, nonatomic) int currentImageIndex;
@@ -47,6 +46,9 @@
 @property (strong, nonatomic) CALayer *layerRevealShadow;
 @property (assign, nonatomic) BOOL shouldAntiAliase;
 @property (assign, nonatomic) BOOL shouldSetShadowPath;
+
+@property (strong, nonatomic) UIImage *leftImage;
+@property (strong, nonatomic) UIImage *rightImage;
 
 @end
 
@@ -106,23 +108,19 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
-    self.settings.duration = 3;
     
-	self.controlFrame.layer.cornerRadius = 5;
-	[self addDropShadowToView:self.controlFrame];
-	[self setShadowPathOnView:self.controlFrame];
-
 	UISwipeGestureRecognizer *left = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipe:)];
 	left.direction = UISwipeGestureRecognizerDirectionLeft;
 	left.delegate = self;
-	[self.view addGestureRecognizer:left];
+	[self.contentView addGestureRecognizer:left];
 	
 	UISwipeGestureRecognizer *right = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipe:)];
 	right.direction = UISwipeGestureRecognizerDirectionRight;
 	right.delegate = self;
-	[self.view addGestureRecognizer:right];
+	[self.contentView addGestureRecognizer:right];
 	
 	UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
+    tap.delegate = self;
 	[self.contentView addGestureRecognizer:tap];
 	
 	UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
@@ -131,7 +129,22 @@
 	
 	// drop-shadow for content view
 	[self addDropShadowToView:self.contentView];
-	[[self.contentView layer] setShadowPath:[[UIBezierPath bezierPathWithRect:[self.contentView bounds]] CGPath]];	
+	[[self.contentView layer] setShadowPath:[[UIBezierPath bezierPathWithRect:[self.contentView bounds]] CGPath]];
+    
+    [self createImages];
+}
+
+- (void)createImages
+{
+	UIEdgeInsets insets = [self shouldAntiAliase]? UIEdgeInsetsMake(1, 0, 1, 0) : UIEdgeInsetsZero;
+
+	CGRect leftRect = self.contentView.bounds;
+	leftRect.size.width = CGRectGetWidth(self.contentView.bounds) / 2;
+	CGRect rightRect = leftRect;
+	rightRect.origin.x += leftRect.size.width;
+    
+    self.leftImage = [MPAnimation renderImage:self.contentView.image withRect:leftRect transparentInsets:insets];
+    self.rightImage = [MPAnimation renderImage:self.contentView.image withRect:rightRect transparentInsets:insets];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -214,7 +227,7 @@
 {
 	// 0 = stage 1, 1 = stage 2
 	[CATransaction begin];
-	[CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+	[CATransaction setDisableActions:YES];
 	
 	if (stageIndex == 0)
 	{
@@ -323,20 +336,6 @@
 				[self animateFlip2:shouldFallBack fromProgress:fromProgress];
 			}
         }
-		else if (![self isAnimating])
-		{
-			// we weren't panning (because touch didn't start near any margin) but test for swipe
-			if (vel.x < SWIPE_LEFT_THRESHOLD)
-			{
-				// Detected a swipe to the left
-				[self performFlipWithDirection:FlipDirectionForward];
-			}
-			else if (vel.x > SWIPE_RIGHT_THRESHOLD)
-			{
-				// Detected a swipe to the right
-				[self performFlipWithDirection:FlipDirectionBackward];
-			}
-		}
 	}
 }
 
@@ -348,8 +347,12 @@
 	if ([self isAnimating])
 		return NO;
 	
-	// don't recognize swipe on a slider!
-	return ![touch.view isKindOfClass:[UISlider class]];
+	CGPoint currentPosition = [touch locationInView:self.contentView];
+    BOOL nearEdge = currentPosition.x <= MARGIN || currentPosition.x >= (CGRectGetWidth(self.contentView.bounds) - MARGIN);
+    if ([gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]] || [gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]])
+        return nearEdge;
+    else
+        return !nearEdge;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
@@ -359,21 +362,6 @@
 }
 
 #pragma mark - Animation
-
-- (UIImage *)currentImage
-{
-	return self.imageView.image;
-}
-
-- (UIImage *)prevImage
-{
-	return self.imageView.image;
-}
-
-- (UIImage *)nextImage
-{
-	return self.imageView.image;
-}
 
 - (void)performFlipWithDirection:(FlipDirection)aDirection
 {
@@ -590,22 +578,67 @@
 	[self doFlip2:0];
 }
 
+- (CGPoint)anchorPoint
+{
+    CGPoint anchorPoint;
+    
+    switch (self.settings.anchorPoint) {
+        case AnchorPointTopLeft:
+            anchorPoint = CGPointMake(-0.25, -0.25);
+            break;
+            
+        case AnchorPointTopCenter:
+            anchorPoint = CGPointMake(0.5, -0.25);
+            break;
+            
+        case AnchorPointTopRight:
+            anchorPoint = CGPointMake(1, 0);
+            break;
+            
+        case AnchorPointMiddleLeft:
+            anchorPoint = CGPointMake(-0.25, 0.5);
+            break;
+            
+        case AnchorPointCenter:
+            anchorPoint = CGPointMake(0.5, 0.5);
+            break;
+            
+        case AnchorPointMiddleRight:
+            anchorPoint = CGPointMake(1.25, 0.5);
+            break;
+            
+        case AnchorPointBottomLeft:
+            anchorPoint = CGPointMake(-0.25, 1.25);
+            break;
+            
+        case AnchorPointBottomCenter:
+            anchorPoint = CGPointMake(0.5, 1.25);
+            break;
+            
+        case AnchorPointBottomRight:
+            anchorPoint = CGPointMake(1.25, 1.25);
+            break;
+    }
+    
+    return anchorPoint;
+}
+
 - (void)buildLayers:(FlipDirection)aDirection
 {
+    CGPoint anchorPoint = [self anchorPoint];
 	BOOL forwards = aDirection == FlipDirectionForward;
 	BOOL inward = [self skewMode] == SkewModeInverse;
 	
-	UIImage *next = forwards? [self nextImage] : [self prevImage];
 	CGRect bounds = self.contentView.bounds;
 	CGFloat scale = [[UIScreen mainScreen] scale];
 	
 	// we inset the panels 1 point on each side with a transparent margin to antialiase the edges
 	UIEdgeInsets insets = [self shouldAntiAliase]? UIEdgeInsetsMake(1, 0, 1, 0) : UIEdgeInsetsZero;
 	
-	CGRect upperRect = bounds;
-	upperRect.size.width = bounds.size.width / 2;
-	CGRect lowerRect = upperRect;
-	lowerRect.origin.x += upperRect.size.width;
+	CGRect leftRect = bounds;
+	leftRect.size.width = bounds.size.width / 2;
+	CGRect rightRect = leftRect;
+	rightRect.origin.x += leftRect.size.width;
 	
 	// Create 4 images to represent 2 halves of the 2 views
 	
@@ -618,14 +651,11 @@
 	// facing Page = the other half of the current view (doesn't move, gets covered by back page during 2nd half)
 	// back Page   = the half of the next view that appears on the flipping page during 2nd half
 	// reveal Page = the other half of the next view (doesn't move, gets revealed by front page during 1st half)
-	UIImage *pageFrontImage = [MPAnimation renderImageFromView:self.contentView withRect:forwards? lowerRect : upperRect transparentInsets:insets];
-	// TODO: facing doesn't need insets
-	UIImage *pageFacingImage = [MPAnimation renderImageFromView:self.contentView withRect:forwards? upperRect : lowerRect];
+	UIImage *pageFrontImage = forwards? self.rightImage : self.leftImage;
+	UIImage *pageFacingImage = forwards? self.leftImage : self.rightImage;
 	
-	self.imageView.image = next;
-	
-	UIImage *pageBackImage = [MPAnimation renderImageFromView:self.contentView withRect:forwards? upperRect : lowerRect transparentInsets:insets];
-	UIImage *pageRevealImage = [MPAnimation renderImageFromView:self.contentView withRect:forwards? lowerRect : upperRect];
+	UIImage *pageBackImage = forwards? self.leftImage : self.rightImage;
+	UIImage *pageRevealImage = forwards? self.rightImage : self.leftImage;
 	
 	UIView *containerView = [self.contentView superview];
 	//[self.contentView setHidden:YES];
@@ -639,6 +669,8 @@
 	// view to hold all our sublayers
 	self.animationView = [[UIView alloc] initWithFrame:self.contentView.frame];
 	self.animationView.backgroundColor = [UIColor clearColor];
+    self.animationView.frame = CGRectOffset(self.contentView.frame, (anchorPoint.x - 0.5) * CGRectGetWidth(self.contentView.frame), (anchorPoint.y - 0.5) * CGRectGetHeight(self.contentView.frame));
+    self.animationView.layer.anchorPoint = anchorPoint;
 	[containerView insertSubview:self.animationView aboveSubview:self.contentView];
 	
     self.layerFlipping = [CALayer layer];
@@ -703,13 +735,13 @@
 	{
 		self.layerRevealShadow = [CALayer layer];
 		[self.layerReveal addSublayer:self.layerRevealShadow];
-		self.layerRevealShadow.frame = self.layerReveal.bounds;
+		self.layerRevealShadow.frame = CGRectInset(self.layerReveal.bounds, insets.left, insets.top);
 		self.layerRevealShadow.backgroundColor = [UIColor blackColor].CGColor;
 		self.layerRevealShadow.opacity = 0.5;
 		
 		self.layerFacingShadow = [CALayer layer];
 		//[self.layerFacing addSublayer:self.layerFacingShadow];
-		self.layerFacingShadow.frame = self.layerFacing.bounds;
+		self.layerFacingShadow.frame = CGRectInset(self.layerFacing.bounds, insets.left, insets.top);
 		self.layerFacingShadow.backgroundColor = [UIColor blackColor].CGColor;
 		self.layerFacingShadow.opacity = 0.0;
 	}
@@ -737,7 +769,8 @@
  - (void)doFlip1:(CGFloat)progress
 {
 	[CATransaction begin];
-	[CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+    [CATransaction setAnimationDuration:0.1];
+	//[CATransaction setDisableActions:YES];
 
 	if (progress < 0)
 		progress = 0;
@@ -761,7 +794,8 @@
  - (void)doFlip2:(CGFloat)progress
 {
 	[CATransaction begin];
-	[CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+    [CATransaction setAnimationDuration:0.1];
+	//[CATransaction setDisableActions:YES];
 
 	if (progress < 0)
 		progress = 0;
@@ -825,10 +859,8 @@
 		else
 			[self setCurrentImageIndex:([self currentImageIndex] + IMAGE_COUNT - 1) % IMAGE_COUNT];
 	}
-	else
-		self.imageView.image = [self currentImage];
 	
-	[self.imageView setHidden:NO];
+	[self.contentView setHidden:NO];
 }
 
 #pragma mark - Slider

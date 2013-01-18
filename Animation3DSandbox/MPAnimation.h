@@ -19,5 +19,6 @@
 
 + (UIImage *)renderImageFromView:(UIView *)view withInsets:(UIEdgeInsets)insets;
 + (UIImage *)renderImage:(UIImage *)image withRect:(CGRect)frame;
++ (UIImage *)renderImage:(UIImage *)image withRect:(CGRect)frame transparentInsets:(UIEdgeInsets)insets;
 
 @end
