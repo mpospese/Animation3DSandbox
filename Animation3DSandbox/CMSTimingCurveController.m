@@ -155,9 +155,20 @@
     CGRect rect = [self curveRect];
 
     UIBezierPath *pathInner = [UIBezierPath bezierPath];
-    [pathInner moveToPoint:rect.origin];
+    [pathInner moveToPoint:CGPointMake(rect.origin.x, rect.origin.y - 16)];
+    [pathInner addLineToPoint:CGPointMake(rect.origin.x - 3, rect.origin.y - 10)];
+    [pathInner addLineToPoint:CGPointMake(rect.origin.x + 3, rect.origin.y - 10)];
+    [pathInner closePath];
+    
+    [pathInner moveToPoint:CGPointMake(rect.origin.x, rect.origin.y - 10)];
     [pathInner addLineToPoint:CGPointMake(CGRectGetMinX(rect), CGRectGetMaxY(rect))];
-    [pathInner addLineToPoint:CGPointMake(CGRectGetMaxX(rect), CGRectGetMaxY(rect))];
+    [pathInner addLineToPoint:CGPointMake(CGRectGetMaxX(rect) + 10, CGRectGetMaxY(rect))];
+    
+    [pathInner moveToPoint:CGPointMake(CGRectGetMaxX(rect) + 16, CGRectGetMaxY(rect))];
+    [pathInner addLineToPoint:CGPointMake(CGRectGetMaxX(rect) + 10, CGRectGetMaxY(rect) - 3)];
+    [pathInner addLineToPoint:CGPointMake(CGRectGetMaxX(rect) + 10, CGRectGetMaxY(rect) + 3)];
+    [pathInner closePath];
+    
     self.graphInner.path = pathInner.CGPath;
     
     UIBezierPath *pathOuter = [UIBezierPath bezierPath];
