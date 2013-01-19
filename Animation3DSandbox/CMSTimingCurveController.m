@@ -23,7 +23,9 @@
 @property (weak, nonatomic) IBOutlet UILabel *propertyLabel;
 @property (weak, nonatomic) IBOutlet UILabel *timeLabel;
 @property (nonatomic, strong) UIPopoverController *resetPopover;
-
+@property (weak, nonatomic) IBOutlet UILabel *controlPoint1Label;
+@property (weak, nonatomic) IBOutlet UILabel *controlPoint2Label;
+@property (nonatomic, strong) NSNumberFormatter *numberFormatter;
 @end
 
 @implementation CMSTimingCurveController
@@ -32,7 +34,8 @@
 {
     self = [super initWithCoder:aDecoder];
     if (self) {
-        
+        _numberFormatter = [[NSNumberFormatter alloc] init];
+        _numberFormatter.maximumFractionDigits = 2;
     }
     return self;
 }
@@ -86,6 +89,25 @@
     [self.propertyLabel sizeToFit];
     [self.timeLabel sizeToFit];
     self.propertyLabel.transform = CGAffineTransformMakeRotation(-M_PI/2);
+    
+    [self updatePoint1];
+    [self updatePoint2];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    [self.settings addObserver:self forKeyPath:@"cp1" options:NSKeyValueObservingOptionNew context:nil];
+    [self.settings addObserver:self forKeyPath:@"cp2" options:NSKeyValueObservingOptionNew context:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    
+    [self.settings removeObserver:self forKeyPath:@"cp1"];
+    [self.settings removeObserver:self forKeyPath:@"cp2"];
 }
 
 - (UIView *)makePointView:(NSString *)title
@@ -148,6 +170,16 @@
     self.timeLabel.center = CGPointMake(CGRectGetMidX(rect), CGRectGetMaxY(rect) + 8 + CGRectGetHeight(self.timeLabel.bounds)/2);
     
     [self updatePaths:0.1 animateLines:NO];
+}
+
+- (void)updatePoint1
+{
+    self.controlPoint1Label.text = [NSString stringWithFormat:@"(%@, %@)", [self.numberFormatter stringFromNumber:@(self.settings.cp1.x)], [self.numberFormatter stringFromNumber:@(self.settings.cp1.y)]];
+}
+
+- (void)updatePoint2
+{
+    self.controlPoint2Label.text = [NSString stringWithFormat:@"(%@, %@)", [self.numberFormatter stringFromNumber:@(self.settings.cp2.x)], [self.numberFormatter stringFromNumber:@(self.settings.cp2.y)]];
 }
 
 - (void)updatePaths:(CGFloat)duration animateLines:(BOOL)animateLines
@@ -273,6 +305,16 @@
         [self.resetPopover dismissPopoverAnimated:YES];
         self.resetPopover = nil;
     }
+}
+
+#pragma mark - KVO
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"cp1"])
+        [self updatePoint1];
+    else if ([keyPath isEqualToString:@"cp2"])
+        [self updatePoint2];
 }
 
 @end
