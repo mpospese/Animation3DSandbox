@@ -21,11 +21,14 @@
         _duration = 1.5;
         
         [self setTimingCurve:TimingCurveDefault];
+       
+        _ballComponents = BallComponentMove;
+        _foldComponents = FoldComponentOpacity | FoldComponentBounds;
+        _flipComponents = FlipComponentFacingShadow | FlipComponentRevealShadow;
         
-        _components = FoldComponentTransform | FoldComponentOpacity | FoldComponentBounds;
-
         _useDropShadows = YES;
         _anchorPoint = AnchorPointCenter;
+        _useBackground = NO;
     }
     return self;
 }

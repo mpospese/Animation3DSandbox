@@ -22,11 +22,14 @@
 
 // Components
 
-@property (nonatomic, assign) FoldComponent components;
+@property (nonatomic, assign) BallComponent ballComponents;
+@property (nonatomic, assign) FoldComponent foldComponents;
+@property (nonatomic, assign) FlipComponent flipComponents;
 
 // View
 
 @property (nonatomic, assign) BOOL useDropShadows;
 @property (nonatomic, assign) AnchorPointLocation anchorPoint;
+@property (nonatomic, assign) BOOL useBackground;
 
 @end

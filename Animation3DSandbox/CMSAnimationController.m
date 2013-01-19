@@ -20,7 +20,9 @@
 @property (nonatomic, strong) UISwipeGestureRecognizer *swipe;
 @property (nonatomic, strong) UITapGestureRecognizer *settingsTap;
 @property (nonatomic, strong) UISwipeGestureRecognizer *settingsSwipe;
-@property (nonatomic, strong) UIViewController *settingsController;
+@property (nonatomic, strong) UIViewController *settingsPane;
+@property (nonatomic, strong) CMSSettingsController *settingsController;
+@property (nonatomic, assign) AnimationType currentAnimation;
 
 @end
 
@@ -29,6 +31,7 @@
 - (void)doInit
 {
     _settings = [CMSSettingsInfo new];
+    _currentAnimation = AnimationTypeFold;
 }
 
 - (id)init
@@ -66,7 +69,19 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     
-    [self loadFlipController];
+    switch (self.currentAnimation) {
+        case AnimationTypeBall:
+            [self loadBallController];
+            break;
+            
+        case AnimationTypeFold:
+            [self loadFoldController];
+            break;
+            
+        case AnimationTypeFlip:
+            [self loadFlipController];
+            break;
+    }
     
 	self.settingsTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closeSettingsPanel:)];
     self.settingsSwipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(closeSettingsPanel:)];
@@ -78,6 +93,15 @@
     swipe.delegate = self;
     [self.mainView addGestureRecognizer:swipe];
     self.swipe = swipe;
+}
+
+- (void)didReceiveMemoryWarning
+{
+    if (!self.settingsPane.parentViewController)
+    {
+        self.settingsController = nil;
+        self.settingsPane = nil;
+    }
 }
 
 - (void)loadFoldController
@@ -152,22 +176,7 @@
     if ([gestureRecognizer state] != UIGestureRecognizerStateEnded)
         return;
     
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPad" bundle:nil];
-    CMSSettingsController *settings = [storyboard instantiateViewControllerWithIdentifier:@"SettingsID"];
-    settings.settings = self.settings;
-    
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:settings];
-    navController.navigationBar.barStyle = UIBarStyleBlack;
-    
-    navController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-    [self addChildViewController:navController];
-    [navController.view setFrame:CGRectMake(0, 0, 320, CGRectGetHeight(self.view.bounds))];
-    [self.view insertSubview:navController.view belowSubview:self.mainView];
-    [navController didMoveToParentViewController:self];
-    self.settingsController = navController;
-    [self.mainView addGestureRecognizer:self.settingsTap];
-    [self.view addGestureRecognizer:self.settingsSwipe];
-    
+    [self initSettingsPane];
     [self showSettings:YES];
 }
 
@@ -183,6 +192,32 @@
     return YES;
 }
 
+- (void)initSettingsPane
+{
+    if (!self.settingsPane)
+    {
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPad" bundle:nil];
+        self.settingsController = [storyboard instantiateViewControllerWithIdentifier:@"SettingsID"];
+        self.settingsController.settings = self.settings;
+        self.settingsController.type = AnimationTypeBall;
+        
+        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.settingsController];
+        navController.navigationBar.barStyle = UIBarStyleBlack;
+        
+        navController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+        self.settingsPane = navController;
+    }
+    
+    [self addChildViewController:self.settingsPane];
+    [self.settingsPane.view setFrame:CGRectMake(0, 0, 320, CGRectGetHeight(self.view.bounds))];
+    [self.view insertSubview:self.settingsPane.view belowSubview:self.mainView];
+    [self.settingsPane didMoveToParentViewController:self];
+    [self.mainView addGestureRecognizer:self.settingsTap];
+    [self.view addGestureRecognizer:self.settingsSwipe];
+    
+    [self.settingsController setType:self.currentAnimation];
+}
+
 - (void)showSettings:(BOOL)show
 {
 	[CATransaction begin];
@@ -192,16 +227,15 @@
     if (!show)
     {
         [CATransaction setCompletionBlock:^{
-            [self.settingsController willMoveToParentViewController:nil];
-            [self.settingsController.view removeFromSuperview];
-            [self.settingsController removeFromParentViewController];
-            self.settingsController = nil;
+            [self.settingsPane willMoveToParentViewController:nil];
+            [self.settingsPane.view removeFromSuperview];
+            [self.settingsPane removeFromParentViewController];
         }];
     }
     
     CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"position.x"];
     CGPoint position = self.mainView.layer.position;
-    position.x += (show? 1 : -1) * (CGRectGetWidth(self.settingsController.view.bounds));
+    position.x += (show? 1 : -1) * (CGRectGetWidth(self.settingsPane.view.bounds));
     animation.fromValue = @([self.mainView.layer.presentationLayer position].x);
     animation.toValue = @(position.x);
     animation.fillMode = kCAFillModeForwards;

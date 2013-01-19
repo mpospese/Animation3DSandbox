@@ -57,11 +57,32 @@ typedef enum {
 } TimingCurve;
 
 enum {
+    BallComponentNone = 0,
+    BallComponentMove = 1 << 0,
+    BallComponentScale = 1 << 1,
+    BallComponentOpacity = 1 << 2
+};
+typedef NSUInteger BallComponent;
+
+enum {
     FoldComponentNone = 0,
-    FoldComponentTransform = 1 << 0,
-    FoldComponentBounds = 1 << 1,
-    FoldComponentOpacity = 1 << 2
+    FoldComponentBounds = 1 << 0,
+    FoldComponentOpacity = 1 << 1
 };
 typedef NSUInteger FoldComponent;
+
+enum {
+    FlipComponentNone = 0,
+    FlipComponentFacingShadow = 1 << 0,
+    FlipComponentRevealShadow = 1 << 1
+};
+typedef NSUInteger FlipComponent;
+
+typedef enum {
+    AnimationTypeBall,
+    AnimationTypeFold,
+    AnimationTypeFlip
+} AnimationType;
+
 
 #endif

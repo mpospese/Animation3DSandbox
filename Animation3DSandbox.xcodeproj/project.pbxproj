@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0C0FEC4016AA07C300C482CC /* Background.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C0FEC3F16AA07C300C482CC /* Background.png */; };
 		0C4709BF16A79ECC001CA999 /* FlipViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C4709BE16A79ECC001CA999 /* FlipViewController.m */; };
 		0C707C2F16A333DB004A1657 /* RedBall.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C707C2D16A333DB004A1657 /* RedBall.png */; };
 		0C707C3016A333DB004A1657 /* RedBall@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C707C2E16A333DB004A1657 /* RedBall@2x.png */; };
@@ -41,6 +42,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0C0FEC3F16AA07C300C482CC /* Background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Background.png; sourceTree = "<group>"; };
 		0C4709BD16A79ECC001CA999 /* FlipViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlipViewController.h; sourceTree = "<group>"; };
 		0C4709BE16A79ECC001CA999 /* FlipViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FlipViewController.m; sourceTree = "<group>"; };
 		0C707C2D16A333DB004A1657 /* RedBall.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = RedBall.png; sourceTree = "<group>"; };
@@ -194,6 +196,7 @@
 				0CEF497D16A062250091E9EF /* RenaissanceIcon@2x.png */,
 				0C707C2D16A333DB004A1657 /* RedBall.png */,
 				0C707C2E16A333DB004A1657 /* RedBall@2x.png */,
+				0C0FEC3F16AA07C300C482CC /* Background.png */,
 			);
 			name = images;
 			sourceTree = "<group>";
@@ -264,6 +267,7 @@
 				0CD8518816A1A09200020B42 /* Icon@2x.png in Resources */,
 				0C707C2F16A333DB004A1657 /* RedBall.png in Resources */,
 				0C707C3016A333DB004A1657 /* RedBall@2x.png in Resources */,
+				0C0FEC4016AA07C300C482CC /* Background.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

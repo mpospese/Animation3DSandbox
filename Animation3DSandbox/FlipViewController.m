@@ -669,11 +669,10 @@
 	// view to hold all our sublayers
 	self.animationView = [[UIView alloc] initWithFrame:self.contentView.frame];
 	self.animationView.backgroundColor = [UIColor clearColor];
-    self.animationView.frame = CGRectOffset(self.contentView.frame, (anchorPoint.x - 0.5) * CGRectGetWidth(self.contentView.frame), (anchorPoint.y - 0.5) * CGRectGetHeight(self.contentView.frame));
-    self.animationView.layer.anchorPoint = anchorPoint;
 	[containerView insertSubview:self.animationView aboveSubview:self.contentView];
 	
     self.layerFlipping = [CALayer layer];
+    self.layerFlipping.anchorPoint = anchorPoint;
     self.layerFlipping.zPosition = 256;
     self.layerFlipping.frame = self.animationView.bounds;
     self.layerFlipping.masksToBounds = NO;
@@ -686,19 +685,20 @@
 	[self.layerReveal setContents:(id)[pageRevealImage CGImage]];
 	[self.animationView.layer addSublayer:self.layerReveal];
 	
-	self.layerFront = [CALayer layer];
-	self.layerFront.frame = (CGRect){CGPointZero, pageFrontImage.size};
-	self.layerFront.anchorPoint = CGPointMake(forwards? 0 : 1, 0.5);
-	self.layerFront.position = CGPointMake(upperHeight, width/2);
-	[self.layerFront setContents:(id)[pageFrontImage CGImage]];
-	[self.layerFlipping addSublayer:self.layerFront];
-	
 	self.layerFacing = [CALayer layer];
 	self.layerFacing.frame = (CGRect){CGPointZero, pageFacingImage.size};
 	self.layerFacing.anchorPoint = CGPointMake(forwards? 1 : 0, 0.5);
 	self.layerFacing.position = CGPointMake(upperHeight, width/2);
 	[self.layerFacing setContents:(id)[pageFacingImage CGImage]];
 	[self.layerFlipping addSublayer:self.layerFacing];
+	
+	self.layerFront = [CALayer layer];
+    self.layerFront.doubleSided = YES;
+	self.layerFront.frame = (CGRect){CGPointZero, pageFrontImage.size};
+	self.layerFront.anchorPoint = CGPointMake(forwards? 0 : 1, 0.5);
+	self.layerFront.position = CGPointMake(upperHeight, width/2);
+	[self.layerFront setContents:(id)[pageFrontImage CGImage]];
+	[self.layerFlipping addSublayer:self.layerFront];
 	
 	self.layerBack = [CALayer layer];
 	self.layerBack.frame = (CGRect){CGPointZero, pageBackImage.size};

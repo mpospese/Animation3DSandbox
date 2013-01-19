@@ -90,27 +90,33 @@
     [CATransaction commit];
 }
 
-#pragma mark - Settings
-
-- (void)setSettings:(CMSSettingsInfo *)settings
+- (void)updateAnchorPoint:(BOOL)animated
 {
-    if ([self.settings isEqual:settings])
+    CGPoint anchorPoint = [self anchorPoint];
+    
+    if (!animated)
+    {
+        self.redBall.layer.anchorPoint = anchorPoint;
         return;
-    
-    if (self.settings)
-    {
-        [self.settings removeObserver:self forKeyPath:@"anchorPoint"];
-        [self.settings removeObserver:self forKeyPath:@"useDropShadows"];
+        
     }
     
-    [super setSettings:settings];
+    [CATransaction begin];
     
-    if (settings)
-    {
-        [settings addObserver:self forKeyPath:@"anchorPoint" options:NSKeyValueObservingOptionNew context:nil];
-        [settings addObserver:self forKeyPath:@"useDropShadows" options:NSKeyValueObservingOptionNew context:nil];
-    }
+    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"anchorPoint"];
+    CALayer *presentationLayer = self.redBall.layer.presentationLayer;
+    animation.fromValue = [NSValue valueWithCGPoint:presentationLayer.anchorPoint];
+    animation.toValue = [NSValue valueWithCGPoint:anchorPoint];
+    [self.redBall.layer addAnimation:animation forKey:@"anchorPoint"];
+    
+    [CATransaction setCompletionBlock:^{
+        self.redBall.layer.anchorPoint = anchorPoint;
+    }];
+    
+    [CATransaction commit];
 }
+
+#pragma mark - Settings
 
 - (CGPoint)anchorPoint
 {
@@ -157,33 +163,6 @@
     return anchorPoint;
 }
 
-
-#pragma mark - KVO
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-    if ([keyPath isEqualToString:@"anchorPoint"])
-    {
-        [CATransaction begin];
-
-        CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"anchorPoint"];
-        CALayer *presentationLayer = self.redBall.layer.presentationLayer;
-        animation.fromValue = [NSValue valueWithCGPoint:presentationLayer.anchorPoint];
-        animation.toValue = [NSValue valueWithCGPoint:[self anchorPoint]];
-        [self.redBall.layer addAnimation:animation forKey:@"anchorPoint"];
-        
-        [CATransaction setCompletionBlock:^{
-            self.redBall.layer.anchorPoint = [self anchorPoint];
-        }];
-        
-        [CATransaction commit];
-    }
-    else if ([keyPath isEqualToString:@"useDropShadows"])
-    {
-        [self updateDropShadow:YES];
-    }
-}
-
 #pragma mark - Gesture recognizers
 
 - (void)handleTap:(UITapGestureRecognizer *)gesture
@@ -203,24 +182,48 @@
     
 	[CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithControlPoints:self.settings.cp1.x :self.settings.cp1.y :self.settings.cp2.x :self.settings.cp2.y]];
     CGFloat targetX = self.isLeft? CGRectGetWidth(self.view.bounds) - 50 - (CGRectGetWidth(self.redBall.bounds)/2) : 50 + (CGRectGetWidth(self.redBall.bounds)/2);
-    //CALayer *presentationLayer = self.redBall.layer.presentationLayer;
-    //CATransform3D targetTransform = self.isLeft? CATransform3DMakeScale(0.50, 0.50, 0) : CATransform3DIdentity;
+    CGFloat targetOpacity = self.isLeft? 0.5 : 1;
     
-    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"position.x"];
-    animation.fromValue = @(self.redBall.layer.position.x);
-    animation.toValue = @(targetX);
-    animation.fillMode = kCAFillModeForwards;
-    [self.redBall.layer addAnimation:animation forKey:@"position"];
+    CALayer *presentationLayer = self.redBall.layer.presentationLayer;
+    CATransform3D targetTransform = self.isLeft? CATransform3DMakeScale(0.50, 0.50, 0) : CATransform3DIdentity;
     
-    /*animation = [CABasicAnimation animationWithKeyPath:@"transform"];
-    animation.fromValue = [NSValue valueWithCATransform3D:presentationLayer.transform];
-    animation.toValue = [NSValue valueWithCATransform3D:targetTransform];
-    animation.fillMode = kCAFillModeForwards;
-    [self.redBall.layer addAnimation:animation forKey:@"transform"];*/
+    CABasicAnimation *animation;
+    
+    if (self.settings.ballComponents & BallComponentMove)
+    {
+        CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"position.x"];
+        animation.fromValue = @(self.redBall.layer.position.x);
+        animation.toValue = @(targetX);
+        animation.fillMode = kCAFillModeForwards;
+        [self.redBall.layer addAnimation:animation forKey:@"position"];
+    }
+    
+    if (self.settings.ballComponents & BallComponentScale)
+    {
+        animation = [CABasicAnimation animationWithKeyPath:@"transform"];
+        animation.fromValue = [NSValue valueWithCATransform3D:presentationLayer.transform];
+        animation.toValue = [NSValue valueWithCATransform3D:targetTransform];
+        animation.fillMode = kCAFillModeForwards;
+        [self.redBall.layer addAnimation:animation forKey:@"transform"];
+    }
+    
+    if (self.settings.ballComponents & BallComponentOpacity)
+    {
+        animation = [CABasicAnimation animationWithKeyPath:@"opacity"];
+        animation.fromValue = @(self.redBall.layer.opacity);
+        animation.toValue = @(targetOpacity);
+        animation.fillMode = kCAFillModeForwards;
+        [self.redBall.layer addAnimation:animation forKey:@"opacity"];
+    }
     
 	[CATransaction setCompletionBlock:^{
-        self.redBall.center = CGPointMake(targetX, self.redBall.center.y);
-        //self.redBall.transform = CATransform3DGetAffineTransform(targetTransform);
+        if (self.settings.ballComponents & BallComponentMove)
+            self.redBall.center = CGPointMake(targetX, self.redBall.center.y);
+        if (self.settings.ballComponents & BallComponentScale)
+            self.redBall.transform = CATransform3DGetAffineTransform(targetTransform);
+        if (self.settings.ballComponents & BallComponentOpacity)
+            self.redBall.alpha = targetOpacity;
+        
 		self.left = !self.isLeft;
         [self.redBall setUserInteractionEnabled:YES];
 	}];

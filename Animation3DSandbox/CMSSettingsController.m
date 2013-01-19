@@ -13,11 +13,16 @@
 @interface CMSSettingsController()
 @property (weak, nonatomic) IBOutlet UILabel *durationLabel;
 @property (weak, nonatomic) IBOutlet UILabel *timingCurveLabel;
-@property (weak, nonatomic) IBOutlet UITableViewCell *componentTransformCell;
-@property (weak, nonatomic) IBOutlet UITableViewCell *componentBoundsCell;
-@property (weak, nonatomic) IBOutlet UITableViewCell *componentOpacityCell;
+@property (weak, nonatomic) IBOutlet UITableViewCell *ballComponentMoveCell;
+@property (weak, nonatomic) IBOutlet UITableViewCell *ballComponentScaleCell;
+@property (weak, nonatomic) IBOutlet UITableViewCell *ballComponentOpacityCell;
+@property (weak, nonatomic) IBOutlet UITableViewCell *foldComponentBoundsCell;
+@property (weak, nonatomic) IBOutlet UITableViewCell *foldComponentOpacityCell;
+@property (weak, nonatomic) IBOutlet UITableViewCell *flipComponentFacingShadowCell;
+@property (weak, nonatomic) IBOutlet UITableViewCell *flipComponentRevealShadowCell;
 @property (weak, nonatomic) IBOutlet UILabel *anchorPointLabel;
 @property (weak, nonatomic) IBOutlet UILabel *dropShadowsLabel;
+@property (weak, nonatomic) IBOutlet UILabel *backgroundLabel;
 
 @end
 
@@ -28,6 +33,7 @@
     self = [super initWithCoder:aDecoder];
     if (self) {
         _settings = [CMSSettingsInfo new];
+        _type = AnimationTypeFlip;
     }
     return self;
 }
@@ -45,10 +51,24 @@
     [self updateDurationLabel];
     [self updateTimingCurveLabel];
     
-    [self updateComponents];
+    [self updateBallComponents];
+    [self updateFoldComponents];
+    [self updateFlipComponents];
     
     [self updateDropShadowsLabel];
-    [self updateAnchorPointLabel];    
+    [self updateAnchorPointLabel];
+    [self updateBackgroundLabel];
+}
+
+- (void)setType:(AnimationType)type
+{
+    if (_type == type)
+        return;
+    
+    _type = type;
+    
+    NSIndexSet *indices = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(CMSSettingsSectionBallComponents, 3)];
+    [self.tableView reloadSections:indices withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -62,6 +82,40 @@
     {
         CMSAnchorPointTable *anchorTable = (CMSAnchorPointTable *)segue.destinationViewController;
         anchorTable.settings = self.settings;
+    }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    switch (section) {
+        case CMSSettingsSectionBallComponents:
+            return self.type == AnimationTypeBall? self.tableView.sectionHeaderHeight : 0;
+            
+        case CMSSettingsSectionFoldComponents:
+            return self.type == AnimationTypeFold? self.tableView.sectionHeaderHeight : 0;
+            
+        case CMSSettingsSectionFlipComponents:
+            return self.type == AnimationTypeFlip? self.tableView.sectionHeaderHeight : 0;
+            
+        default:
+            return self.tableView.sectionHeaderHeight;
+    }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    switch (indexPath.section) {
+        case CMSSettingsSectionBallComponents:
+            return self.type == AnimationTypeBall? self.tableView.rowHeight : 0;
+            
+        case CMSSettingsSectionFoldComponents:
+            return self.type == AnimationTypeFold? self.tableView.rowHeight : 0;
+            
+        case CMSSettingsSectionFlipComponents:
+            return self.type == AnimationTypeFlip? self.tableView.rowHeight : 0;
+            
+        default:
+            return self.tableView.rowHeight;
     }
 }
 
@@ -90,7 +144,12 @@
                         
                     case CMSSettingsViewRowAnchorPoint:
                         break;
-                }
+                        
+                    case CMSSettingsViewRowBackground:
+                        self.settings.useBackground = !self.settings.useBackground;
+                        [self updateBackgroundLabel];
+                        break;
+               }
                 break;
         }        
     }
@@ -99,12 +158,32 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     switch (indexPath.section) {
-        case CMSSettingsSectionComponents:
-            if (self.settings.components & (1 << indexPath.row))
-                self.settings.components &= ~(1 << indexPath.row);
+        case CMSSettingsSectionBallComponents:
+            if (self.settings.ballComponents & (1 << indexPath.row))
+                self.settings.ballComponents &= ~(1 << indexPath.row);
             else
-                self.settings.components |= (1 << indexPath.row);
-            [self updateComponents];
+                self.settings.ballComponents |= (1 << indexPath.row);
+            [self updateBallComponents];
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
+            [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+            break;
+            
+        case CMSSettingsSectionFoldComponents:
+            if (self.settings.foldComponents & (1 << indexPath.row))
+                self.settings.foldComponents &= ~(1 << indexPath.row);
+            else
+                self.settings.foldComponents |= (1 << indexPath.row);
+            [self updateFoldComponents];
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
+            [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+            break;
+            
+        case CMSSettingsSectionFlipComponents:
+            if (self.settings.flipComponents & (1 << indexPath.row))
+                self.settings.flipComponents &= ~(1 << indexPath.row);
+            else
+                self.settings.flipComponents |= (1 << indexPath.row);
+            [self updateFlipComponents];
             [tableView deselectRowAtIndexPath:indexPath animated:YES];
             [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
             break;
@@ -218,11 +297,23 @@
 
 #pragma mark - Components section
 
-- (void)updateComponents
+- (void)updateBallComponents
 {
-    self.componentTransformCell.accessoryType = (self.settings.components & FoldComponentTransform)? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
-    self.componentBoundsCell.accessoryType = (self.settings.components & FoldComponentBounds)? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
-    self.componentOpacityCell.accessoryType = (self.settings.components & FoldComponentOpacity)? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+    self.ballComponentMoveCell.accessoryType = (self.settings.ballComponents & BallComponentMove)? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+    self.ballComponentScaleCell.accessoryType = (self.settings.ballComponents & BallComponentScale)? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+    self.ballComponentOpacityCell.accessoryType = (self.settings.ballComponents & BallComponentOpacity)? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+}
+
+- (void)updateFoldComponents
+{
+    self.foldComponentBoundsCell.accessoryType = (self.settings.foldComponents & FoldComponentBounds)? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+    self.foldComponentOpacityCell.accessoryType = (self.settings.foldComponents & FoldComponentOpacity)? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+}
+
+- (void)updateFlipComponents
+{
+    self.flipComponentFacingShadowCell.accessoryType = (self.settings.flipComponents & FlipComponentFacingShadow)? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+    self.flipComponentRevealShadowCell.accessoryType = (self.settings.flipComponents & FlipComponentRevealShadow)? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
 }
 
 #pragma mark - View section
@@ -272,5 +363,11 @@
             break;
    }
 }
+
+- (void)updateBackgroundLabel
+{
+    [self.backgroundLabel setText:self.settings.useBackground? @"Yes" : @"No"];
+}
+
 
 @end

@@ -12,7 +12,9 @@
 typedef enum 
 {
     CMSSettingsSectionAnimation,
-    CMSSettingsSectionComponents,
+    CMSSettingsSectionBallComponents,
+    CMSSettingsSectionFoldComponents,
+    CMSSettingsSectionFlipComponents,
     CMSSettingsSectionView
 } CMSSettingsSection;
 
@@ -32,11 +34,13 @@ typedef enum
 typedef enum
 {
     CMSSettingsViewRowDropShadow,
-    CMSSettingsViewRowAnchorPoint
+    CMSSettingsViewRowAnchorPoint,
+    CMSSettingsViewRowBackground
 } CMSSettingsViewRow;
 
 @interface CMSSettingsController : UITableViewController
 
 @property (nonatomic, strong) CMSSettingsInfo *settings;
+@property (nonatomic, assign) AnimationType type;
 
 @end

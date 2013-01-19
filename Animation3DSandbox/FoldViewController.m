@@ -22,7 +22,6 @@
 @property (weak, nonatomic) IBOutlet UIView *bottomBar;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *skewSegment;
 @property (weak, nonatomic) IBOutlet UIView *controlFrame;
-@property (weak, nonatomic) IBOutlet UIView *mainView;
 
 @property (readonly) CGFloat skew;
 
@@ -143,9 +142,6 @@
 	[[self.controlFrame layer] setShadowPath:[[UIBezierPath bezierPathWithRoundedRect:[self.controlFrame bounds] cornerRadius:5] CGPath]];
 	[self setDropShadow:self.contentView];
 	[[self.contentView layer] setShadowPath:[[UIBezierPath bezierPathWithRect:[self.contentView bounds]] CGPath]];
-	self.mainView.layer.shadowOpacity = 0.5;
-    self.mainView.layer.shadowOffset = CGSizeMake(-3, 0);
-    self.mainView.layer.shadowPath = [[UIBezierPath bezierPathWithRect:self.mainView.bounds] CGPath];
     
 	// Add our tap gesture recognizer
 	UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
@@ -155,7 +151,7 @@
 	// Add our pinch gesture recognizer
 	UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinch:)];
 	pinchGesture.delegate = self;
-	[self.mainView addGestureRecognizer:pinchGesture];
+	[self.view addGestureRecognizer:pinchGesture];
     
     // render some images
     UIEdgeInsets insets = UIEdgeInsetsMake(10, 10, 10, 10);
@@ -419,21 +415,18 @@
 	[CATransaction begin];
     [CATransaction setAnimationDuration:0.15];
 	
-    if (self.settings.components & FoldComponentTransform)
-    {
-        self.firstJointLayer.transform = CATransform3DMakeRotation(-1*angle, 1, 0, 0);
-        self.secondJointLayer.transform = CATransform3DMakeRotation(2*angle, 1, 0, 0);
-        self.topSleeve.transform = CATransform3DMakeRotation(1*angle, 1, 0, 0);
-        self.bottomSleeve.transform = CATransform3DMakeRotation(-1*angle, 1, 0, 0);
-	}
+    self.firstJointLayer.transform = CATransform3DMakeRotation(-1*angle, 1, 0, 0);
+    self.secondJointLayer.transform = CATransform3DMakeRotation(2*angle, 1, 0, 0);
+    self.topSleeve.transform = CATransform3DMakeRotation(1*angle, 1, 0, 0);
+    self.bottomSleeve.transform = CATransform3DMakeRotation(-1*angle, 1, 0, 0);
     
-    if (self.settings.components & FoldComponentOpacity)
+    if (self.settings.foldComponents & FoldComponentOpacity)
     {
         self.upperFoldShadow.opacity = FOLD_SHADOW_OPACITY * (1- cosine);
         self.lowerFoldShadow.opacity = FOLD_SHADOW_OPACITY * (1 - cosine);
 	}
     
-    if (self.settings.components & FoldComponentBounds)
+    if (self.settings.foldComponents & FoldComponentBounds)
         self.perspectiveLayer.bounds = (CGRect){CGPointZero, CGSizeMake(self.perspectiveLayer.bounds.size.width, foldHeight)};
 
 	[CATransaction commit];
@@ -481,7 +474,7 @@
 	
 	if ([self isFolded])
 	{
-        if (self.settings.components & FoldComponentBounds)
+        if (self.settings.foldComponents & FoldComponentBounds)
         {
             CGPoint anchorPoint = [self anchorPoint];
             self.topBar.transform = CGAffineTransformMakeTranslation(0, anchorPoint.y * self.foldHeight);
@@ -530,44 +523,41 @@
     if (!forwards)
         fromProgress = 1 - fromProgress;
 
-    if (self.settings.components & FoldComponentTransform)
-    {
-        // fold the first (top) joint away from us
-        CABasicAnimation* animation = [CABasicAnimation animationWithKeyPath:rotationKey];
-        //[animation setFromValue:forwards? [NSNumber numberWithDouble:-90*factor*fromProgress] : [NSNumber numberWithDouble:-90*factor*(1-fromProgress)]];
-        [animation setToValue:forwards? [NSNumber numberWithDouble:-90*factor] : [NSNumber numberWithDouble:0]];
-        [animation setFillMode:kCAFillModeForwards];
-        [animation setRemovedOnCompletion:NO];
-        animation.speed = 1;
-        [self.firstJointLayer addAnimation:animation forKey:nil];
-        
-        // fold the second joint back towards us at twice the angle (since it's connected to the first fold we're folding away)
-        animation = [CABasicAnimation animationWithKeyPath:rotationKey];
-        //[animation setFromValue:forwards? [NSNumber numberWithDouble:180*factor*fromProgress] : [NSNumber numberWithDouble:180*factor*(1-fromProgress)]];
-        [animation setToValue:forwards? [NSNumber numberWithDouble:180*factor] : [NSNumber numberWithDouble:0]];
-        [animation setFillMode:kCAFillModeForwards];
-        [animation setRemovedOnCompletion:NO];
-        animation.speed = 1;
-        [self.secondJointLayer addAnimation:animation forKey:nil];
-        
-        // fold the bottom sleeve (3rd joint) away from us, so that net result is it lays flat from user's perspective
-        animation = [CABasicAnimation animationWithKeyPath:rotationKey];
-        //[animation setFromValue:forwards? [NSNumber numberWithDouble:-90*factor*fromProgress] : [NSNumber numberWithDouble:-90*factor*(1-fromProgress)]];
-        [animation setToValue:forwards? [NSNumber numberWithDouble:-90*factor] : [NSNumber numberWithDouble:0]];
-        [animation setFillMode:kCAFillModeForwards];
-        [animation setRemovedOnCompletion:NO];
-        animation.speed = 1;
-        [self.bottomSleeve addAnimation:animation forKey:nil];
-        
-        // fold top sleeve towards us, so that net result is it lays flat from user's perspective
-        animation = [CABasicAnimation animationWithKeyPath:rotationKey];
-        //[animation setFromValue:forwards? [NSNumber numberWithDouble:90*factor*fromProgress] : [NSNumber numberWithDouble:90*factor*(1-fromProgress)]];
-        [animation setToValue:forwards? [NSNumber numberWithDouble:90*factor] : [NSNumber numberWithDouble:0]];
-        [animation setFillMode:kCAFillModeForwards];
-        [animation setRemovedOnCompletion:NO];
-        animation.speed = 1;
-        [self.topSleeve addAnimation:animation forKey:nil];
-    }
+    // fold the first (top) joint away from us
+    CABasicAnimation* animation = [CABasicAnimation animationWithKeyPath:rotationKey];
+    //[animation setFromValue:forwards? [NSNumber numberWithDouble:-90*factor*fromProgress] : [NSNumber numberWithDouble:-90*factor*(1-fromProgress)]];
+    [animation setToValue:forwards? [NSNumber numberWithDouble:-90*factor] : [NSNumber numberWithDouble:0]];
+    [animation setFillMode:kCAFillModeForwards];
+    [animation setRemovedOnCompletion:NO];
+    animation.speed = 1;
+    [self.firstJointLayer addAnimation:animation forKey:nil];
+    
+    // fold the second joint back towards us at twice the angle (since it's connected to the first fold we're folding away)
+    animation = [CABasicAnimation animationWithKeyPath:rotationKey];
+    //[animation setFromValue:forwards? [NSNumber numberWithDouble:180*factor*fromProgress] : [NSNumber numberWithDouble:180*factor*(1-fromProgress)]];
+    [animation setToValue:forwards? [NSNumber numberWithDouble:180*factor] : [NSNumber numberWithDouble:0]];
+    [animation setFillMode:kCAFillModeForwards];
+    [animation setRemovedOnCompletion:NO];
+    animation.speed = 1;
+    [self.secondJointLayer addAnimation:animation forKey:nil];
+    
+    // fold the bottom sleeve (3rd joint) away from us, so that net result is it lays flat from user's perspective
+    animation = [CABasicAnimation animationWithKeyPath:rotationKey];
+    //[animation setFromValue:forwards? [NSNumber numberWithDouble:-90*factor*fromProgress] : [NSNumber numberWithDouble:-90*factor*(1-fromProgress)]];
+    [animation setToValue:forwards? [NSNumber numberWithDouble:-90*factor] : [NSNumber numberWithDouble:0]];
+    [animation setFillMode:kCAFillModeForwards];
+    [animation setRemovedOnCompletion:NO];
+    animation.speed = 1;
+    [self.bottomSleeve addAnimation:animation forKey:nil];
+    
+    // fold top sleeve towards us, so that net result is it lays flat from user's perspective
+    animation = [CABasicAnimation animationWithKeyPath:rotationKey];
+    //[animation setFromValue:forwards? [NSNumber numberWithDouble:90*factor*fromProgress] : [NSNumber numberWithDouble:90*factor*(1-fromProgress)]];
+    [animation setToValue:forwards? [NSNumber numberWithDouble:90*factor] : [NSNumber numberWithDouble:0]];
+    [animation setFillMode:kCAFillModeForwards];
+    [animation setRemovedOnCompletion:NO];
+    animation.speed = 1;
+    [self.topSleeve addAnimation:animation forKey:nil];
     
 	// Build an array of keyframes for perspectiveLayer.bounds.size.height
 	NSMutableArray* arrayHeight = [NSMutableArray arrayWithCapacity:frameCount + 1];
@@ -594,7 +584,7 @@
 	// Since there's no built-in sine timing curve, we'll use CAKeyframeAnimation to achieve it
 	CAKeyframeAnimation *keyAnimation;
     
-    if (self.settings.components & FoldComponentBounds)
+    if (self.settings.foldComponents & FoldComponentBounds)
     {
         keyAnimation = [CAKeyframeAnimation animationWithKeyPath:@"bounds.size.height"];
         [keyAnimation setValues:[NSArray arrayWithArray:arrayHeight]];
@@ -604,7 +594,7 @@
         [self.perspectiveLayer addAnimation:keyAnimation forKey:nil];
 	}
     
-    if (self.settings.components & FoldComponentOpacity)
+    if (self.settings.foldComponents & FoldComponentOpacity)
     {
         // Dim the 2 folding panels as they fold away from us
         keyAnimation = [CAKeyframeAnimation animationWithKeyPath:@"opacity"];
@@ -772,7 +762,7 @@
 	self.firstJointLayer.position = CGPointMake(width/2, 0);
 	
 	// Shadow layers to add shadowing to the 2 folding panels
-    if (self.settings.components & FoldComponentOpacity)
+    if (self.settings.foldComponents & FoldComponentOpacity)
     {
         self.upperFoldShadow = [CAGradientLayer layer];
         [upperFold addSublayer:self.upperFoldShadow];
