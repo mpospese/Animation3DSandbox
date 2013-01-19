@@ -31,7 +31,7 @@
 - (void)doInit
 {
     _settings = [CMSSettingsInfo new];
-    _currentAnimation = AnimationTypeFold;
+    _currentAnimation = AnimationTypeFlip;
 }
 
 - (id)init
@@ -166,7 +166,7 @@
         return;
     
     [self.mainView removeGestureRecognizer:self.settingsTap];
-    [self.mainView removeGestureRecognizer:self.settingsSwipe];
+    [self.view removeGestureRecognizer:self.settingsSwipe];
     
     [self showSettings:NO];
 }

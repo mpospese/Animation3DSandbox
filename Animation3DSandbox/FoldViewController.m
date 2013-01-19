@@ -95,53 +95,10 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
 	
-    /*CAMediaTimingFunction *easeIn = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
-    float* point1 = (float *)malloc(2 * sizeof(float));
-    float* point2 = (float *)malloc(2 * sizeof(float));
-    float* point3 = (float *)malloc(2 * sizeof(float));
-    float* point4 = (float *)malloc(2 * sizeof(float));
-    
-    [easeIn getControlPointAtIndex:0 values:point1];
-    [easeIn getControlPointAtIndex:1 values:point2];
-    [easeIn getControlPointAtIndex:2 values:point3];
-    [easeIn getControlPointAtIndex:3 values:point4];
-    NSLog(@"Ease In = {%.2f, %.2f}, {%.2f, %.2f}", point2[0], point2[1], point3[0], point3[1]);
-    
-    easeIn = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
-    [easeIn getControlPointAtIndex:0 values:point1];
-    [easeIn getControlPointAtIndex:1 values:point2];
-    [easeIn getControlPointAtIndex:2 values:point3];
-    [easeIn getControlPointAtIndex:3 values:point4];
-    NSLog(@"Ease Out = {%.2f, %.2f}, {%.2f, %.2f}", point2[0], point2[1], point3[0], point3[1]);
-    
-    easeIn = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-    [easeIn getControlPointAtIndex:0 values:point1];
-    [easeIn getControlPointAtIndex:1 values:point2];
-    [easeIn getControlPointAtIndex:2 values:point3];
-    [easeIn getControlPointAtIndex:3 values:point4];
-    NSLog(@"Ease In Ease Out = {%.2f, %.2f}, {%.2f, %.2f}", point2[0], point2[1], point3[0], point3[1]);
-    
-    easeIn = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
-    [easeIn getControlPointAtIndex:0 values:point1];
-    [easeIn getControlPointAtIndex:1 values:point2];
-    [easeIn getControlPointAtIndex:2 values:point3];
-    [easeIn getControlPointAtIndex:3 values:point4];
-    NSLog(@"Linear = {%.2f, %.2f}, {%.2f, %.2f}", point2[0], point2[1], point3[0], point3[1]);
-    
-    easeIn = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionDefault];
-    [easeIn getControlPointAtIndex:0 values:point1];
-    [easeIn getControlPointAtIndex:1 values:point2];
-    [easeIn getControlPointAtIndex:2 values:point3];
-    [easeIn getControlPointAtIndex:3 values:point4];
-    NSLog(@"Default = {%.2f, %.2f}, {%.2f, %.2f}", point2[0], point2[1], point3[0], point3[1]);*/
-    
-   
-	// Set drop shadows and shadow paths on views
-	self.controlFrame.layer.cornerRadius = 5;
-	[self setDropShadow:self.controlFrame];
-	[[self.controlFrame layer] setShadowPath:[[UIBezierPath bezierPathWithRoundedRect:[self.controlFrame bounds] cornerRadius:5] CGPath]];
-	[self setDropShadow:self.contentView];
+	// Set drop shadows and shadow path
+    [self.contentView layer].shadowOffset = CGSizeMake(0, 3);
 	[[self.contentView layer] setShadowPath:[[UIBezierPath bezierPathWithRect:[self.contentView bounds]] CGPath]];
+    [self updateDropShadow:NO];
     
 	// Add our tap gesture recognizer
 	UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
@@ -152,8 +109,10 @@
 	UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinch:)];
 	pinchGesture.delegate = self;
 	[self.view addGestureRecognizer:pinchGesture];
-    
-    // render some images
+}
+
+- (void)updateImages
+{
     UIEdgeInsets insets = UIEdgeInsetsMake(10, 10, 10, 10);
     UIImage *entire = [MPAnimation renderImageFromView:self.contentView withInsets:insets];
     
@@ -164,7 +123,7 @@
     yOffset += self.foldUpperImage.size.height;
     self.foldLowerImage = [MPAnimation renderImage:entire withRect:CGRectMake(0, yOffset, entire.size.width, self.centerBar.bounds.size.height/2)];
     yOffset += self.foldLowerImage.size.height;
-	self.slideLowerImage = [MPAnimation renderImage:entire withRect:CGRectMake(0, yOffset, entire.size.width, self.bottomBar.bounds.size.height + insets.bottom)];
+	self.slideLowerImage = [MPAnimation renderImage:entire withRect:CGRectMake(0, yOffset, entire.size.width, self.bottomBar.bounds.size.height + insets.bottom)];    
 }
 
 - (CGFloat)foldHeight
@@ -228,30 +187,54 @@
 {
 	return [self skewMode] == SkewModeInverse;
 }
-			
-#pragma mark - methods
 
-- (void)setDropShadow:(UIView *)view
+- (void)updateDropShadow:(BOOL)animated
 {
-	[self setDropShadowForLayer:[view layer]];
-}
-
-- (void)setDropShadowForLayer:(CALayer *)layer
-{
-    if (self.settings.useDropShadows)
+    if (self.isFolded)
     {
-        layer.shadowOpacity = 0.5;
-        layer.shadowOffset = CGSizeMake(0, 3);
+        // we have to unfold first (so that we can properly render the images)
+        [self fold:^{
+            [self updateDropShadow:animated];
+        }];
+        return;
     }
+    
+    CGFloat shadowOpacity = self.settings.useDropShadows? 0.5 : 0;
+    if (!animated)
+    {
+        [self.contentView.layer setShadowOpacity:shadowOpacity];
+        [self updateImages];
+        return;
+    }
+    
+    [CATransaction begin];
+    
+    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"shadowOpacity"];
+    CALayer *presentationLayer = self.contentView.layer.presentationLayer;
+    animation.fromValue = @(presentationLayer.shadowOpacity);
+    animation.toValue = @(shadowOpacity);
+    [self.contentView.layer addAnimation:animation forKey:@"shadowOpacity"];
+    
+    [CATransaction setCompletionBlock:^{
+        [self.contentView.layer setShadowOpacity:shadowOpacity];
+        [self updateImages];
+    }];
+    
+    [CATransaction commit];
 }
 
 #pragma mark - Gesture handlers
 
 - (void)handleTap:(UITapGestureRecognizer *)gestureRecognizer
 {
+	[self fold:nil];
+}
+
+- (void)fold:(void (^)(void))block
+{
 	[self setLastProgress:0];
 	[self startFold];
-	[self animateFold:YES];
+	[self animateFold:YES completion:block];
 }
 
 - (void)handlePinch:(UIPinchGestureRecognizer *)gestureRecognizer {
@@ -447,7 +430,7 @@
     CGFloat currentProgress = [self currentProgress];
 	
 	if (currentProgress> 0 && currentProgress < 1)
-		[self animateFold:finish];
+		[self animateFold:finish completion:nil];
 	else
 		[self postFold:finish];
 }
@@ -498,7 +481,7 @@
 	[self.contentView setHidden:NO];	
 }
 
-- (void)animateFold:(BOOL)finish
+- (void)animateFold:(BOOL)finish completion:(void (^)(void))block
 {
 	[self setFolding:YES];
 	
@@ -512,6 +495,9 @@
 	[CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithControlPoints:self.settings.cp1.x :self.settings.cp1.y :self.settings.cp2.x :self.settings.cp2.y]];
 	[CATransaction setCompletionBlock:^{
 		[self postFold:finish];
+        
+        if (block)
+            block();
 	}];
 	
 	[self.animationView setCenter:[self animationCenter]];

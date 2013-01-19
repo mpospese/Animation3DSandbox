@@ -93,17 +93,6 @@
     return self;
 }
 
-- (void)addDropShadowToView:(UIView *)view
-{
-	view.layer.shadowOpacity = 0.5;
-	view.layer.shadowOffset = CGSizeMake(0, 3);
-}
-
-- (void)setShadowPathOnView:(UIView *)view
-{
-	[[view layer] setShadowPath:[[UIBezierPath bezierPathWithRoundedRect:[view bounds] cornerRadius:5] CGPath]];	
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -128,13 +117,12 @@
 	[self.contentView addGestureRecognizer:pan];
 	
 	// drop-shadow for content view
-	[self addDropShadowToView:self.contentView];
+	[[self.contentView layer] setShadowOffset:CGSizeMake(0, 3)];
 	[[self.contentView layer] setShadowPath:[[UIBezierPath bezierPathWithRect:[self.contentView bounds]] CGPath]];
-    
-    [self createImages];
+    [self updateDropShadow:NO];
 }
 
-- (void)createImages
+- (void)updateImages
 {
 	UIEdgeInsets insets = [self shouldAntiAliase]? UIEdgeInsetsMake(1, 0, 1, 0) : UIEdgeInsetsZero;
 
@@ -145,6 +133,32 @@
     
     self.leftImage = [MPAnimation renderImage:self.contentView.image withRect:leftRect transparentInsets:insets];
     self.rightImage = [MPAnimation renderImage:self.contentView.image withRect:rightRect transparentInsets:insets];
+}
+
+- (void)updateDropShadow:(BOOL)animated
+{
+    CGFloat shadowOpacity = self.settings.useDropShadows? 0.5 : 0;
+    if (!animated)
+    {
+        [self.contentView.layer setShadowOpacity:shadowOpacity];
+        [self updateImages];
+        return;
+    }
+    
+    [CATransaction begin];
+    
+    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"shadowOpacity"];
+    CALayer *presentationLayer = self.contentView.layer.presentationLayer;
+    animation.fromValue = @(presentationLayer.shadowOpacity);
+    animation.toValue = @(shadowOpacity);
+    [self.contentView.layer addAnimation:animation forKey:@"shadowOpacity"];
+    
+    [CATransaction setCompletionBlock:^{
+        [self.contentView.layer setShadowOpacity:shadowOpacity];
+        [self updateImages];
+    }];
+    
+    [CATransaction commit];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -414,13 +428,16 @@
 	// Shadows
 	
 	// darken front page just slightly as we flip (just to give it a crease where it touches facing page)
-	animation = [CABasicAnimation animationWithKeyPath:@"opacity"];
-	[animation setFromValue:[NSNumber numberWithDouble:0.1 * fromProgress]];
-	[animation setToValue:[NSNumber numberWithDouble:0.1]];
-	[flippingShadow addAnimation:animation forKey:nil];
-	[flippingShadow setOpacity:0.1];
+    if (self.settings.flipComponents & FlipComponentFacingShadow)
+    {
+        animation = [CABasicAnimation animationWithKeyPath:@"opacity"];
+        [animation setFromValue:[NSNumber numberWithDouble:0.1 * fromProgress]];
+        [animation setToValue:[NSNumber numberWithDouble:0.1]];
+        [flippingShadow addAnimation:animation forKey:nil];
+        [flippingShadow setOpacity:0.1];
+    }
 	
-	if (!inward)
+	if ((self.settings.flipComponents & FlipComponentRevealShadow) && !inward)
 	{
 		// lighten the page that is revealed by front page flipping up (along a cosine curve)
 		// TODO: consider FROM value
@@ -443,25 +460,28 @@
 		[coveredShadow setOpacity:[[arrayOpacity lastObject] floatValue]];
 	}
 	
-	// shadow opacity should fade up from 0 to 0.5 at 12.5% progress then remain there through 100%
-	NSMutableArray* arrayOpacity = [NSMutableArray arrayWithCapacity:frameCount + 1];
-	CGFloat progress;
-	CGFloat shadowProgress;
-	for (int frame = 0; frame <= frameCount; frame++)
-	{
-		progress = fromProgress + (toProgress - fromProgress) * ((float)frame) / frameCount;
-		shadowProgress = progress * 8;
-		if (shadowProgress > 1)
-			shadowProgress = 1;
-		
-		[arrayOpacity addObject:[NSNumber numberWithFloat:0.25 * shadowProgress]];
-	}
-	
-	CAKeyframeAnimation *keyAnimation = [CAKeyframeAnimation animationWithKeyPath:@"shadowOpacity"];
-	[keyAnimation setCalculationMode:kCAAnimationLinear];
-	[keyAnimation setValues:arrayOpacity];
-	[layer addAnimation:keyAnimation forKey:nil];
-	[layer setShadowOpacity:[[arrayOpacity lastObject] floatValue]];
+    if (self.settings.useDropShadows)
+    {
+        // shadow opacity should fade up from 0 to 0.5 at 12.5% progress then remain there through 100%
+        NSMutableArray* arrayOpacity = [NSMutableArray arrayWithCapacity:frameCount + 1];
+        CGFloat progress;
+        CGFloat shadowProgress;
+        for (int frame = 0; frame <= frameCount; frame++)
+        {
+            progress = fromProgress + (toProgress - fromProgress) * ((float)frame) / frameCount;
+            shadowProgress = progress * 8;
+            if (shadowProgress > 1)
+                shadowProgress = 1;
+            
+            [arrayOpacity addObject:[NSNumber numberWithFloat:0.25 * shadowProgress]];
+        }
+        
+        CAKeyframeAnimation *keyAnimation = [CAKeyframeAnimation animationWithKeyPath:@"shadowOpacity"];
+        [keyAnimation setCalculationMode:kCAAnimationLinear];
+        [keyAnimation setValues:arrayOpacity];
+        [layer addAnimation:keyAnimation forKey:nil];
+        [layer setShadowOpacity:[[arrayOpacity lastObject] floatValue]];
+    }
 	
 	// Commit the transaction for 1st half
 	[CATransaction commit];
@@ -514,15 +534,18 @@
 	// Shadows
 	
 	// Lighten back page just slightly as we flip (just to give it a crease where it touches reveal page)
-	animation2 = [CABasicAnimation animationWithKeyPath:@"opacity"];
-	[animation2 setFromValue:[NSNumber numberWithDouble:0.1 * (1-fromProgress)]];
-	[animation2 setToValue:[NSNumber numberWithDouble:0]];
-	[animation2 setFillMode:kCAFillModeForwards];
-	[animation2 setRemovedOnCompletion:NO];
-	[flippingShadow addAnimation:animation2 forKey:nil];
-	[flippingShadow setOpacity:0];
+    if (self.settings.flipComponents & FlipComponentFacingShadow)
+    {
+        animation2 = [CABasicAnimation animationWithKeyPath:@"opacity"];
+        [animation2 setFromValue:[NSNumber numberWithDouble:0.1 * (1-fromProgress)]];
+        [animation2 setToValue:[NSNumber numberWithDouble:0]];
+        [animation2 setFillMode:kCAFillModeForwards];
+        [animation2 setRemovedOnCompletion:NO];
+        [flippingShadow addAnimation:animation2 forKey:nil];
+        [flippingShadow setOpacity:0];
+    }
 	
-	if (!inward)
+	if ((self.settings.flipComponents & FlipComponentRevealShadow) && !inward)
 	{
 		// Darken facing page as it gets covered by back page flipping down (along a sine curve)
 		NSMutableArray* arrayOpacity = [NSMutableArray arrayWithCapacity:frameCount + 1];
@@ -543,26 +566,29 @@
 		[coveredShadow setOpacity:[[arrayOpacity lastObject] floatValue]];
 	}
 	
-	// shadow opacity on flipping page should be 0.5 through 87.5% progress then fade to 0 at 100%
-	NSMutableArray* arrayOpacity = [NSMutableArray arrayWithCapacity:frameCount + 1];
-	CGFloat progress;
-	CGFloat shadowProgress;
-	for (int frame = 0; frame <= frameCount; frame++)
-	{
-		progress = fromProgress + (toProgress - fromProgress) * ((float)frame) / frameCount;
-		shadowProgress = (1 - progress) * 8;
-		if (shadowProgress > 1)
-			shadowProgress = 1;
-		
-		[arrayOpacity addObject:[NSNumber numberWithFloat:0.25 * shadowProgress]];
+    if (self.settings.useDropShadows)
+    {
+        // shadow opacity on flipping page should be 0.5 through 87.5% progress then fade to 0 at 100%
+        NSMutableArray* arrayOpacity = [NSMutableArray arrayWithCapacity:frameCount + 1];
+        CGFloat progress;
+        CGFloat shadowProgress;
+        for (int frame = 0; frame <= frameCount; frame++)
+        {
+            progress = fromProgress + (toProgress - fromProgress) * ((float)frame) / frameCount;
+            shadowProgress = (1 - progress) * 8;
+            if (shadowProgress > 1)
+                shadowProgress = 1;
+            
+            [arrayOpacity addObject:[NSNumber numberWithFloat:0.25 * shadowProgress]];
+        }
+        
+        CAKeyframeAnimation *keyAnimation = [CAKeyframeAnimation animationWithKeyPath:@"shadowOpacity"];
+        [keyAnimation setCalculationMode:kCAAnimationLinear];
+        [keyAnimation setValues:arrayOpacity];
+        [layer addAnimation:keyAnimation forKey:nil];
+        [layer setShadowOpacity:[[arrayOpacity lastObject] floatValue]];
 	}
-	
-	CAKeyframeAnimation *keyAnimation = [CAKeyframeAnimation animationWithKeyPath:@"shadowOpacity"];
-	[keyAnimation setCalculationMode:kCAAnimationLinear];
-	[keyAnimation setValues:arrayOpacity];
-	[layer addAnimation:keyAnimation forKey:nil];
-	[layer setShadowOpacity:[[arrayOpacity lastObject] floatValue]];
-	
+    
 	// Commit the transaction
 	[CATransaction commit];
 }
@@ -707,31 +733,34 @@
 	[self.layerBack setContents:(id)[pageBackImage CGImage]];
 	
 	// Create shadow layers
-	self.layerFrontShadow = [CAGradientLayer layer];
-	[self.layerFront addSublayer:self.layerFrontShadow];
-	self.layerFrontShadow.frame = CGRectInset(self.layerFront.bounds, insets.left, insets.top);
-	self.layerFrontShadow.opacity = 0.0;
-	if (forwards)
-		self.layerFrontShadow.colors = [NSArray arrayWithObjects:(id)[[[UIColor blackColor] colorWithAlphaComponent:0.5] CGColor], (id)[UIColor blackColor].CGColor, (id)[[UIColor clearColor] CGColor], nil];
-	else
-		self.layerFrontShadow.colors = [NSArray arrayWithObjects:(id)[[UIColor clearColor] CGColor], (id)[UIColor blackColor].CGColor, (id)[[[UIColor blackColor] colorWithAlphaComponent:0.5] CGColor], nil];
-	self.layerFrontShadow.startPoint = CGPointMake(forwards? 0 : 0.5, 0.5);
-	self.layerFrontShadow.endPoint = CGPointMake(forwards? 0.5 : 1, 0.5);
-	self.layerFrontShadow.locations = [NSArray arrayWithObjects:[NSNumber numberWithDouble:0], [NSNumber numberWithDouble:forwards? 0.1 : 0.9], [NSNumber numberWithDouble:1], nil];
-	
-	self.layerBackShadow = [CAGradientLayer layer];
-	[self.layerBack addSublayer:self.layerBackShadow];
-	self.layerBackShadow.frame = CGRectInset(self.layerBack.bounds, insets.left, insets.top);
-	self.layerBackShadow.opacity = 0.1;
-	if (forwards)
-		self.layerBackShadow.colors = [NSArray arrayWithObjects:(id)[[UIColor clearColor] CGColor], (id)[UIColor blackColor].CGColor, (id)[[[UIColor blackColor] colorWithAlphaComponent:0.5] CGColor], nil];
-	else
-		self.layerBackShadow.colors = [NSArray arrayWithObjects:(id)[[[UIColor blackColor] colorWithAlphaComponent:0.5] CGColor], (id)[UIColor blackColor].CGColor, (id)[[UIColor clearColor] CGColor], nil];
-	self.layerBackShadow.startPoint = CGPointMake(forwards? 0.5 : 0, 0.5);
-	self.layerBackShadow.endPoint = CGPointMake(forwards? 1 : 0.5, 0.5);
-	self.layerBackShadow.locations = [NSArray arrayWithObjects:[NSNumber numberWithDouble:0], [NSNumber numberWithDouble:forwards? 0.9 : 0.1], [NSNumber numberWithDouble:1], nil];
-	
-	if (!inward)
+    if (self.settings.flipComponents & FlipComponentFacingShadow)
+    {
+        self.layerFrontShadow = [CAGradientLayer layer];
+        [self.layerFront addSublayer:self.layerFrontShadow];
+        self.layerFrontShadow.frame = CGRectInset(self.layerFront.bounds, insets.left, insets.top);
+        self.layerFrontShadow.opacity = 0.0;
+        if (forwards)
+            self.layerFrontShadow.colors = [NSArray arrayWithObjects:(id)[[[UIColor blackColor] colorWithAlphaComponent:0.5] CGColor], (id)[UIColor blackColor].CGColor, (id)[[UIColor clearColor] CGColor], nil];
+        else
+            self.layerFrontShadow.colors = [NSArray arrayWithObjects:(id)[[UIColor clearColor] CGColor], (id)[UIColor blackColor].CGColor, (id)[[[UIColor blackColor] colorWithAlphaComponent:0.5] CGColor], nil];
+        self.layerFrontShadow.startPoint = CGPointMake(forwards? 0 : 0.5, 0.5);
+        self.layerFrontShadow.endPoint = CGPointMake(forwards? 0.5 : 1, 0.5);
+        self.layerFrontShadow.locations = [NSArray arrayWithObjects:[NSNumber numberWithDouble:0], [NSNumber numberWithDouble:forwards? 0.1 : 0.9], [NSNumber numberWithDouble:1], nil];
+        
+        self.layerBackShadow = [CAGradientLayer layer];
+        [self.layerBack addSublayer:self.layerBackShadow];
+        self.layerBackShadow.frame = CGRectInset(self.layerBack.bounds, insets.left, insets.top);
+        self.layerBackShadow.opacity = 0.1;
+        if (forwards)
+            self.layerBackShadow.colors = [NSArray arrayWithObjects:(id)[[UIColor clearColor] CGColor], (id)[UIColor blackColor].CGColor, (id)[[[UIColor blackColor] colorWithAlphaComponent:0.5] CGColor], nil];
+        else
+            self.layerBackShadow.colors = [NSArray arrayWithObjects:(id)[[[UIColor blackColor] colorWithAlphaComponent:0.5] CGColor], (id)[UIColor blackColor].CGColor, (id)[[UIColor clearColor] CGColor], nil];
+        self.layerBackShadow.startPoint = CGPointMake(forwards? 0.5 : 0, 0.5);
+        self.layerBackShadow.endPoint = CGPointMake(forwards? 1 : 0.5, 0.5);
+        self.layerBackShadow.locations = [NSArray arrayWithObjects:[NSNumber numberWithDouble:0], [NSNumber numberWithDouble:forwards? 0.9 : 0.1], [NSNumber numberWithDouble:1], nil];
+	}
+    
+	if ((self.settings.flipComponents & FlipComponentRevealShadow) && !inward)
 	{
 		self.layerRevealShadow = [CALayer layer];
 		[self.layerReveal addSublayer:self.layerRevealShadow];
@@ -756,14 +785,16 @@
 	self.layerFlipping.sublayerTransform = transform;
 	
 	// set shadows on the 2 pages we'll be animating
-	//self.layerFront.shadowOpacity = 0.25;
-	self.layerFront.shadowOffset = CGSizeMake(0,3);
-	if ([self shouldSetShadowPath])
-		[self.layerFront setShadowPath:[[UIBezierPath bezierPathWithRect:CGRectInset([self.layerFront bounds], insets.left, insets.top)] CGPath]];	
-	self.layerBack.shadowOpacity = 0.25;
-	self.layerBack.shadowOffset = CGSizeMake(0,3);
-	if ([self shouldSetShadowPath])
-		[self.layerBack setShadowPath:[[UIBezierPath bezierPathWithRect:CGRectInset([self.layerBack bounds], insets.left, insets.top)] CGPath]];
+    if (self.settings.useDropShadows)
+    {
+        self.layerFront.shadowOffset = CGSizeMake(0,3);
+        if ([self shouldSetShadowPath])
+            [self.layerFront setShadowPath:[[UIBezierPath bezierPathWithRect:CGRectInset([self.layerFront bounds], insets.left, insets.top)] CGPath]];	
+        self.layerBack.shadowOpacity = 0.25;
+        self.layerBack.shadowOffset = CGSizeMake(0,3);
+        if ([self shouldSetShadowPath])
+            [self.layerBack setShadowPath:[[UIBezierPath bezierPathWithRect:CGRectInset([self.layerBack bounds], insets.left, insets.top)] CGPath]];
+    }
 }
 
  - (void)doFlip1:(CGFloat)progress
@@ -778,16 +809,23 @@
 		progress = 1;
 
 	[self.layerFront setTransform:[self flipTransform1:progress]];
-	[self.layerFrontShadow setOpacity:0.1 * progress];
-	CGFloat cosOpacity = cos(radians(90 * progress)) * (1./3);
-	[self.layerRevealShadow setOpacity:cosOpacity];
-	
-	// shadow opacity should fade up from 0 to 0.5 at 12.5% progress then remain there through 100%
-	CGFloat shadowProgress = progress * 8;
-	if (shadowProgress > 1)
-		shadowProgress = 1;
-	[self.layerFront setShadowOpacity:0.25 * shadowProgress];
-
+    if (self.settings.flipComponents & FlipComponentFacingShadow)
+        [self.layerFrontShadow setOpacity:0.1 * progress];
+    if (self.settings.flipComponents & FlipComponentRevealShadow)
+    {
+        CGFloat cosOpacity = cos(radians(90 * progress)) * (1./3);
+        [self.layerRevealShadow setOpacity:cosOpacity];
+	}
+    
+    if (self.settings.useDropShadows)
+    {
+        // shadow opacity should fade up from 0 to 0.5 at 12.5% progress then remain there through 100%
+        CGFloat shadowProgress = progress * 8;
+        if (shadowProgress > 1)
+            shadowProgress = 1;
+        [self.layerFront setShadowOpacity:0.25 * shadowProgress];
+    }
+    
 	[CATransaction commit];
 }
  
@@ -803,16 +841,23 @@
 		progress = 1;
 	
 	[self.layerBack setTransform:[self flipTransform2:progress]];
-	[self.layerBackShadow setOpacity:0.1 * (1- progress)];
-	CGFloat sinOpacity = sin(radians(90 * progress)) * (1./3);
-	[self.layerFacingShadow setOpacity:sinOpacity];
-	
-	// shadow opacity on flipping page should be 0.5 through 87.5% progress then fade to 0 at 100%
-	CGFloat shadowProgress = (1 - progress) * 8;
-	if (shadowProgress > 1)
-		shadowProgress = 1;
-	[self.layerBack setShadowOpacity:0.25 * shadowProgress];
-
+    if (self.settings.flipComponents & FlipComponentFacingShadow)
+        [self.layerBackShadow setOpacity:0.1 * (1- progress)];
+    if (self.settings.flipComponents & FlipComponentRevealShadow)
+    {
+        CGFloat sinOpacity = sin(radians(90 * progress)) * (1./3);
+        [self.layerFacingShadow setOpacity:sinOpacity];
+	}
+    
+    if (self.settings.useDropShadows)
+    {
+        // shadow opacity on flipping page should be 0.5 through 87.5% progress then fade to 0 at 100%
+        CGFloat shadowProgress = (1 - progress) * 8;
+        if (shadowProgress > 1)
+            shadowProgress = 1;
+        [self.layerBack setShadowOpacity:0.25 * shadowProgress];
+    }
+    
 	[CATransaction commit];
 }
 	 
@@ -896,21 +941,6 @@
 
 - (IBAction)antiAliaseValueChanged:(id)sender {
 	[self setShouldAntiAliase:[sender isOn]];
-}
-
-- (IBAction)shadowPathValueChanged:(id)sender {
-	[self setShouldSetShadowPath:[sender isOn]];
-	
-	if ([self shouldSetShadowPath])
-	{
-		[self setShadowPathOnView:self.controlFrame];
-		[self.contentView.layer setShadowPath:[[UIBezierPath bezierPathWithRect:[self.contentView bounds]] CGPath]];
-	}
-	else
-	{
-		[self.controlFrame.layer setShadowPath:nil];
-		[self.contentView.layer setShadowPath:nil];
-	}
 }
 
 @end
