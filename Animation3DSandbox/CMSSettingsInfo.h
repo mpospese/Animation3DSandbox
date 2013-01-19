@@ -31,5 +31,8 @@
 @property (nonatomic, assign) BOOL useDropShadows;
 @property (nonatomic, assign) AnchorPointLocation anchorPoint;
 @property (nonatomic, assign) BOOL useBackground;
+@property (nonatomic, assign) SkewMode skewMode;
+
+- (CGFloat)skewMultiplier;
 
 @end

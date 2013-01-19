@@ -19,7 +19,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"background"]];
+    self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Background"]];
     self.backgroundView.frame = self.view.bounds;
     self.backgroundView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.view insertSubview:self.backgroundView atIndex:0];

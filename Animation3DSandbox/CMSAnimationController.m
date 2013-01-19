@@ -17,12 +17,16 @@
 
 @property (nonatomic, strong) CMSSettingsInfo *settings;
 @property (nonatomic, strong) UIView *mainView;
-@property (nonatomic, strong) UISwipeGestureRecognizer *swipe;
-@property (nonatomic, strong) UITapGestureRecognizer *settingsTap;
-@property (nonatomic, strong) UISwipeGestureRecognizer *settingsSwipe;
+@property (nonatomic, strong) UISwipeGestureRecognizer *settingsOpenSwipe;
+@property (nonatomic, strong) UITapGestureRecognizer *settingsDismissTap;
+@property (nonatomic, strong) UISwipeGestureRecognizer *settingsCloseSwipe;
+@property (nonatomic, strong) UISwipeGestureRecognizer *swipePreviousAnimation;
+@property (nonatomic, strong) UISwipeGestureRecognizer *swipeNextAnimation;
 @property (nonatomic, strong) UIViewController *settingsPane;
 @property (nonatomic, strong) CMSSettingsController *settingsController;
 @property (nonatomic, assign) AnimationType currentAnimation;
+@property (nonatomic, strong) CMSBaseAnimationController *selectedController;
+@property (nonatomic, assign, getter = isSettingsOpen) BOOL settingsOpen;
 
 @end
 
@@ -31,7 +35,7 @@
 - (void)doInit
 {
     _settings = [CMSSettingsInfo new];
-    _currentAnimation = AnimationTypeFlip;
+    _currentAnimation = AnimationTypeFold;
 }
 
 - (id)init
@@ -67,32 +71,30 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
 	// Do any additional setup after loading the view.
     
-    switch (self.currentAnimation) {
-        case AnimationTypeBall:
-            [self loadBallController];
-            break;
-            
-        case AnimationTypeFold:
-            [self loadFoldController];
-            break;
-            
-        case AnimationTypeFlip:
-            [self loadFlipController];
-            break;
-    }
+    // Gestures
+    self.settingsOpenSwipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipe:)];
+    self.settingsOpenSwipe.direction = UISwipeGestureRecognizerDirectionRight;
+    self.settingsOpenSwipe.delegate = self;
+
+	self.settingsDismissTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closeSettingsPanel:)];
+    self.settingsCloseSwipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(closeSettingsPanel:)];
+    self.settingsCloseSwipe.direction = UISwipeGestureRecognizerDirectionLeft;
     
-	self.settingsTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closeSettingsPanel:)];
-    self.settingsSwipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(closeSettingsPanel:)];
-    self.settingsSwipe.direction = UISwipeGestureRecognizerDirectionLeft;
-	//[self.view addGestureRecognizer:self.settingsTap];
-	    
-    UISwipeGestureRecognizer *swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipe:)];
-    swipe.direction = UISwipeGestureRecognizerDirectionRight;
-    swipe.delegate = self;
-    [self.mainView addGestureRecognizer:swipe];
-    self.swipe = swipe;
+    self.swipePreviousAnimation = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handle2FingerSwipe:)];
+    self.swipePreviousAnimation.direction = UISwipeGestureRecognizerDirectionRight;
+    self.swipePreviousAnimation.numberOfTouchesRequired = 2;
+    self.swipePreviousAnimation.delegate = self;
+    
+    self.swipeNextAnimation = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handle2FingerSwipe:)];
+    self.swipeNextAnimation.direction = UISwipeGestureRecognizerDirectionLeft;
+    self.swipeNextAnimation.numberOfTouchesRequired = 2;
+    self.swipeNextAnimation.delegate = self;
+    
+    // load controller
+    [self loadController:self.currentAnimation offset:0];
 }
 
 - (void)didReceiveMemoryWarning
@@ -104,58 +106,81 @@
     }
 }
 
-- (void)loadFoldController
+- (void)loadController:(AnimationType)type offset:(NSInteger)offset
 {
+    CMSBaseAnimationController *oldController = self.selectedController;
+    
+    NSString *storyboardIdentifier = nil;
+    switch (type)
+    {
+        case AnimationTypeBall:
+            storyboardIdentifier = [CMSBallController storyboardID];
+            break;
+            
+        case AnimationTypeFold:
+            storyboardIdentifier = [FoldViewController storyboardID];
+            break;
+            
+        case AnimationTypeFlip:
+            storyboardIdentifier = [FlipViewController storyboardID];
+            break;
+            
+    }
+    
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPad" bundle:nil];
-    FoldViewController *foldController = [storyboard instantiateViewControllerWithIdentifier:@"FoldID"];
-    foldController.settings = self.settings;
-    self.mainView = foldController.view;
+    CMSBaseAnimationController *controller = [storyboard instantiateViewControllerWithIdentifier:storyboardIdentifier];
+    controller.settings = self.settings;
     
-    foldController.view.layer.shadowOpacity = 0.5;
-    foldController.view.layer.shadowOffset = CGSizeMake(-3, 0);
-    foldController.view.layer.shadowPath = [UIBezierPath bezierPathWithRect:foldController.view.bounds].CGPath;
+    controller.view.layer.shadowOpacity = 0.5;
+    controller.view.layer.shadowOffset = CGSizeMake(-3, 0);
+    controller.view.layer.shadowPath = [UIBezierPath bezierPathWithRect:controller.view.bounds].CGPath;
     
-    [self addChildViewController:foldController];
-    foldController.view.frame = self.view.bounds;
-    foldController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [self.view addSubview:foldController.view];
-    [foldController didMoveToParentViewController:self];
+    [self addChildViewController:controller];
+    controller.view.frame = CGRectOffset(self.view.bounds, offset * CGRectGetWidth(self.view.bounds), 0);
+    controller.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.view addSubview:controller.view];
+    [controller didMoveToParentViewController:self];
+    
+    [UIView animateWithDuration:0.5 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+        if (oldController && offset != 0)
+            [[oldController view] setFrame:CGRectOffset(self.view.bounds, -1 * offset * CGRectGetWidth(self.view.bounds), 0)];
+        controller.view.frame = self.view.bounds;
+        
+    } completion:^(BOOL finished) {
+        [oldController willMoveToParentViewController:nil];
+        [[oldController view] removeFromSuperview];
+        [oldController removeFromParentViewController];
+        [oldController setSettings:nil];
+        
+        self.selectedController = controller;
+        self.mainView = controller.view;
+        [self.mainView addGestureRecognizer:self.settingsOpenSwipe];
+        [self.mainView addGestureRecognizer:self.swipePreviousAnimation];
+        [self.mainView addGestureRecognizer:self.swipeNextAnimation];
+        
+        if (!self.settingsPane.parentViewController)
+        {
+            self.settingsController = nil;
+            self.settingsPane = nil;
+        }
+    }];
 }
 
-- (void)loadFlipController
-{
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPad" bundle:nil];
-    FlipViewController *flipController = [storyboard instantiateViewControllerWithIdentifier:@"FlipID"];
-    flipController.settings = self.settings;
-    self.mainView = flipController.view;
-    
-    flipController.view.layer.shadowOpacity = 0.5;
-    flipController.view.layer.shadowOffset = CGSizeMake(-3, 0);
-    flipController.view.layer.shadowPath = [UIBezierPath bezierPathWithRect:flipController.view.bounds].CGPath;
-    
-    [self addChildViewController:flipController];
-    flipController.view.frame = self.view.bounds;
-    flipController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [self.view addSubview:flipController.view];
-    [flipController didMoveToParentViewController:self];
-}
+#pragma mark - UIGestureRecognizerDelegate methods
 
-- (void)loadBallController
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPad" bundle:nil];
-    CMSBallController *ballController = [storyboard instantiateViewControllerWithIdentifier:[CMSBallController storyboardID]];
-    ballController.settings = self.settings;
-    self.mainView = ballController.view;
+    if ([gestureRecognizer isEqual:self.settingsOpenSwipe])
+    {
+        CGPoint point = [gestureRecognizer locationInView:self.view];
+        if (point.x > 44)
+            return NO;
+    }
     
-    ballController.view.layer.shadowOpacity = 0.5;
-    ballController.view.layer.shadowOffset = CGSizeMake(-3, 0);
-    ballController.view.layer.shadowPath = [UIBezierPath bezierPathWithRect:ballController.view.bounds].CGPath;
+    if ([gestureRecognizer isEqual:self.swipePreviousAnimation] || [gestureRecognizer isEqual:self.swipeNextAnimation])
+        return !self.isSettingsOpen;
     
-    [self addChildViewController:ballController];
-    ballController.view.frame = self.view.bounds;
-    ballController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [self.view addSubview:ballController.view];
-    [ballController didMoveToParentViewController:self];
+    return YES;
 }
 
 #pragma mark - Gesture handlers
@@ -165,8 +190,8 @@
     if ([gestureRecognizer state] != UIGestureRecognizerStateEnded)
         return;
     
-    [self.mainView removeGestureRecognizer:self.settingsTap];
-    [self.view removeGestureRecognizer:self.settingsSwipe];
+    [self.mainView removeGestureRecognizer:self.settingsDismissTap];
+    [self.view removeGestureRecognizer:self.settingsCloseSwipe];
     
     [self showSettings:NO];
 }
@@ -180,16 +205,17 @@
     [self showSettings:YES];
 }
 
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+- (void)handle2FingerSwipe:(UISwipeGestureRecognizer *)gesture
 {
-    if ([gestureRecognizer isEqual:self.swipe])
-    {
-        CGPoint point = [gestureRecognizer locationInView:self.view];
-        if (point.x > 44)
-            return NO;
-    }
+    if (gesture.state != UIGestureRecognizerStateEnded)
+        return;
     
-    return YES;
+    int offset = (gesture.direction == UISwipeGestureRecognizerDirectionLeft)? 1 : -1;
+    int type = ((int)self.currentAnimation + offset) % 3;
+    if (type < 0)
+        type += 3;
+    self.currentAnimation = type;
+    [self loadController:self.currentAnimation offset:offset];
 }
 
 - (void)initSettingsPane
@@ -212,14 +238,15 @@
     [self.settingsPane.view setFrame:CGRectMake(0, 0, 320, CGRectGetHeight(self.view.bounds))];
     [self.view insertSubview:self.settingsPane.view belowSubview:self.mainView];
     [self.settingsPane didMoveToParentViewController:self];
-    [self.mainView addGestureRecognizer:self.settingsTap];
-    [self.view addGestureRecognizer:self.settingsSwipe];
+    [self.mainView addGestureRecognizer:self.settingsDismissTap];
+    [self.view addGestureRecognizer:self.settingsCloseSwipe];
     
     [self.settingsController setType:self.currentAnimation];
 }
 
 - (void)showSettings:(BOOL)show
 {
+    self.settingsOpen = show;
 	[CATransaction begin];
 	[CATransaction setAnimationDuration:0.3];//self.settings.duration];
 	[CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithControlPoints:self.settings.cp1.x :self.settings.cp1.y :self.settings.cp2.x :self.settings.cp2.y]];

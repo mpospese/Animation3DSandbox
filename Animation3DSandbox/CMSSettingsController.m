@@ -23,6 +23,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *anchorPointLabel;
 @property (weak, nonatomic) IBOutlet UILabel *dropShadowsLabel;
 @property (weak, nonatomic) IBOutlet UILabel *backgroundLabel;
+@property (weak, nonatomic) IBOutlet UILabel *skewModeLabel;
 
 @end
 
@@ -58,6 +59,7 @@
     [self updateDropShadowsLabel];
     [self updateAnchorPointLabel];
     [self updateBackgroundLabel];
+    [self updateSkewModeLabel];
 }
 
 - (void)setType:(AnimationType)type
@@ -148,6 +150,11 @@
                     case CMSSettingsViewRowBackground:
                         self.settings.useBackground = !self.settings.useBackground;
                         [self updateBackgroundLabel];
+                        break;
+                        
+                    case CMSSettingsViewRowSkew:
+                        self.settings.skewMode = (self.settings.skewMode + 1) % (SkewModeHigh + 1);
+                        [self updateSkewModeLabel];
                         break;
                }
                 break;
@@ -367,6 +374,31 @@
 - (void)updateBackgroundLabel
 {
     [self.backgroundLabel setText:self.settings.useBackground? @"Yes" : @"No"];
+}
+
+- (void)updateSkewModeLabel
+{
+    switch (self.settings.skewMode) {
+        case SkewModeInverse:
+            self.skewModeLabel.text = @"Inverse";
+            break;
+            
+        case SkewModeNone:
+            self.skewModeLabel.text = @"None";
+            break;
+            
+        case SkewModeLow:
+            self.skewModeLabel.text = @"Low";
+            break;
+            
+        case SkewModeNormal:
+            self.skewModeLabel.text = @"Normal";
+            break;
+            
+        case SkewModeHigh:
+            self.skewModeLabel.text = @"High";
+            break;
+    }
 }
 
 

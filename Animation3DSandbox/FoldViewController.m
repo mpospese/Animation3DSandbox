@@ -20,8 +20,6 @@
 @property (weak, nonatomic) IBOutlet UIView *topBar;
 @property (weak, nonatomic) IBOutlet UIView *centerBar;
 @property (weak, nonatomic) IBOutlet UIView *bottomBar;
-@property (weak, nonatomic) IBOutlet UISegmentedControl *skewSegment;
-@property (weak, nonatomic) IBOutlet UIView *controlFrame;
 
 @property (readonly) CGFloat skew;
 
@@ -29,7 +27,6 @@
 @property (assign, nonatomic, getter = isFolding) BOOL folding;
 @property (assign, nonatomic) CGFloat pinchStartGap;
 @property (assign, nonatomic) CGFloat lastProgress;
-@property (assign, nonatomic) CGFloat durationMultiplier;
 
 @property (strong, nonatomic) UIView *animationView;
 @property (strong, nonatomic) CALayer *perspectiveLayer;
@@ -40,7 +37,6 @@
 @property (strong, nonatomic) CALayer *firstJointLayer;
 @property (strong, nonatomic) CALayer *secondJointLayer;
 @property (assign, nonatomic) CGPoint animationCenter;
-@property (readonly, nonatomic) SkewMode skewMode;
 @property (readonly, nonatomic) BOOL isInverse;
 
 @property (strong, nonatomic) UIImage *slideUpperImage;
@@ -57,7 +53,6 @@
 
 - (void)doInit
 {
-	_durationMultiplier = 1;
 }
 
 - (id)init
@@ -156,36 +151,17 @@
 
 #pragma mark - Properties
 
-- (SkewMode)skewMode
-{
-	return (SkewMode)[self.skewSegment selectedSegmentIndex];
-}
-
 - (CGFloat)skew
 {
-	switch ([self skewMode])
-	{
-		case SkewModeInverse:
-			return 1 / ((self.foldHeight / 2) *  4.666666667);
-			
-		case SkewModeNone:
-		case SkewModeSide:
-			return 0;
-			
-		case SkewModeLow:
-			return -1 / ((self.foldHeight / 2) *  14.5);
-			
-		case SkewModeNormal:
-			return -1 / ((self.foldHeight / 2) *  4.666666667);
-			
-		case SkewModeHigh:
-			return -1 / ((self.foldHeight / 2) *  1.5);
-	}
+    if (self.settings.skewMode == SkewModeNone)
+        return 0;
+    else
+        return 1 / ((self.foldHeight / 2) * self.settings.skewMultiplier);
 }
 
 - (BOOL)isInverse
 {
-	return [self skewMode] == SkewModeInverse;
+	return (self.settings.skewMode == SkewModeInverse);
 }
 
 - (void)updateDropShadow:(BOOL)animated
@@ -280,61 +256,6 @@
 		}
 		
 		[self doFold:currentGap - [self pinchStartGap]];
-	}
-}
-
-- (IBAction)skewValueChanged:(UISegmentedControl *)sender {
-	BOOL wasSideView = !CATransform3DIsIdentity(self.contentView.layer.transform);
-	BOOL isSideView = self.skewMode == SkewModeSide;
-	
-	CATransform3D perspectiveTransform = CATransform3DIdentity;
-	CATransform3D contentTransform = CATransform3DIdentity;
-	
-	if (isSideView)
-	{
-		// Special transform so that we can view the fold from the side
-		perspectiveTransform.m34 = -0.0010;
-		perspectiveTransform = CATransform3DTranslate(perspectiveTransform, 30, -35, 0);
-		perspectiveTransform = CATransform3DRotate(perspectiveTransform, radians(60), .75, 1, -0.5);
-		contentTransform = perspectiveTransform;
-	}
-	else
-		perspectiveTransform.m34 = [self skew];		
-	
-	if (isSideView != wasSideView)
-	{
-		// animate the change in view point
-		CGFloat duration = DEFAULT_DURATION * [self durationMultiplier];
-		[UIView animateWithDuration:duration animations:^{
-			self.contentView.layer.transform = contentTransform;
-		}];
-	}
-	else
-		self.contentView.layer.transform = contentTransform;
-	
-	[[self perspectiveLayer] setSublayerTransform:perspectiveTransform];	
-}
-
-- (IBAction)durationValueChanged:(UISegmentedControl *)sender {
-	switch ([sender selectedSegmentIndex]) {
-		case 0:
-			[self setDurationMultiplier:1];
-			break;
-			
-		case 1:
-			[self setDurationMultiplier:2];
-			break;
-			
-		case 2:
-			[self setDurationMultiplier:5];
-			break;
-			
-		case 3:
-			[self setDurationMultiplier:10];
-			break;
-			
-		default:
-			break;
 	}
 }
 
@@ -486,7 +407,7 @@
 	[self setFolding:YES];
 	
 	// Figure out how many frames we want
-	CGFloat duration = DEFAULT_DURATION * [self durationMultiplier];
+	CGFloat duration = self.settings.duration;
 	NSUInteger frameCount = ceilf(duration * 60); // we want 60 FPS
 		
 	// Create a transaction
@@ -776,6 +697,13 @@
 	self.perspectiveLayer.sublayerTransform = transform;
 	
 	[CATransaction commit];
+}
+
+#pragma mark - Class Methods
+
++ (NSString *)storyboardID
+{
+    return @"FoldID";
 }
 
 @end

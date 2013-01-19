@@ -11,5 +11,6 @@
 
 @interface FoldViewController : CMSBaseAnimationController
 
++ (NSString *)storyboardID;
 
 @end

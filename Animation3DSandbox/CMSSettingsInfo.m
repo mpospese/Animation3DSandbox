@@ -29,6 +29,7 @@
         _useDropShadows = YES;
         _anchorPoint = AnchorPointCenter;
         _useBackground = NO;
+        _skewMode = SkewModeNormal;
     }
     return self;
 }
@@ -111,6 +112,26 @@
         default:
             break;
     }
+}
+
+- (CGFloat)skewMultiplier
+{
+	switch (self.skewMode) {
+		case SkewModeInverse:
+			return 4.666667;
+			
+		case SkewModeNone:
+			return 0;
+			
+		case SkewModeLow:
+			return -14.5;
+			
+		case SkewModeNormal:
+			return -4.666667;
+			
+		case SkewModeHigh:
+			return -1.5;
+	}
 }
 
 @end

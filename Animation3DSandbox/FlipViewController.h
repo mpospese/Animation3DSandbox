@@ -9,13 +9,8 @@
 #import <UIKit/UIKit.h>
 #import "CMSBaseAnimationController.h"
 
-typedef enum {
-	FlipDirectionForward,
-	FlipDirectionBackward
-} FlipDirection;
-
 @interface FlipViewController : CMSBaseAnimationController
 
-
++ (NSString *)storyboardID;
 
 @end

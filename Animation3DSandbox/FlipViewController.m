@@ -11,29 +11,28 @@
 #import "MPAnimation.h"
 #import "Enumerations.h"
 
-#define IMAGE_COUNT 4
-#define DEFAULT_SKEW	-(1. / 1000.)
 #define ANGLE	90
 #define MARGIN	72
 
-#define SWIPE_UP_THRESHOLD -100.0f
-#define SWIPE_DOWN_THRESHOLD 100.0f
 #define SWIPE_LEFT_THRESHOLD -100.0f
 #define SWIPE_RIGHT_THRESHOLD 100.0f
+#define SPINE_SHADOW_OFFSET 5.0f
+
+typedef enum {
+	FlipDirectionForward,
+	FlipDirectionBackward
+} FlipDirection;
+
 
 @interface FlipViewController()<UIGestureRecognizerDelegate>
 
 @property (weak, nonatomic) IBOutlet UIImageView *contentView;
-@property (weak, nonatomic) IBOutlet UIView *controlFrame;
 
-@property(assign, nonatomic) int currentImageIndex;
 @property(assign, nonatomic) FlipDirection direction;
 @property(assign, nonatomic, getter = isFlipFrontPage) BOOL flipFrontPage;
 @property(assign, nonatomic, getter = isAnimating) BOOL animating;
 @property(assign, nonatomic, getter = isPanning) BOOL panning;
 @property(assign, nonatomic) CGPoint panStart;
-@property (assign, nonatomic) CGFloat durationMultiplier;
-@property (assign, nonatomic) SkewMode skewMode;
 @property (strong, nonatomic) UIView *animationView;
 @property (strong, nonatomic) CALayer *layerFront;
 @property (strong, nonatomic) CALayer *layerFacing;
@@ -42,8 +41,8 @@
 @property (strong, nonatomic) CALayer *layerFlipping;
 @property (strong, nonatomic) CAGradientLayer *layerFrontShadow;
 @property (strong, nonatomic) CAGradientLayer *layerBackShadow;
-@property (strong, nonatomic) CALayer *layerFacingShadow;
-@property (strong, nonatomic) CALayer *layerRevealShadow;
+@property (strong, nonatomic) CAGradientLayer *layerFacingShadow;
+@property (strong, nonatomic) CAGradientLayer *layerRevealShadow;
 @property (assign, nonatomic) BOOL shouldAntiAliase;
 @property (assign, nonatomic) BOOL shouldSetShadowPath;
 
@@ -57,8 +56,6 @@
 - (void)doInit
 {
 	_direction = FlipDirectionForward;
-	_durationMultiplier = 1;
-	_skewMode = SkewModeNormal;
 	_shouldSetShadowPath = YES;
 	_shouldAntiAliase = YES;
 }
@@ -166,32 +163,6 @@
 	return YES;
 }
 
-#pragma mark - Properties
-
-- (CGFloat)skewMultiplier
-{
-	switch ([self skewMode]) {
-		case SkewModeInverse:
-			return -4.666667;
-			
-		case SkewModeNone:
-		case SkewModeSide:
-			return 0;
-			
-		case SkewModeLow:
-			return 12;
-			
-		case SkewModeNormal:
-			return 4.666667;
-			
-		case SkewModeHigh:
-			return 1.5;
-			
-		default:
-			break;
-	}
-}
-
 #pragma mark - Gesture handlers
 
 - (void)handleSwipe:(UIGestureRecognizer *)gestureRecognizer
@@ -201,6 +172,7 @@
 	
 	UISwipeGestureRecognizer *swipeGesture = (UISwipeGestureRecognizer *)gestureRecognizer;
 	
+    NSLog(@"Swipe!");
 	if (swipeGesture.direction == UISwipeGestureRecognizerDirectionLeft)
         [self performFlipWithDirection:FlipDirectionForward];
 	else if (swipeGesture.direction == UISwipeGestureRecognizerDirectionRight)
@@ -246,9 +218,7 @@
 	if (stageIndex == 0)
 	{
 		[self doFlip2:0];
-        [self.animationView.layer addSublayer:self.layerReveal]; // demote reveal down to animationView
-        [self.layerFlipping addSublayer:self.layerFacing]; // promote facing to flipping
-		[self.layerFlipping insertSublayer:self.layerFront below:self.layerFacing];// front goes beneath facing
+		[self.layerFlipping addSublayer:self.layerFront];
 		[self.layerReveal addSublayer:self.layerRevealShadow];
 		[self.layerBack removeFromSuperlayer];
 		[self.layerFacingShadow removeFromSuperlayer];
@@ -256,9 +226,7 @@
 	else
 	{
 		[self doFlip1:1];
-        [self.animationView.layer addSublayer:self.layerFacing]; // demote facing down to animationView
-		[self.layerFlipping addSublayer:self.layerReveal]; // promote reveal up to flipping
-		[self.layerFlipping insertSublayer:self.layerBack below:self.layerReveal]; // back goes underneath reveal
+		[self.layerFlipping addSublayer:self.layerBack];
 		[self.layerFacing addSublayer:self.layerFacingShadow];
 		[self.layerFront removeFromSuperlayer];
 		[self.layerRevealShadow removeFromSuperlayer];
@@ -366,13 +334,13 @@
     if ([gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]] || [gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]])
         return nearEdge;
     else
-        return !nearEdge;
+        return YES;//!nearEdge;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
 	// Allow simultanoues pan & swipe recognizers
-	return YES;
+	return NO;
 }
 
 #pragma mark - Animation
@@ -618,7 +586,7 @@
             break;
             
         case AnchorPointTopRight:
-            anchorPoint = CGPointMake(1, 0);
+            anchorPoint = CGPointMake(1.25, -0.25);
             break;
             
         case AnchorPointMiddleLeft:
@@ -653,7 +621,7 @@
 {
     CGPoint anchorPoint = [self anchorPoint];
 	BOOL forwards = aDirection == FlipDirectionForward;
-	BOOL inward = [self skewMode] == SkewModeInverse;
+	BOOL inward = (self.settings.skewMode == SkewModeInverse);
 	
 	CGRect bounds = self.contentView.bounds;
 	CGFloat scale = [[UIScreen mainScreen] scale];
@@ -716,7 +684,7 @@
 	self.layerFacing.anchorPoint = CGPointMake(forwards? 1 : 0, 0.5);
 	self.layerFacing.position = CGPointMake(upperHeight, width/2);
 	[self.layerFacing setContents:(id)[pageFacingImage CGImage]];
-	[self.layerFlipping addSublayer:self.layerFacing];
+	[self.animationView.layer addSublayer:self.layerFacing];
 	
 	self.layerFront = [CALayer layer];
     self.layerFront.doubleSided = YES;
@@ -762,38 +730,56 @@
     
 	if ((self.settings.flipComponents & FlipComponentRevealShadow) && !inward)
 	{
-		self.layerRevealShadow = [CALayer layer];
+        // gradient shadows going from black at center (spine) to 50% black at outer edges (margins)
+		self.layerRevealShadow = [CAGradientLayer layer];
 		[self.layerReveal addSublayer:self.layerRevealShadow];
 		self.layerRevealShadow.frame = CGRectInset(self.layerReveal.bounds, insets.left, insets.top);
-		self.layerRevealShadow.backgroundColor = [UIColor blackColor].CGColor;
 		self.layerRevealShadow.opacity = 0.5;
+        self.layerRevealShadow.colors = @[(id)[UIColor blackColor].CGColor, (id)[UIColor colorWithWhite:0 alpha:0.5].CGColor];
+        self.layerRevealShadow.startPoint = CGPointMake(forwards? 0 : 1, 0.5);
+        self.layerRevealShadow.endPoint = CGPointMake(forwards? 1 : 0, 0.5);
 		
-		self.layerFacingShadow = [CALayer layer];
+		self.layerFacingShadow = [CAGradientLayer layer];
 		//[self.layerFacing addSublayer:self.layerFacingShadow];
 		self.layerFacingShadow.frame = CGRectInset(self.layerFacing.bounds, insets.left, insets.top);
-		self.layerFacingShadow.backgroundColor = [UIColor blackColor].CGColor;
 		self.layerFacingShadow.opacity = 0.0;
+        self.layerFacingShadow.colors = @[(id)[UIColor blackColor].CGColor, (id)[UIColor colorWithWhite:0 alpha:0.5].CGColor];
+        self.layerFacingShadow.startPoint = CGPointMake(forwards? 1 : 0, 0.5);
+        self.layerFacingShadow.endPoint = CGPointMake(forwards? 0 : 1, 0.5);
 	}
 	
 	// Perspective is best proportional to the height of the pieces being folded away, rather than a fixed value
 	// the larger the piece being folded, the more perspective distance (zDistance) is needed.
 	// m34 = -1/zDistance
-	if ([self skewMode] == SkewModeNone)
+	if (self.settings.skewMode == SkewModeNone)
 		transform.m34 = 0;
 	else
-		transform.m34 = - 1 / (height * [self skewMultiplier]);
+		transform.m34 = 1 / (height * self.settings.skewMultiplier);
 	self.layerFlipping.sublayerTransform = transform;
 	
-	// set shadows on the 2 pages we'll be animating
     if (self.settings.useDropShadows)
     {
+        // set drop shadows on the 2 pages we'll be animating
         self.layerFront.shadowOffset = CGSizeMake(0,3);
+        CGRect pathRect = CGRectInset([self.layerFront bounds], insets.left, insets.top);
+        // reduce shadow path near center (spine) to (a) prevent bleed-over onto facing page,
+        // and (b) reduce artifacts from double shadows (turning page + page below) where they join at spine
+        if (forwards)
+            pathRect.origin.x += SPINE_SHADOW_OFFSET;
+        else
+            pathRect.size.width -= SPINE_SHADOW_OFFSET;
+        
         if ([self shouldSetShadowPath])
-            [self.layerFront setShadowPath:[[UIBezierPath bezierPathWithRect:CGRectInset([self.layerFront bounds], insets.left, insets.top)] CGPath]];	
+            [self.layerFront setShadowPath:[[UIBezierPath bezierPathWithRect:pathRect] CGPath]];
         self.layerBack.shadowOpacity = 0.25;
         self.layerBack.shadowOffset = CGSizeMake(0,3);
+        pathRect = CGRectInset([self.layerBack bounds], insets.left, insets.top);
+        if (forwards)
+            pathRect.size.width -= SPINE_SHADOW_OFFSET;
+        else
+            pathRect.origin.x += SPINE_SHADOW_OFFSET;
         if ([self shouldSetShadowPath])
-            [self.layerBack setShadowPath:[[UIBezierPath bezierPathWithRect:CGRectInset([self.layerBack bounds], insets.left, insets.top)] CGPath]];
+            [self.layerBack setShadowPath:[[UIBezierPath bezierPathWithRect:pathRect] CGPath]];
     }
 }
 
@@ -896,51 +882,16 @@
 	self.layerBackShadow = nil;
 	self.layerFacingShadow = nil;
 	self.layerRevealShadow = nil;
-	
-	if (completed)
-	{
-		if (self.direction == FlipDirectionForward)
-			[self setCurrentImageIndex:([self currentImageIndex] + 1) % IMAGE_COUNT];
-		else
-			[self setCurrentImageIndex:([self currentImageIndex] + IMAGE_COUNT - 1) % IMAGE_COUNT];
-	}
+    self.layerFlipping = nil;
 	
 	[self.contentView setHidden:NO];
 }
 
-#pragma mark - Slider
+#pragma mark - Class Methods
 
-- (IBAction)skewValueChanged:(id)sender {
-	UISegmentedControl *segment = sender;
-	[self setSkewMode:(SkewMode)segment.selectedSegmentIndex];
-}
-
-- (IBAction)durationValueChanged:(id)sender {
-	UISegmentedControl *segment = sender;
-	switch ([segment selectedSegmentIndex]) {
-		case 0:
-			[self setDurationMultiplier:1];
-			break;
-			
-		case 1:
-			[self setDurationMultiplier:2];
-			break;
-			
-		case 2:
-			[self setDurationMultiplier:5];
-			break;
-			
-		case 3:
-			[self setDurationMultiplier:10];
-			break;
-			
-		default:
-			break;
-	}
-}
-
-- (IBAction)antiAliaseValueChanged:(id)sender {
-	[self setShouldAntiAliase:[sender isOn]];
++ (NSString *)storyboardID
+{
+    return @"FlipID";
 }
 
 @end
