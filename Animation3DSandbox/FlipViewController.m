@@ -117,6 +117,8 @@ typedef enum {
 	[[self.contentView layer] setShadowOffset:CGSizeMake(0, 3)];
 	[[self.contentView layer] setShadowPath:[[UIBezierPath bezierPathWithRect:[self.contentView bounds]] CGPath]];
     [self updateDropShadow:NO];
+    [self updateTheme:NO];
+    [self updateImages];
 }
 
 - (void)updateImages
@@ -138,22 +140,71 @@ typedef enum {
     if (!animated)
     {
         [self.contentView.layer setShadowOpacity:shadowOpacity];
-        [self updateImages];
         return;
     }
     
     [CATransaction begin];
     
+    [CATransaction setCompletionBlock:^{
+        [self.contentView.layer setShadowOpacity:shadowOpacity];
+        [self updateImages];
+        [self.contentView.layer removeAnimationForKey:@"shadowOpacity"];
+    }];
+    
     CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"shadowOpacity"];
     CALayer *presentationLayer = self.contentView.layer.presentationLayer;
     animation.fromValue = @(presentationLayer.shadowOpacity);
     animation.toValue = @(shadowOpacity);
+    animation.removedOnCompletion = NO;
+    animation.fillMode = kCAFillModeForwards;
     [self.contentView.layer addAnimation:animation forKey:@"shadowOpacity"];
     
+    [CATransaction commit];
+}
+
+- (void)updateTheme:(BOOL)animated
+{
+    NSString *imageName = nil;
+    switch (self.settings.theme)
+    {
+        case ThemeRenaissance:
+            imageName = @"RenaissanceIcon";
+            break;
+            
+        case ThemeCocoaConf:
+            imageName = @"CocoaConfIcon";
+            break;
+    }
+    
+    UIImage *flipImage = [UIImage imageNamed:imageName];
+    
+    if (!animated)
+    {
+        self.contentView.image = flipImage;
+        return;
+    }
+    
+    CALayer *layer = [CALayer layer];
+    layer.contents = (id)[flipImage CGImage];
+    layer.opacity = 0;
+    layer.frame = self.contentView.frame;
+    [[[self.contentView superview] layer] addSublayer:layer];
+    
+    [CATransaction begin];
+
     [CATransaction setCompletionBlock:^{
-        [self.contentView.layer setShadowOpacity:shadowOpacity];
+        self.contentView.image = flipImage;
         [self updateImages];
+        [layer removeAnimationForKey:@"opacity"];
+        [layer removeFromSuperlayer];
     }];
+    
+    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"opacity"];
+    animation.fromValue = @0;
+    animation.toValue = @1;
+    animation.removedOnCompletion = NO;
+    animation.fillMode = kCAFillModeForwards;
+    [layer addAnimation:animation forKey:@"opacity"];
     
     [CATransaction commit];
 }

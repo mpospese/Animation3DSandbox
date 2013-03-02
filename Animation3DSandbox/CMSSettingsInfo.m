@@ -30,6 +30,7 @@
         _anchorPoint = AnchorPointCenter;
         _useBackground = NO;
         _skewMode = SkewModeNormal;
+        _theme = ThemeCocoaConf;
     }
     return self;
 }

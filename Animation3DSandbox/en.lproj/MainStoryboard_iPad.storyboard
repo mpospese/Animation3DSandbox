@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="2844" systemVersion="12C3012" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" initialViewController="3Zk-1b-qah">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="3084" systemVersion="12C3012" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" initialViewController="3Zk-1b-qah">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="1930"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="2083"/>
     </dependencies>
     <scenes>
         <!--Animation Controller-->
@@ -580,6 +580,31 @@
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
                                     </tableViewCell>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="Wp4-qb-cLU" detailTextLabel="C9i-Zz-Gle" style="IBUITableViewCellStyleValue1" id="1tK-pe-7KN">
+                                        <rect key="frame" x="0.0" y="682" width="320" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Theme" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Wp4-qb-cLU">
+                                                    <rect key="frame" x="10" y="11" width="55" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <color key="highlightedColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                </label>
+                                                <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="CocoaConf" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="C9i-Zz-Gle">
+                                                    <rect key="frame" x="224" y="11" width="86" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" red="0.21960784310000001" green="0.3294117647" blue="0.52941176469999995" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <color key="highlightedColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                </label>
+                                            </subviews>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
+                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                         </sections>
@@ -604,6 +629,7 @@
                         <outlet property="foldComponentBoundsCell" destination="7dS-qH-4ID" id="45q-gs-omG"/>
                         <outlet property="foldComponentOpacityCell" destination="uBU-ri-W8E" id="1ot-Hd-egJ"/>
                         <outlet property="skewModeLabel" destination="tbp-yL-qdU" id="ebo-Dt-HjU"/>
+                        <outlet property="themeLabel" destination="C9i-Zz-Gle" id="iDl-PP-Kw3"/>
                         <outlet property="timingCurveLabel" destination="AeM-Rh-Id0" id="zWG-UW-6US"/>
                     </connections>
                 </tableViewController>
@@ -806,7 +832,7 @@
                         <rect key="frame" x="0.0" y="20" width="768" height="955"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <imageView contentMode="scaleToFill" image="RenaissanceIcon.png" id="gPr-B4-ulq">
+                            <imageView contentMode="scaleToFill" image="CocoaConfIcon.png" id="gPr-B4-ulq">
                                 <rect key="frame" x="128" y="222" width="512" height="512"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             </imageView>
@@ -895,9 +921,12 @@
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="bottomBar" destination="Cbk-Gv-PAa" id="mug-gq-ND9"/>
+                        <outlet property="bottomImage" destination="tNY-Sd-IMp" id="5Pl-4p-N9f"/>
                         <outlet property="centerBar" destination="Mhg-uV-yNB" id="Qhb-Fw-Ig3"/>
+                        <outlet property="centerImage" destination="3Hx-qn-cBs" id="nXT-xs-6Sl"/>
                         <outlet property="contentView" destination="dGe-j3-OZO" id="kVP-8x-fK6"/>
                         <outlet property="topBar" destination="kkl-cC-8CA" id="llA-Ke-1lk"/>
+                        <outlet property="topImage" destination="Dle-aw-FSW" id="wNx-nt-vp8"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="t1b-WN-Vbf" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -907,6 +936,7 @@
     </scenes>
     <resources>
         <image name="Background.png" width="1024" height="768"/>
+        <image name="CocoaConfIcon.png" width="512" height="512"/>
         <image name="RedBall.png" width="160" height="160"/>
         <image name="RenaissanceIcon.png" width="512" height="512"/>
     </resources>

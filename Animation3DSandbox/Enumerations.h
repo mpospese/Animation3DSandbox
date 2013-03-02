@@ -83,5 +83,9 @@ typedef enum {
     AnimationTypeFlip
 } AnimationType;
 
+typedef enum {
+    ThemeRenaissance,
+    ThemeCocoaConf
+} ThemeType;
 
 #endif

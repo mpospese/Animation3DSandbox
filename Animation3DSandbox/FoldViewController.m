@@ -21,6 +21,10 @@
 @property (weak, nonatomic) IBOutlet UIView *centerBar;
 @property (weak, nonatomic) IBOutlet UIView *bottomBar;
 
+@property (weak, nonatomic) IBOutlet UIImageView *topImage;
+@property (weak, nonatomic) IBOutlet UIImageView *centerImage;
+@property (weak, nonatomic) IBOutlet UIImageView *bottomImage;
+
 @property (readonly) CGFloat skew;
 
 @property (assign, nonatomic, getter = isFolded) BOOL folded;
@@ -94,6 +98,8 @@
     [self.contentView layer].shadowOffset = CGSizeMake(0, 3);
 	[[self.contentView layer] setShadowPath:[[UIBezierPath bezierPathWithRect:[self.contentView bounds]] CGPath]];
     [self updateDropShadow:NO];
+    [self updateTheme:NO];
+    [self updateImages];
     
 	// Add our tap gesture recognizer
 	UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
@@ -179,7 +185,6 @@
     if (!animated)
     {
         [self.contentView.layer setShadowOpacity:shadowOpacity];
-        [self updateImages];
         return;
     }
     
@@ -197,6 +202,37 @@
     }];
     
     [CATransaction commit];
+}
+
+- (void)updateTheme:(BOOL)animated
+{
+    if (self.isFolded)
+    {
+        // we have to unfold first (so that we can properly render the images)
+        [self fold:^{
+            [self updateTheme:animated];
+        }];
+        return;
+    }
+    
+    NSString *imageName = nil;
+    switch (self.settings.theme)
+    {
+        case ThemeRenaissance:
+            imageName = @"RenaissanceIcon";
+            break;
+            
+        case ThemeCocoaConf:
+            imageName = @"CocoaConfIcon";
+            break;
+    }
+    
+    UIImage *foldImage = [UIImage imageNamed:imageName];
+    self.topImage.image = foldImage;
+    self.centerImage.image = foldImage;
+    self.bottomImage.image = foldImage;
+    if (animated)
+        [self updateImages];
 }
 
 #pragma mark - Gesture handlers

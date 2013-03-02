@@ -24,6 +24,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *dropShadowsLabel;
 @property (weak, nonatomic) IBOutlet UILabel *backgroundLabel;
 @property (weak, nonatomic) IBOutlet UILabel *skewModeLabel;
+@property (weak, nonatomic) IBOutlet UILabel *themeLabel;
 
 @end
 
@@ -60,6 +61,7 @@
     [self updateAnchorPointLabel];
     [self updateBackgroundLabel];
     [self updateSkewModeLabel];
+    [self updateThemeLabel];
 }
 
 - (void)setType:(AnimationType)type
@@ -155,6 +157,11 @@
                     case CMSSettingsViewRowSkew:
                         self.settings.skewMode = (self.settings.skewMode + 1) % (SkewModeHigh + 1);
                         [self updateSkewModeLabel];
+                        break;
+                        
+                    case CMSSettingsViewRowTheme:
+                        self.settings.theme = (self.settings.theme + 1) % (ThemeCocoaConf + 1);
+                        [self updateThemeLabel];
                         break;
                }
                 break;
@@ -397,6 +404,19 @@
             
         case SkewModeHigh:
             self.skewModeLabel.text = @"High";
+            break;
+    }
+}
+
+- (void)updateThemeLabel
+{
+    switch (self.settings.theme) {
+        case ThemeRenaissance:
+            self.themeLabel.text = @"Renaissance";
+            break;
+            
+        case ThemeCocoaConf:
+            self.themeLabel.text = @"CocoaConf";
             break;
     }
 }

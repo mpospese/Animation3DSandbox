@@ -33,6 +33,10 @@
 @property (nonatomic, assign) BOOL useBackground;
 @property (nonatomic, assign) SkewMode skewMode;
 
+// Theme
+
+@property (nonatomic, assign) ThemeType theme;
+
 - (CGFloat)skewMultiplier;
 
 @end

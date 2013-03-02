@@ -36,7 +36,8 @@ typedef enum
     CMSSettingsViewRowDropShadow,
     CMSSettingsViewRowAnchorPoint,
     CMSSettingsViewRowBackground,
-    CMSSettingsViewRowSkew
+    CMSSettingsViewRowSkew,
+    CMSSettingsViewRowTheme
 } CMSSettingsViewRow;
 
 @interface CMSSettingsController : UITableViewController

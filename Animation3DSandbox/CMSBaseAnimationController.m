@@ -39,6 +39,7 @@
         [self.settings removeObserver:self forKeyPath:@"anchorPoint"];
         [self.settings removeObserver:self forKeyPath:@"useDropShadows"];
         [self.settings removeObserver:self forKeyPath:@"useBackground"];
+        [self.settings removeObserver:self forKeyPath:@"theme"];
     }
     
     _settings = settings;
@@ -48,6 +49,7 @@
         [settings addObserver:self forKeyPath:@"anchorPoint" options:NSKeyValueObservingOptionNew context:nil];
         [settings addObserver:self forKeyPath:@"useDropShadows" options:NSKeyValueObservingOptionNew context:nil];
         [settings addObserver:self forKeyPath:@"useBackground" options:NSKeyValueObservingOptionNew context:nil];
+        [settings addObserver:self forKeyPath:@"theme" options:NSKeyValueObservingOptionNew context:nil];
     }
 }
 
@@ -66,6 +68,10 @@
     else if ([keyPath isEqualToString:@"useBackground"])
     {
         [self updateBackground:YES];
+    }
+    else if ([keyPath isEqualToString:@"theme"])
+    {
+        [self updateTheme:YES];
     }
 }
 
@@ -92,5 +98,11 @@
         [self.backgroundView setAlpha: opacity];
     } completion:nil];
 }
+
+- (void)updateTheme:(BOOL)animated
+{
+    
+}
+
 
 @end
