@@ -18,6 +18,10 @@
 				<string>Icon-72@2x.png</string>
 				<string>Icon.png</string>
 				<string>Icon@2x.png</string>
+				<string>IconC.png</string>
+				<string>IconC@2x.png</string>
+				<string>IconC-72.png</string>
+				<string>IconC-72@2x.png</string>
 			</array>
 			<key>UIPrerenderedIcon</key>
 			<true/>
