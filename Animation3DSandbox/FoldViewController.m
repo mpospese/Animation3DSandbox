@@ -194,12 +194,16 @@
     CALayer *presentationLayer = self.contentView.layer.presentationLayer;
     animation.fromValue = @(presentationLayer.shadowOpacity);
     animation.toValue = @(shadowOpacity);
-    [self.contentView.layer addAnimation:animation forKey:@"shadowOpacity"];
+    animation.removedOnCompletion = NO;
+    animation.fillMode = kCAFillModeForwards;
     
     [CATransaction setCompletionBlock:^{
         [self.contentView.layer setShadowOpacity:shadowOpacity];
         [self updateImages];
+        [self.contentView.layer removeAnimationForKey:@"shadowOpacity"];
     }];
+    
+    [self.contentView.layer addAnimation:animation forKey:@"shadowOpacity"];
     
     [CATransaction commit];
 }
@@ -228,11 +232,80 @@
     }
     
     UIImage *foldImage = [UIImage imageNamed:imageName];
-    self.topImage.image = foldImage;
-    self.centerImage.image = foldImage;
-    self.bottomImage.image = foldImage;
-    if (animated)
+    
+    if (!animated)
+    {
+        self.topImage.image = foldImage;
+        self.centerImage.image = foldImage;
+        self.bottomImage.image = foldImage;
+        return;
+    }
+    
+    CALayer *layer1 = [self tempLayerForImage:foldImage view:self.topImage];
+    CALayer *layer2 = [self tempLayerForImage:foldImage view:self.centerImage];
+    CALayer *layer3 = [self tempLayerForImage:foldImage view:self.bottomImage];
+    
+    [CATransaction begin];
+    
+    [CATransaction setCompletionBlock:^{
+        self.topImage.image = foldImage;
+        self.centerImage.image = foldImage;
+        self.bottomImage.image = foldImage;
         [self updateImages];
+        [layer1 removeFromSuperlayer];
+        [layer2 removeFromSuperlayer];
+        [layer3 removeFromSuperlayer];
+    }];
+    
+    CABasicAnimation *animation1 = [self fadeInAnimation];
+    [layer1 addAnimation:animation1 forKey:@"opacity"];
+    CABasicAnimation *animation2 = [self fadeInAnimation];
+    [layer2 addAnimation:animation2 forKey:@"opacity"];
+    CABasicAnimation *animation3 = [self fadeInAnimation];
+    [layer3 addAnimation:animation3 forKey:@"opacity"];
+    
+    [CATransaction commit];
+}
+
+- (CALayer *)tempLayerForImage:(UIImage *)image view:(UIView *)view
+{
+    CALayer *layer = [CALayer layer];
+    [layer setContentsScale:[[UIScreen mainScreen] scale]];
+
+    switch (view.contentMode) {
+        case UIViewContentModeTop:
+            [layer setContentsGravity:kCAGravityBottom];
+            break;
+            
+        case UIViewContentModeCenter:
+            [layer setContentsGravity:kCAGravityCenter];
+            break;
+            
+        case UIViewContentModeBottom:
+            [layer setContentsGravity:kCAGravityTop];
+            break;
+            
+        default:
+            break;
+    }
+    [layer setMasksToBounds:YES];
+    layer.opacity = 0;
+    layer.bounds = view.bounds;
+    layer.position = view.center;
+    layer.contents = (id)[image CGImage];
+    [[[view superview] layer] addSublayer:layer];
+    return layer;
+}
+
+- (CABasicAnimation *)fadeInAnimation
+{
+    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"opacity"];
+    animation.fromValue = @0;
+    animation.toValue = @1;
+    animation.removedOnCompletion = NO;
+    animation.fillMode = kCAFillModeForwards;
+
+    return animation;
 }
 
 #pragma mark - Gesture handlers
