@@ -181,11 +181,24 @@
 	[CATransaction setAnimationDuration:self.settings.duration];
     
 	[CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithControlPoints:self.settings.cp1.x :self.settings.cp1.y :self.settings.cp2.x :self.settings.cp2.y]];
+    
     CGFloat targetX = self.isLeft? CGRectGetWidth(self.view.bounds) - 50 - (CGRectGetWidth(self.redBall.bounds)/2) : 50 + (CGRectGetWidth(self.redBall.bounds)/2);
     CGFloat targetOpacity = self.isLeft? 0.5 : 1;
     
     CALayer *presentationLayer = self.redBall.layer.presentationLayer;
     CATransform3D targetTransform = self.isLeft? CATransform3DMakeScale(0.50, 0.50, 0) : CATransform3DIdentity;
+    
+	[CATransaction setCompletionBlock:^{
+        if (self.settings.ballComponents & BallComponentMove)
+            self.redBall.center = CGPointMake(targetX, self.redBall.center.y);
+        if (self.settings.ballComponents & BallComponentScale)
+            self.redBall.transform = CATransform3DGetAffineTransform(targetTransform);
+        if (self.settings.ballComponents & BallComponentOpacity)
+            self.redBall.alpha = targetOpacity;
+        
+		self.left = !self.isLeft;
+        [self.redBall setUserInteractionEnabled:YES];
+	}];
     
     CABasicAnimation *animation;
     
@@ -215,18 +228,6 @@
         animation.fillMode = kCAFillModeForwards;
         [self.redBall.layer addAnimation:animation forKey:@"opacity"];
     }
-    
-	[CATransaction setCompletionBlock:^{
-        if (self.settings.ballComponents & BallComponentMove)
-            self.redBall.center = CGPointMake(targetX, self.redBall.center.y);
-        if (self.settings.ballComponents & BallComponentScale)
-            self.redBall.transform = CATransform3DGetAffineTransform(targetTransform);
-        if (self.settings.ballComponents & BallComponentOpacity)
-            self.redBall.alpha = targetOpacity;
-        
-		self.left = !self.isLeft;
-        [self.redBall setUserInteractionEnabled:YES];
-	}];
     
     [CATransaction commit];
 }
