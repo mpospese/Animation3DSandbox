@@ -96,8 +96,8 @@
 	
 	// Set drop shadows and shadow path
     [self.contentView layer].shadowOffset = CGSizeMake(0, 3);
-	[[self.contentView layer] setShadowPath:[[UIBezierPath bezierPathWithRect:[self.contentView bounds]] CGPath]];
     [self updateDropShadow:NO];
+    [self updateSetShadowPath:NO];
     [self updateTheme:NO];
     [self updateImages];
     
@@ -126,6 +126,27 @@
     yOffset += self.foldLowerImage.size.height;
 	self.slideLowerImage = [MPAnimation renderImage:entire withRect:CGRectMake(0, yOffset, entire.size.width, self.bottomBar.bounds.size.height + insets.bottom)];    
 }
+
+- (void)updateSetShadowPath:(BOOL)animated
+{
+    if (self.isFolded)
+    {
+        // we have to unfold first (so that we can properly render the images)
+        [self fold:^{
+            [self updateSetShadowPath:animated];
+        }];
+        return;
+    }
+    
+    if (self.settings.setShadowPath)
+        [[self.contentView layer] setShadowPath:[[UIBezierPath bezierPathWithRect:[self.contentView bounds]] CGPath]];
+    else
+        [[self.contentView layer] setShadowPath:nil];
+    
+    if (animated)
+        [self updateImages];
+}
+
 
 - (CGFloat)foldHeight
 {
@@ -492,12 +513,18 @@
             CGPoint anchorPoint = [self anchorPoint];
             self.topBar.transform = CGAffineTransformMakeTranslation(0, anchorPoint.y * self.foldHeight);
             self.bottomBar.transform = CGAffineTransformMakeTranslation(0, (anchorPoint.y - 1) * self.foldHeight);
-            self.contentView.layer.shadowPath = [UIBezierPath bezierPathWithRect:CGRectMake(0, anchorPoint.y * self.foldHeight, self.contentView.bounds.size.width, self.contentView.bounds.size.height - self.foldHeight)].CGPath;
+            if ([self.settings setShadowPath])
+                self.contentView.layer.shadowPath = [UIBezierPath bezierPathWithRect:CGRectMake(0, anchorPoint.y * self.foldHeight, self.contentView.bounds.size.width, self.contentView.bounds.size.height - self.foldHeight)].CGPath;
+            else
+                self.contentView.layer.shadowPath = nil;
         }
         else
         {
             self.bottomBar.transform = CGAffineTransformMakeTranslation(0, -self.foldHeight);
-            self.contentView.layer.shadowPath = [UIBezierPath bezierPathWithRect:CGRectMake(0, 0, self.contentView.bounds.size.width, self.contentView.bounds.size.height - self.foldHeight)].CGPath;
+            if ([self.settings setShadowPath])
+                self.contentView.layer.shadowPath = [UIBezierPath bezierPathWithRect:CGRectMake(0, 0, self.contentView.bounds.size.width, self.contentView.bounds.size.height - self.foldHeight)].CGPath;
+            else
+                self.contentView.layer.shadowPath = nil;
         }
 		[self.centerBar setHidden:YES];
 	}
@@ -506,9 +533,12 @@
 		self.topBar.transform = CGAffineTransformIdentity;
 		self.bottomBar.transform = CGAffineTransformIdentity;
 		[self.centerBar setHidden:NO];
-        self.contentView.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.contentView.bounds].CGPath;
+        if ([self.settings setShadowPath])
+            self.contentView.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.contentView.bounds].CGPath;
+        else
+            self.contentView.layer.shadowPath = nil;
 	}
-	[self.contentView setHidden:NO];	
+	[self.contentView setHidden:NO];
 }
 
 - (void)animateFold:(BOOL)finish completion:(void (^)(void))block
