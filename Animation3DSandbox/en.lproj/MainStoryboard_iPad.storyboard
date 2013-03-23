@@ -282,11 +282,11 @@
                         <sections>
                             <tableViewSection headerTitle="Animation" id="p7M-ae-uYo">
                                 <cells>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="9be-Kl-UVp" detailTextLabel="Wb7-Kb-IV1" style="IBUITableViewCellStyleValue1" id="rNa-0d-gYx">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="9be-Kl-UVp" detailTextLabel="Wb7-Kb-IV1" style="IBUITableViewCellStyleValue1" id="rNa-0d-gYx">
                                         <rect key="frame" x="0.0" y="22" width="320" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                            <rect key="frame" x="0.0" y="0.0" width="300" height="43"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Duration" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="9be-Kl-UVp">
@@ -297,7 +297,7 @@
                                                     <color key="highlightedColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                                 </label>
                                                 <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="0.3" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Wb7-Kb-IV1">
-                                                    <rect key="frame" x="266" y="11" width="24" height="21"/>
+                                                    <rect key="frame" x="286" y="11" width="24" height="21"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" red="0.2196078431372549" green="0.32941176470588235" blue="0.52941176470588236" alpha="1" colorSpace="calibratedRGB"/>
@@ -580,8 +580,58 @@
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
                                     </tableViewCell>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="Wp4-qb-cLU" detailTextLabel="C9i-Zz-Gle" style="IBUITableViewCellStyleValue1" id="1tK-pe-7KN">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="uiw-ZZ-6FL" detailTextLabel="E4c-xM-YSL" style="IBUITableViewCellStyleValue1" id="Tmx-Sl-RYz">
                                         <rect key="frame" x="0.0" y="682" width="320" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Set Shadow Path" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="uiw-ZZ-6FL">
+                                                    <rect key="frame" x="10" y="11" width="138" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <color key="highlightedColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                </label>
+                                                <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Yes" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="E4c-xM-YSL">
+                                                    <rect key="frame" x="280" y="11" width="30" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" red="0.21960784310000001" green="0.3294117647" blue="0.52941176469999995" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <color key="highlightedColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                </label>
+                                            </subviews>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
+                                    </tableViewCell>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="6jw-sC-AEi" detailTextLabel="UdD-sH-0Nf" style="IBUITableViewCellStyleValue1" id="Vlm-nD-rlt">
+                                        <rect key="frame" x="0.0" y="726" width="320" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Anti-aliase" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="6jw-sC-AEi">
+                                                    <rect key="frame" x="10" y="11" width="86" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <color key="highlightedColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                </label>
+                                                <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Yes" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="UdD-sH-0Nf">
+                                                    <rect key="frame" x="280" y="11" width="30" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" red="0.21960784310000001" green="0.3294117647" blue="0.52941176469999995" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <color key="highlightedColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                </label>
+                                            </subviews>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
+                                    </tableViewCell>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="Wp4-qb-cLU" detailTextLabel="C9i-Zz-Gle" style="IBUITableViewCellStyleValue1" id="1tK-pe-7KN">
+                                        <rect key="frame" x="0.0" y="770" width="320" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
@@ -618,6 +668,7 @@
                     <splitViewMasterSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <connections>
                         <outlet property="anchorPointLabel" destination="wZB-vg-tmY" id="juP-C9-3n7"/>
+                        <outlet property="antiAliaseLabel" destination="UdD-sH-0Nf" id="c4Y-cD-oVT"/>
                         <outlet property="backgroundLabel" destination="4U6-GG-Rm2" id="uxj-fl-2il"/>
                         <outlet property="ballComponentMoveCell" destination="6le-ut-gZH" id="o5Q-JY-6v2"/>
                         <outlet property="ballComponentOpacityCell" destination="Jca-Gp-DWV" id="0Fo-iT-AfE"/>
@@ -628,6 +679,7 @@
                         <outlet property="flipComponentRevealShadowCell" destination="KEA-ht-xai" id="wpb-xz-MrH"/>
                         <outlet property="foldComponentBoundsCell" destination="7dS-qH-4ID" id="45q-gs-omG"/>
                         <outlet property="foldComponentOpacityCell" destination="uBU-ri-W8E" id="1ot-Hd-egJ"/>
+                        <outlet property="setShadowPathLabel" destination="E4c-xM-YSL" id="l4z-8u-vNn"/>
                         <outlet property="skewModeLabel" destination="tbp-yL-qdU" id="ebo-Dt-HjU"/>
                         <outlet property="themeLabel" destination="C9i-Zz-Gle" id="iDl-PP-Kw3"/>
                         <outlet property="timingCurveLabel" destination="AeM-Rh-Id0" id="zWG-UW-6US"/>
@@ -940,6 +992,76 @@
         <image name="RedBall.png" width="160" height="160"/>
         <image name="RenaissanceIcon.png" width="512" height="512"/>
     </resources>
+    <classes>
+        <class className="CMSAnchorPointTable" superclassName="UITableViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/CMSAnchorPointTable.h"/>
+        </class>
+        <class className="CMSAnimationController" superclassName="UIViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/CMSAnimationController.h"/>
+        </class>
+        <class className="CMSBallController" superclassName="CMSBaseAnimationController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/CMSBallController.h"/>
+            <relationships>
+                <relationship kind="outlet" name="redBall" candidateClass="UIImageView"/>
+            </relationships>
+        </class>
+        <class className="CMSBaseAnimationController" superclassName="UIViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/CMSBaseAnimationController.h"/>
+        </class>
+        <class className="CMSSettingsController" superclassName="UITableViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/CMSSettingsController.h"/>
+            <relationships>
+                <relationship kind="outlet" name="anchorPointLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="antiAliaseLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="backgroundLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="ballComponentMoveCell" candidateClass="UITableViewCell"/>
+                <relationship kind="outlet" name="ballComponentOpacityCell" candidateClass="UITableViewCell"/>
+                <relationship kind="outlet" name="ballComponentScaleCell" candidateClass="UITableViewCell"/>
+                <relationship kind="outlet" name="dropShadowsLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="durationLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="flipComponentFacingShadowCell" candidateClass="UITableViewCell"/>
+                <relationship kind="outlet" name="flipComponentRevealShadowCell" candidateClass="UITableViewCell"/>
+                <relationship kind="outlet" name="foldComponentBoundsCell" candidateClass="UITableViewCell"/>
+                <relationship kind="outlet" name="foldComponentOpacityCell" candidateClass="UITableViewCell"/>
+                <relationship kind="outlet" name="setShadowPathLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="skewModeLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="themeLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="timingCurveLabel" candidateClass="UILabel"/>
+            </relationships>
+        </class>
+        <class className="CMSTimingCurveController" superclassName="UIViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/CMSTimingCurveController.h"/>
+            <relationships>
+                <relationship kind="action" name="resetTimingCurve:"/>
+                <relationship kind="outlet" name="controlPoint1Label" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="controlPoint2Label" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="curveContainer" candidateClass="UIView"/>
+                <relationship kind="outlet" name="propertyLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="timeLabel" candidateClass="UILabel"/>
+            </relationships>
+        </class>
+        <class className="CMSTimingCurveTable" superclassName="UITableViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/CMSTimingCurveTable.h"/>
+        </class>
+        <class className="FlipViewController" superclassName="CMSBaseAnimationController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/FlipViewController.h"/>
+            <relationships>
+                <relationship kind="outlet" name="contentView" candidateClass="UIImageView"/>
+            </relationships>
+        </class>
+        <class className="FoldViewController" superclassName="CMSBaseAnimationController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/FoldViewController.h"/>
+            <relationships>
+                <relationship kind="outlet" name="bottomBar" candidateClass="UIView"/>
+                <relationship kind="outlet" name="bottomImage" candidateClass="UIImageView"/>
+                <relationship kind="outlet" name="centerBar" candidateClass="UIView"/>
+                <relationship kind="outlet" name="centerImage" candidateClass="UIImageView"/>
+                <relationship kind="outlet" name="contentView" candidateClass="UIView"/>
+                <relationship kind="outlet" name="topBar" candidateClass="UIView"/>
+                <relationship kind="outlet" name="topImage" candidateClass="UIImageView"/>
+            </relationships>
+        </class>
+    </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar" statusBarStyle="blackTranslucent"/>
         <simulatedOrientationMetrics key="orientation"/>

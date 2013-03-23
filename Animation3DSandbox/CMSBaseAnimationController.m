@@ -39,6 +39,8 @@
         [self.settings removeObserver:self forKeyPath:@"anchorPoint"];
         [self.settings removeObserver:self forKeyPath:@"useDropShadows"];
         [self.settings removeObserver:self forKeyPath:@"useBackground"];
+        [self.settings removeObserver:self forKeyPath:@"setShadowPath"];
+        [self.settings removeObserver:self forKeyPath:@"antiAliase"];
         [self.settings removeObserver:self forKeyPath:@"theme"];
     }
     
@@ -49,6 +51,8 @@
         [settings addObserver:self forKeyPath:@"anchorPoint" options:NSKeyValueObservingOptionNew context:nil];
         [settings addObserver:self forKeyPath:@"useDropShadows" options:NSKeyValueObservingOptionNew context:nil];
         [settings addObserver:self forKeyPath:@"useBackground" options:NSKeyValueObservingOptionNew context:nil];
+        [settings addObserver:self forKeyPath:@"setShadowPath" options:NSKeyValueObservingOptionNew context:nil];
+        [settings addObserver:self forKeyPath:@"antiAliase" options:NSKeyValueObservingOptionNew context:nil];
         [settings addObserver:self forKeyPath:@"theme" options:NSKeyValueObservingOptionNew context:nil];
     }
 }
@@ -69,6 +73,14 @@
     {
         [self updateBackground:YES];
     }
+    else if ([keyPath isEqualToString:@"setShadowPath"])
+    {
+        [self updateSetShadowPath:YES];
+    }
+    else if ([keyPath isEqualToString:@"antiAliase"])
+    {
+        [self updateAntialiase:YES];
+    }
     else if ([keyPath isEqualToString:@"theme"])
     {
         [self updateTheme:YES];
@@ -81,6 +93,16 @@
 }
 
 - (void)updateDropShadow:(BOOL)animated
+{
+    
+}
+
+- (void)updateSetShadowPath:(BOOL)animated
+{
+    
+}
+
+- (void)updateAntialiase:(BOOL)animated
 {
     
 }

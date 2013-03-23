@@ -43,8 +43,6 @@ typedef enum {
 @property (strong, nonatomic) CAGradientLayer *layerBackShadow;
 @property (strong, nonatomic) CAGradientLayer *layerFacingShadow;
 @property (strong, nonatomic) CAGradientLayer *layerRevealShadow;
-@property (assign, nonatomic) BOOL shouldAntiAliase;
-@property (assign, nonatomic) BOOL shouldSetShadowPath;
 
 @property (strong, nonatomic) UIImage *leftImage;
 @property (strong, nonatomic) UIImage *rightImage;
@@ -56,8 +54,6 @@ typedef enum {
 - (void)doInit
 {
 	_direction = FlipDirectionForward;
-	_shouldSetShadowPath = YES;
-	_shouldAntiAliase = YES;
 }
 
 - (id)init
@@ -115,15 +111,15 @@ typedef enum {
 	
 	// drop-shadow for content view
 	[[self.contentView layer] setShadowOffset:CGSizeMake(0, 3)];
-	[[self.contentView layer] setShadowPath:[[UIBezierPath bezierPathWithRect:[self.contentView bounds]] CGPath]];
     [self updateDropShadow:NO];
+    [self updateSetShadowPath:NO];
     [self updateTheme:NO];
     [self updateImages];
 }
 
 - (void)updateImages
 {
-	UIEdgeInsets insets = [self shouldAntiAliase]? UIEdgeInsetsMake(1, 0, 1, 0) : UIEdgeInsetsZero;
+	UIEdgeInsets insets = [self.settings antiAliase]? UIEdgeInsetsMake(1, 0, 1, 0) : UIEdgeInsetsZero;
 
 	CGRect leftRect = self.contentView.bounds;
 	leftRect.size.width = CGRectGetWidth(self.contentView.bounds) / 2;
@@ -160,6 +156,22 @@ typedef enum {
     [self.contentView.layer addAnimation:animation forKey:@"shadowOpacity"];
     
     [CATransaction commit];
+}
+
+- (void)updateSetShadowPath:(BOOL)animated
+{
+    if (self.settings.setShadowPath)
+        [[self.contentView layer] setShadowPath:[[UIBezierPath bezierPathWithRect:[self.contentView bounds]] CGPath]];
+    else
+        [[self.contentView layer] setShadowPath:nil];
+    
+    if (animated)
+        [self updateImages];
+}
+
+- (void)updateAntialiase:(BOOL)animated
+{
+    [self updateImages];
 }
 
 - (void)updateTheme:(BOOL)animated
@@ -678,7 +690,7 @@ typedef enum {
 	CGFloat scale = [[UIScreen mainScreen] scale];
 	
 	// we inset the panels 1 point on each side with a transparent margin to antialiase the edges
-	UIEdgeInsets insets = [self shouldAntiAliase]? UIEdgeInsetsMake(1, 0, 1, 0) : UIEdgeInsetsZero;
+	UIEdgeInsets insets = [self.settings antiAliase]? UIEdgeInsetsMake(1, 0, 1, 0) : UIEdgeInsetsZero;
 	
 	CGRect leftRect = bounds;
 	leftRect.size.width = bounds.size.width / 2;
@@ -820,7 +832,7 @@ typedef enum {
         else
             pathRect.size.width -= SPINE_SHADOW_OFFSET;
         
-        if ([self shouldSetShadowPath])
+        if ([self.settings setShadowPath])
             [self.layerFront setShadowPath:[[UIBezierPath bezierPathWithRect:pathRect] CGPath]];
         self.layerBack.shadowOpacity = 0.25;
         self.layerBack.shadowOffset = CGSizeMake(0,3);
@@ -829,7 +841,7 @@ typedef enum {
             pathRect.size.width -= SPINE_SHADOW_OFFSET;
         else
             pathRect.origin.x += SPINE_SHADOW_OFFSET;
-        if ([self shouldSetShadowPath])
+        if ([self.settings setShadowPath])
             [self.layerBack setShadowPath:[[UIBezierPath bezierPathWithRect:pathRect] CGPath]];
     }
 }

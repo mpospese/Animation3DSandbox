@@ -24,6 +24,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *dropShadowsLabel;
 @property (weak, nonatomic) IBOutlet UILabel *backgroundLabel;
 @property (weak, nonatomic) IBOutlet UILabel *skewModeLabel;
+@property (weak, nonatomic) IBOutlet UILabel *setShadowPathLabel;
+@property (weak, nonatomic) IBOutlet UILabel *antiAliaseLabel;
 @property (weak, nonatomic) IBOutlet UILabel *themeLabel;
 
 @end
@@ -61,6 +63,8 @@
     [self updateAnchorPointLabel];
     [self updateBackgroundLabel];
     [self updateSkewModeLabel];
+    [self updateSetShadowPathLabel];
+    [self updateAntiAliaseLabel];
     [self updateThemeLabel];
 }
 
@@ -158,6 +162,16 @@
                         self.settings.skewMode = (self.settings.skewMode + 1) % (SkewModeHigh + 1);
                         [self updateSkewModeLabel];
                         break;
+                        
+                    case CMSSettingsViewRowSetShadowPath:
+                        self.settings.setShadowPath = !self.settings.setShadowPath;
+                        [self updateSetShadowPathLabel];
+                        break;
+                        
+                    case CMSSettingsViewRowAntiAliase:
+                        self.settings.antiAliase = !self.settings.antiAliase;
+                        [self updateAntiAliaseLabel];
+                       break;
                         
                     case CMSSettingsViewRowTheme:
                         self.settings.theme = (self.settings.theme + 1) % (ThemeCocoaConf + 1);
@@ -406,6 +420,16 @@
             self.skewModeLabel.text = @"High";
             break;
     }
+}
+
+- (void)updateSetShadowPathLabel
+{
+    [self.setShadowPathLabel setText:self.settings.setShadowPath? @"Yes" : @"No"];
+}
+
+- (void)updateAntiAliaseLabel
+{
+    [self.antiAliaseLabel setText:self.settings.antiAliase? @"Yes" : @"No"];
 }
 
 - (void)updateThemeLabel

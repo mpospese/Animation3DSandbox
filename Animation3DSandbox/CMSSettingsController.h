@@ -37,6 +37,8 @@ typedef enum
     CMSSettingsViewRowAnchorPoint,
     CMSSettingsViewRowBackground,
     CMSSettingsViewRowSkew,
+    CMSSettingsViewRowSetShadowPath,
+    CMSSettingsViewRowAntiAliase,
     CMSSettingsViewRowTheme
 } CMSSettingsViewRow;
 
