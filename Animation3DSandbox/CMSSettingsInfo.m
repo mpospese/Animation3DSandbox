@@ -31,6 +31,8 @@
         _useBackground = NO;
         _skewMode = SkewModeNormal;
         _theme = ThemeCocoaConf;
+        _setShadowPath = YES;
+        _antiAliase = YES;
     }
     return self;
 }

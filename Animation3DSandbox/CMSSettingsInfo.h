@@ -32,6 +32,8 @@
 @property (nonatomic, assign) AnchorPointLocation anchorPoint;
 @property (nonatomic, assign) BOOL useBackground;
 @property (nonatomic, assign) SkewMode skewMode;
+@property (nonatomic, assign) BOOL setShadowPath;
+@property (nonatomic, assign) BOOL antiAliase;
 
 // Theme
 
