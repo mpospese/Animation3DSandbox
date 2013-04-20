@@ -28,7 +28,7 @@
         
         _useDropShadows = YES;
         _anchorPoint = AnchorPointCenter;
-        _useBackground = NO;
+        _useBackground = YES;
         _skewMode = SkewModeNormal;
         _theme = ThemeCocoaConf;
         _setShadowPath = YES;

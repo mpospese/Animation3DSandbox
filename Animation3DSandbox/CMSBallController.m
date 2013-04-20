@@ -209,6 +209,7 @@
         animation.toValue = @(targetX);
         animation.fillMode = kCAFillModeForwards;
         [self.redBall.layer addAnimation:animation forKey:@"position"];
+        self.redBall.layer.position = CGPointMake(targetX, self.redBall.layer.position.y);
     }
     
     if (self.settings.ballComponents & BallComponentScale)
@@ -218,6 +219,7 @@
         animation.toValue = [NSValue valueWithCATransform3D:targetTransform];
         animation.fillMode = kCAFillModeForwards;
         [self.redBall.layer addAnimation:animation forKey:@"transform"];
+        self.redBall.layer.transform = targetTransform;
     }
     
     if (self.settings.ballComponents & BallComponentOpacity)
@@ -227,6 +229,7 @@
         animation.toValue = @(targetOpacity);
         animation.fillMode = kCAFillModeForwards;
         [self.redBall.layer addAnimation:animation forKey:@"opacity"];
+        self.redBall.layer.opacity = targetOpacity;
     }
     
     [CATransaction commit];
