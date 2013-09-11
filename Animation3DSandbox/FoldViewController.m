@@ -250,6 +250,10 @@
         case ThemeCocoaConf:
             imageName = @"CocoaConfIcon";
             break;
+            
+        case Theme360iDev:
+            imageName = @"logo360";
+            break;
     }
     
     UIImage *foldImage = [UIImage imageNamed:imageName];

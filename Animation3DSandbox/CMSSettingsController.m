@@ -174,7 +174,7 @@
                        break;
                         
                     case CMSSettingsViewRowTheme:
-                        self.settings.theme = (self.settings.theme + 1) % (ThemeCocoaConf + 1);
+                        self.settings.theme = (self.settings.theme + 1) % (Theme360iDev + 1);
                         [self updateThemeLabel];
                         break;
                }
@@ -441,6 +441,10 @@
             
         case ThemeCocoaConf:
             self.themeLabel.text = @"CocoaConf";
+            break;
+            
+        case Theme360iDev:
+            self.themeLabel.text = @"360iDev";
             break;
     }
 }

@@ -186,6 +186,10 @@ typedef enum {
         case ThemeCocoaConf:
             imageName = @"CocoaConfIcon";
             break;
+            
+        case Theme360iDev:
+            imageName = @"logo360";
+            break;
     }
     
     UIImage *flipImage = [UIImage imageNamed:imageName];

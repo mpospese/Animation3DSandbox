@@ -85,7 +85,8 @@ typedef enum {
 
 typedef enum {
     ThemeRenaissance,
-    ThemeCocoaConf
+    ThemeCocoaConf,
+    Theme360iDev
 } ThemeType;
 
 #endif

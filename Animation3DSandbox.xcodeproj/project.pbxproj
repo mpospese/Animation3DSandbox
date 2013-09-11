@@ -23,6 +23,12 @@
 		0C750B5B16A202B200095CA1 /* CMSAnchorPointTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C750B5A16A202B200095CA1 /* CMSAnchorPointTable.m */; };
 		0C750B6616A21EF700095CA1 /* CMSTimingCurveTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C750B6516A21EF700095CA1 /* CMSTimingCurveTable.m */; };
 		0C9C16C616AB515900C86A63 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 0C9C16C516AB515900C86A63 /* README.md */; };
+		0CB5D9FB17E0DFDA00EFAE1C /* logo360.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CB5D9F917E0DFDA00EFAE1C /* logo360.png */; };
+		0CB5D9FC17E0DFDA00EFAE1C /* logo360@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CB5D9FA17E0DFDA00EFAE1C /* logo360@2x.png */; };
+		0CB5DA0117E0E06300EFAE1C /* Icon360-72.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CB5D9FD17E0E06200EFAE1C /* Icon360-72.png */; };
+		0CB5DA0217E0E06300EFAE1C /* Icon360-72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CB5D9FE17E0E06200EFAE1C /* Icon360-72@2x.png */; };
+		0CB5DA0317E0E06300EFAE1C /* Icon360.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CB5D9FF17E0E06300EFAE1C /* Icon360.png */; };
+		0CB5DA0417E0E06300EFAE1C /* Icon360@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CB5DA0017E0E06300EFAE1C /* Icon360@2x.png */; };
 		0CD8517F16A19F8000020B42 /* CMSSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CD8517E16A19F8000020B42 /* CMSSettingsController.m */; };
 		0CD8518216A1A07500020B42 /* IconR-72.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CD8518116A1A07500020B42 /* IconR-72.png */; };
 		0CD8518416A1A07900020B42 /* IconR-72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CD8518316A1A07900020B42 /* IconR-72@2x.png */; };
@@ -71,6 +77,12 @@
 		0C750B6416A21EF700095CA1 /* CMSTimingCurveTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMSTimingCurveTable.h; sourceTree = "<group>"; };
 		0C750B6516A21EF700095CA1 /* CMSTimingCurveTable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMSTimingCurveTable.m; sourceTree = "<group>"; };
 		0C9C16C516AB515900C86A63 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		0CB5D9F917E0DFDA00EFAE1C /* logo360.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo360.png; sourceTree = "<group>"; };
+		0CB5D9FA17E0DFDA00EFAE1C /* logo360@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo360@2x.png"; sourceTree = "<group>"; };
+		0CB5D9FD17E0E06200EFAE1C /* Icon360-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon360-72.png"; sourceTree = "<group>"; };
+		0CB5D9FE17E0E06200EFAE1C /* Icon360-72@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon360-72@2x.png"; sourceTree = "<group>"; };
+		0CB5D9FF17E0E06300EFAE1C /* Icon360.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon360.png; sourceTree = "<group>"; };
+		0CB5DA0017E0E06300EFAE1C /* Icon360@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon360@2x.png"; sourceTree = "<group>"; };
 		0CD8517D16A19F8000020B42 /* CMSSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMSSettingsController.h; sourceTree = "<group>"; };
 		0CD8517E16A19F8000020B42 /* CMSSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMSSettingsController.m; sourceTree = "<group>"; };
 		0CD8518116A1A07500020B42 /* IconR-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "IconR-72.png"; sourceTree = "<group>"; };
@@ -133,6 +145,10 @@
 				0CD8518516A1A08E00020B42 /* IconR.png */,
 				0CD8518316A1A07900020B42 /* IconR-72@2x.png */,
 				0CD8518116A1A07500020B42 /* IconR-72.png */,
+				0CB5D9FD17E0E06200EFAE1C /* Icon360-72.png */,
+				0CB5D9FE17E0E06200EFAE1C /* Icon360-72@2x.png */,
+				0CB5D9FF17E0E06300EFAE1C /* Icon360.png */,
+				0CB5DA0017E0E06300EFAE1C /* Icon360@2x.png */,
 				0CEF494E16A05B030091E9EF /* Animation3DSandbox */,
 				0CEF494716A05B030091E9EF /* Frameworks */,
 				0CEF494516A05B030091E9EF /* Products */,
@@ -215,6 +231,8 @@
 				0C04300F16E256370023B19B /* CocoaConfIcon@2x.png */,
 				0CEF497C16A062250091E9EF /* RenaissanceIcon.png */,
 				0CEF497D16A062250091E9EF /* RenaissanceIcon@2x.png */,
+				0CB5D9F917E0DFDA00EFAE1C /* logo360.png */,
+				0CB5D9FA17E0DFDA00EFAE1C /* logo360@2x.png */,
 				0C707C2D16A333DB004A1657 /* RedBall.png */,
 				0C707C2E16A333DB004A1657 /* RedBall@2x.png */,
 				0C0FEC3F16AA07C300C482CC /* Background.png */,
@@ -296,6 +314,12 @@
 				0C04301516E324200023B19B /* IconC@2x.png in Resources */,
 				0C04301716E324320023B19B /* IconC-72.png in Resources */,
 				0C04301916E324360023B19B /* IconC-72@2x.png in Resources */,
+				0CB5D9FB17E0DFDA00EFAE1C /* logo360.png in Resources */,
+				0CB5D9FC17E0DFDA00EFAE1C /* logo360@2x.png in Resources */,
+				0CB5DA0117E0E06300EFAE1C /* Icon360-72.png in Resources */,
+				0CB5DA0217E0E06300EFAE1C /* Icon360-72@2x.png in Resources */,
+				0CB5DA0317E0E06300EFAE1C /* Icon360.png in Resources */,
+				0CB5DA0417E0E06300EFAE1C /* Icon360@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
