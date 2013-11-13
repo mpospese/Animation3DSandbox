@@ -116,6 +116,7 @@
 		0CEF497616A05BC80091E9EF /* Enumerations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Enumerations.h; sourceTree = "<group>"; };
 		0CEF497C16A062250091E9EF /* RenaissanceIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = RenaissanceIcon.png; sourceTree = "<group>"; };
 		0CEF497D16A062250091E9EF /* RenaissanceIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "RenaissanceIcon@2x.png"; sourceTree = "<group>"; };
+		4D69507A1833C4DE00C8BA1E /* Source Code License.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = "Source Code License.rtf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,11 +137,12 @@
 		0CEF493916A05B030091E9EF = {
 			isa = PBXGroup;
 			children = (
+				0C9C16C516AB515900C86A63 /* README.md */,
+				4D69507A1833C4DE00C8BA1E /* Source Code License.rtf */,
 				0C04301816E324350023B19B /* IconC-72@2x.png */,
 				0C04301616E324320023B19B /* IconC-72.png */,
 				0C04301416E324200023B19B /* IconC@2x.png */,
 				0C04301216E3241A0023B19B /* IconC.png */,
-				0C9C16C516AB515900C86A63 /* README.md */,
 				0CD8518716A1A09200020B42 /* IconR@2x.png */,
 				0CD8518516A1A08E00020B42 /* IconR.png */,
 				0CD8518316A1A07900020B42 /* IconR-72@2x.png */,

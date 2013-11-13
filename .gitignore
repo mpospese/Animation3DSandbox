@@ -6,3 +6,5 @@
 *.xcscheme
 
 Animation3DSandbox.xcodeproj/xcuserdata/crazymilksoftware.xcuserdatad/xcschemes/xcschememanagement.plist
+
+*.xccheckout
