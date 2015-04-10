@@ -27,9 +27,6 @@
         self.settings.type = indexPath.row;
         [tableView reloadRowsAtIndexPaths:@[indexPath, oldPath] withRowAnimation:UITableViewRowAnimationNone];
     }
-    
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    [self.navigationController popViewControllerAnimated:YES];
 }
 
 @end
