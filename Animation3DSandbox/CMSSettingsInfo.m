@@ -33,6 +33,7 @@
         _theme = ThemeCocoaConf;
         _setShadowPath = YES;
         _antiAliase = YES;
+        _type = AnimationTypeBall;
     }
     return self;
 }

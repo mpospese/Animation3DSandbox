@@ -20,11 +20,8 @@
 @property (nonatomic, strong) UISwipeGestureRecognizer *settingsOpenSwipe;
 @property (nonatomic, strong) UITapGestureRecognizer *settingsDismissTap;
 @property (nonatomic, strong) UISwipeGestureRecognizer *settingsCloseSwipe;
-@property (nonatomic, strong) UISwipeGestureRecognizer *swipePreviousAnimation;
-@property (nonatomic, strong) UISwipeGestureRecognizer *swipeNextAnimation;
 @property (nonatomic, strong) UIViewController *settingsPane;
 @property (nonatomic, strong) CMSSettingsController *settingsController;
-@property (nonatomic, assign) AnimationType currentAnimation;
 @property (nonatomic, strong) CMSBaseAnimationController *selectedController;
 @property (nonatomic, assign, getter = isSettingsOpen) BOOL settingsOpen;
 
@@ -35,7 +32,7 @@
 - (void)doInit
 {
     _settings = [CMSSettingsInfo new];
-    _currentAnimation = AnimationTypeFold;
+    [_settings addObserver:self forKeyPath:@"type" options:NSKeyValueObservingOptionNew context:nil];
 }
 
 - (id)init
@@ -68,6 +65,12 @@
     return self;
 }
 
+- (void)dealloc
+{
+    [self.settings removeObserver:self forKeyPath:@"type"];
+    _settings = nil;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -83,18 +86,8 @@
     self.settingsCloseSwipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(closeSettingsPanel:)];
     self.settingsCloseSwipe.direction = UISwipeGestureRecognizerDirectionLeft;
     
-    self.swipePreviousAnimation = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handle2FingerSwipe:)];
-    self.swipePreviousAnimation.direction = UISwipeGestureRecognizerDirectionRight;
-    self.swipePreviousAnimation.numberOfTouchesRequired = 2;
-    self.swipePreviousAnimation.delegate = self;
-    
-    self.swipeNextAnimation = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handle2FingerSwipe:)];
-    self.swipeNextAnimation.direction = UISwipeGestureRecognizerDirectionLeft;
-    self.swipeNextAnimation.numberOfTouchesRequired = 2;
-    self.swipeNextAnimation.delegate = self;
-    
     // load controller
-    [self loadController:self.currentAnimation offset:0];
+    [self loadController:self.settings.type];
 }
 
 - (void)didReceiveMemoryWarning
@@ -106,7 +99,7 @@
     }
 }
 
-- (void)loadController:(AnimationType)type offset:(NSInteger)offset
+- (void)loadController:(AnimationType)type
 {
     CMSBaseAnimationController *oldController = self.selectedController;
     
@@ -136,15 +129,13 @@
     controller.view.layer.shadowPath = [UIBezierPath bezierPathWithRect:controller.view.bounds].CGPath;
     
     [self addChildViewController:controller];
-    controller.view.frame = CGRectOffset(self.view.bounds, offset * CGRectGetWidth(self.view.bounds), 0);
+    controller.view.frame = self.mainView? self.mainView.frame :self.view.bounds;
     controller.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.view addSubview:controller.view];
     [controller didMoveToParentViewController:self];
     
     [UIView animateWithDuration:0.5 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
-        if (oldController && offset != 0)
-            [[oldController view] setFrame:CGRectOffset(self.view.bounds, -1 * offset * CGRectGetWidth(self.view.bounds), 0)];
-        controller.view.frame = self.view.bounds;
+        oldController.view.alpha = 0;
         
     } completion:^(BOOL finished) {
         [oldController willMoveToParentViewController:nil];
@@ -155,8 +146,6 @@
         self.selectedController = controller;
         self.mainView = controller.view;
         [self.mainView addGestureRecognizer:self.settingsOpenSwipe];
-        [self.mainView addGestureRecognizer:self.swipePreviousAnimation];
-        [self.mainView addGestureRecognizer:self.swipeNextAnimation];
         
         if (!self.settingsPane.parentViewController)
         {
@@ -176,9 +165,6 @@
         if (point.x > 44)
             return NO;
     }
-    
-    if ([gestureRecognizer isEqual:self.swipePreviousAnimation] || [gestureRecognizer isEqual:self.swipeNextAnimation])
-        return !self.isSettingsOpen;
     
     return YES;
 }
@@ -205,19 +191,6 @@
     [self showSettings:YES];
 }
 
-- (void)handle2FingerSwipe:(UISwipeGestureRecognizer *)gesture
-{
-    if (gesture.state != UIGestureRecognizerStateEnded)
-        return;
-    
-    int offset = (gesture.direction == UISwipeGestureRecognizerDirectionLeft)? 1 : -1;
-    int type = ((int)self.currentAnimation + offset) % 3;
-    if (type < 0)
-        type += 3;
-    self.currentAnimation = type;
-    [self loadController:self.currentAnimation offset:offset];
-}
-
 - (void)initSettingsPane
 {
     if (!self.settingsPane)
@@ -225,7 +198,6 @@
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPad" bundle:nil];
         self.settingsController = [storyboard instantiateViewControllerWithIdentifier:@"SettingsID"];
         self.settingsController.settings = self.settings;
-        self.settingsController.type = AnimationTypeBall;
         
         UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.settingsController];
         navController.navigationBar.barStyle = UIBarStyleBlack;
@@ -239,9 +211,7 @@
     [self.view insertSubview:self.settingsPane.view belowSubview:self.mainView];
     [self.settingsPane didMoveToParentViewController:self];
     [self.mainView addGestureRecognizer:self.settingsDismissTap];
-    [self.view addGestureRecognizer:self.settingsCloseSwipe];
-    
-    [self.settingsController setType:self.currentAnimation];
+    [self.view addGestureRecognizer:self.settingsCloseSwipe];    
 }
 
 - (void)showSettings:(BOOL)show
@@ -272,6 +242,19 @@
     [CATransaction commit];
 }
 
+#pragma mark - KVO
 
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"type"])
+    {
+        [self updateType:YES];
+    }
+}
+
+- (void)updateType:(BOOL)animated
+{
+    [self loadController:self.settings.type];
+}
 
 @end

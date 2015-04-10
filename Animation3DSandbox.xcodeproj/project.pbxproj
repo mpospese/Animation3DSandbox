@@ -53,6 +53,7 @@
 		0CEF497E16A062250091E9EF /* RenaissanceIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CEF497C16A062250091E9EF /* RenaissanceIcon.png */; };
 		0CEF497F16A062250091E9EF /* RenaissanceIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CEF497D16A062250091E9EF /* RenaissanceIcon@2x.png */; };
 		809C99E11AD7C7120066467D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 809C99E01AD7C7120066467D /* Images.xcassets */; };
+		809C99E41AD7D12B0066467D /* CMSAnimationTypeTableController.m in Sources */ = {isa = PBXBuildFile; fileRef = 809C99E31AD7D12B0066467D /* CMSAnimationTypeTableController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -119,6 +120,8 @@
 		0CEF497D16A062250091E9EF /* RenaissanceIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "RenaissanceIcon@2x.png"; sourceTree = "<group>"; };
 		4D69507A1833C4DE00C8BA1E /* Source Code License.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = "Source Code License.rtf"; sourceTree = "<group>"; };
 		809C99E01AD7C7120066467D /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		809C99E21AD7D12B0066467D /* CMSAnimationTypeTableController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMSAnimationTypeTableController.h; sourceTree = "<group>"; };
+		809C99E31AD7D12B0066467D /* CMSAnimationTypeTableController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMSAnimationTypeTableController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -208,6 +211,8 @@
 				0C750B6516A21EF700095CA1 /* CMSTimingCurveTable.m */,
 				0C750B5916A202B200095CA1 /* CMSAnchorPointTable.h */,
 				0C750B5A16A202B200095CA1 /* CMSAnchorPointTable.m */,
+				809C99E21AD7D12B0066467D /* CMSAnimationTypeTableController.h */,
+				809C99E31AD7D12B0066467D /* CMSAnimationTypeTableController.m */,
 				0CEF497716A05D0E0091E9EF /* images */,
 				809C99E01AD7C7120066467D /* Images.xcassets */,
 				0CEF494F16A05B030091E9EF /* Supporting Files */,
@@ -343,6 +348,7 @@
 				0CD8517F16A19F8000020B42 /* CMSSettingsController.m in Sources */,
 				0CD8518B16A1A22C00020B42 /* CMSTimingCurveController.m in Sources */,
 				0CD8519116A1C47000020B42 /* CMSSettingsInfo.m in Sources */,
+				809C99E41AD7D12B0066467D /* CMSAnimationTypeTableController.m in Sources */,
 				0C750B5B16A202B200095CA1 /* CMSAnchorPointTable.m in Sources */,
 				0C750B6616A21EF700095CA1 /* CMSTimingCurveTable.m in Sources */,
 				0C707C3816A37E28004A1657 /* CMSAnimationController.m in Sources */,

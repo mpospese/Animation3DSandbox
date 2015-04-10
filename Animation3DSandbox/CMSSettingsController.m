@@ -9,8 +9,10 @@
 #import "CMSSettingsController.h"
 #import "CMSTimingCurveController.h"
 #import "CMSAnchorPointTable.h"
+#import "CMSAnimationTypeTableController.h"
 
 @interface CMSSettingsController()
+@property (weak, nonatomic) IBOutlet UILabel *typeLabel;
 @property (weak, nonatomic) IBOutlet UILabel *durationLabel;
 @property (weak, nonatomic) IBOutlet UILabel *timingCurveLabel;
 @property (weak, nonatomic) IBOutlet UITableViewCell *ballComponentMoveCell;
@@ -36,8 +38,7 @@
 {
     self = [super initWithCoder:aDecoder];
     if (self) {
-        _settings = [CMSSettingsInfo new];
-        _type = AnimationTypeFlip;
+//        self.settings = [CMSSettingsInfo new];
     }
     return self;
 }
@@ -45,13 +46,18 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+}
 
+- (void)reloadData
+{
+    [self.tableView reloadData];
+    
+    [self updateTypeLabel];
     [self updateDurationLabel];
     [self updateTimingCurveLabel];
     
@@ -68,15 +74,24 @@
     [self updateThemeLabel];
 }
 
-- (void)setType:(AnimationType)type
+- (void)setSettings:(CMSSettingsInfo *)settings
 {
-    if (_type == type)
+    if ([self.settings isEqual:settings])
         return;
     
-    _type = type;
+    if (self.settings)
+    {
+        [self.settings removeObserver:self forKeyPath:@"type"];
+    }
     
-    NSIndexSet *indices = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(CMSSettingsSectionBallComponents, 3)];
-    [self.tableView reloadSections:indices withRowAnimation:UITableViewRowAnimationAutomatic];
+    _settings = settings;
+    
+    if (settings)
+    {
+       [settings addObserver:self forKeyPath:@"type" options:NSKeyValueObservingOptionNew context:nil];
+    }
+    
+    [self reloadData];
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -86,10 +101,15 @@
         CMSTimingCurveController *curveController = (CMSTimingCurveController *)segue.destinationViewController;
         curveController.settings = self.settings;
     }
-    if ([segue.destinationViewController isKindOfClass:[CMSAnchorPointTable class]])
+    else if ([segue.destinationViewController isKindOfClass:[CMSAnchorPointTable class]])
     {
         CMSAnchorPointTable *anchorTable = (CMSAnchorPointTable *)segue.destinationViewController;
         anchorTable.settings = self.settings;
+    }
+    else if ([segue.destinationViewController isKindOfClass:[CMSAnimationTypeTableController class]])
+    {
+        CMSAnimationTypeTableController *typeController = (CMSAnimationTypeTableController *)segue.destinationViewController;
+        typeController.settings = self.settings;
     }
 }
 
@@ -97,13 +117,13 @@
 {
     switch (section) {
         case CMSSettingsSectionBallComponents:
-            return self.type == AnimationTypeBall? self.tableView.sectionHeaderHeight : 0;
+            return self.settings.type == AnimationTypeBall? self.tableView.sectionHeaderHeight : 0;
             
         case CMSSettingsSectionFoldComponents:
-            return self.type == AnimationTypeFold? self.tableView.sectionHeaderHeight : 0;
+            return self.settings.type == AnimationTypeFold? self.tableView.sectionHeaderHeight : 0;
             
         case CMSSettingsSectionFlipComponents:
-            return self.type == AnimationTypeFlip? self.tableView.sectionHeaderHeight : 0;
+            return self.settings.type == AnimationTypeFlip? self.tableView.sectionHeaderHeight : 0;
             
         default:
             return self.tableView.sectionHeaderHeight;
@@ -114,13 +134,13 @@
 {
     switch (indexPath.section) {
         case CMSSettingsSectionBallComponents:
-            return self.type == AnimationTypeBall? self.tableView.rowHeight : 0;
+            return self.settings.type == AnimationTypeBall? self.tableView.rowHeight : 0;
             
         case CMSSettingsSectionFoldComponents:
-            return self.type == AnimationTypeFold? self.tableView.rowHeight : 0;
+            return self.settings.type == AnimationTypeFold? self.tableView.rowHeight : 0;
             
         case CMSSettingsSectionFlipComponents:
-            return self.type == AnimationTypeFlip? self.tableView.rowHeight : 0;
+            return self.settings.type == AnimationTypeFlip? self.tableView.rowHeight : 0;
             
         default:
             return self.tableView.rowHeight;
@@ -134,6 +154,9 @@
         switch (indexPath.section) {
             case CMSSettingsSectionAnimation:
                 switch (indexPath.row) {
+                    case CMSSettingsAnimationRowType:
+                        break;
+                        
                     case CMSSettingsAnimationRowDuration:
                         [self setNextDuration];
                         break;
@@ -226,6 +249,10 @@
     switch (indexPath.section) {
         case CMSSettingsSectionAnimation:
             switch (indexPath.row) {
+                case CMSSettingsAnimationRowType:
+                    [self updateTypeLabel];
+                    break;
+                    
                 /*case CMSSettingsAnimationRowDuration:
                     break;*/
                     
@@ -321,6 +348,26 @@
     }
     
     self.timingCurveLabel.text = text;
+}
+
+- (void)updateTypeLabel
+{
+    NSString *text = nil;
+    switch ([self.settings type]) {
+        case AnimationTypeBall:
+            text = @"Ball";
+            break;
+            
+        case AnimationTypeFlip:
+            text = @"Flip";
+            break;
+            
+        case AnimationTypeFold:
+            text = @"Fold";
+            break;
+    }
+    
+    self.typeLabel.text = text;
 }
 
 #pragma mark - Components section
@@ -449,5 +496,14 @@
     }
 }
 
+#pragma mark - KVO
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"type"])
+    {
+        [self reloadData];
+    }
+}
 
 @end

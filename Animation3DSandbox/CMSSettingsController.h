@@ -20,6 +20,7 @@ typedef enum
 
 typedef enum
 {
+    CMSSettingsAnimationRowType,
     CMSSettingsAnimationRowDuration,
     CMSSettingsAnimationRowTimingCurve
 } CMSSettingsAnimationRow;
@@ -45,6 +46,5 @@ typedef enum
 @interface CMSSettingsController : UITableViewController
 
 @property (nonatomic, strong) CMSSettingsInfo *settings;
-@property (nonatomic, assign) AnimationType type;
 
 @end

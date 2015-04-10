@@ -13,6 +13,7 @@
 
 // Animations
 
+@property (nonatomic, assign) AnimationType type;
 @property (nonatomic, assign) CFTimeInterval duration;
 
 // Timing Curve
