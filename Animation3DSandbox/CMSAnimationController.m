@@ -12,8 +12,11 @@
 #import "FoldViewController.h"
 #import "FlipViewController.h"
 #import "CMSBallController.h"
+#import "CMSAnchorPointTable.h"
+#import "CMSTimingCurveTable.h"
+#import "CMSAnimationTypeTableController.h"
 
-@interface CMSAnimationController()<UIGestureRecognizerDelegate>
+@interface CMSAnimationController()<UISplitViewControllerDelegate>
 
 @property (nonatomic, strong) CMSSettingsInfo *settings;
 
@@ -25,6 +28,7 @@
 {
     _settings = [CMSSettingsInfo new];
     [_settings addObserver:self forKeyPath:@"type" options:NSKeyValueObservingOptionNew context:nil];
+    self.delegate = self;
 }
 
 - (id)init
@@ -81,7 +85,7 @@
 {
 }
 
-- (void)loadController:(AnimationType)type
+- (UIViewController *)primaryViewControllerForType:(AnimationType)type
 {
     NSString *storyboardIdentifier = nil;
     switch (type)
@@ -103,7 +107,13 @@
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard_iPad" bundle:nil];
     CMSBaseAnimationController *controller = [storyboard instantiateViewControllerWithIdentifier:storyboardIdentifier];
     controller.settings = self.settings;
- 
+
+    return controller;
+}
+
+- (void)loadController:(AnimationType)type
+{
+    UIViewController *controller = [self primaryViewControllerForType:type];
     [self showDetailViewController:controller sender:self];
 }
 
@@ -120,6 +130,73 @@
 - (void)updateType:(BOOL)animated
 {
     [self loadController:self.settings.type];
+}
+
+#pragma mark - UISplitViewControllerDelegate
+
+- (UIViewController *)primaryViewControllerForCollapsingSplitViewController:(UISplitViewController *)splitViewController
+{    
+    return nil;
+}
+
+- (BOOL)splitViewController:(UISplitViewController *)splitViewController collapseSecondaryViewController:(UIViewController *)secondaryViewController ontoPrimaryViewController:(UIViewController *)primaryViewController
+{
+    if (![primaryViewController isKindOfClass:[UINavigationController class]])
+        return NO;
+    
+    UINavigationController *navController = (UINavigationController *)primaryViewController;
+    if ([navController.viewControllers count] == 1)
+        return NO;
+    
+    UIViewController *lastController = [navController.viewControllers lastObject];
+    if ([lastController isKindOfClass:[CMSAnchorPointTable class]] || [lastController isKindOfClass:[CMSTimingCurveTable class]])
+    {
+        // if we're drilled into Anchor Point table or Timing Curve Table,
+        // don't collapse the animation view on top of it
+        return YES;
+    }
+    else
+    {
+        // if we're drilled into the Animation Type Table, just get rid of it
+        // so that animation view is collapsed directly on top of root
+        [navController popToRootViewControllerAnimated:NO];
+    }
+
+    return NO;
+}
+
+- (UIViewController *)splitViewController:(UISplitViewController *)splitViewController separateSecondaryViewControllerFromPrimaryViewController:(UIViewController *)primaryViewController
+{
+    return nil;
+}
+
+- (UIViewController *)primaryViewControllerForExpandingSplitViewController:(UISplitViewController *)splitViewController
+{
+    NSArray *controllers = splitViewController.viewControllers;
+    UINavigationController *navController = [controllers firstObject];
+    UIViewController *lastController = [navController.viewControllers lastObject];
+    
+    if (![lastController isKindOfClass:[CMSBaseAnimationController class]])
+    {
+        // if there is no animation view, make one and put it on the end of the stack
+        UIViewController *last = [self primaryViewControllerForType:self.settings.type];
+        [navController pushViewController:last animated:NO];
+    }
+    else
+    {
+        NSArray *subControllers = [navController viewControllers];
+        if ([subControllers count] == 3)
+        {
+            // when expanding back, pop to root in primary controller,
+            // don't show the animation type picker on left
+            if ([subControllers[1] isKindOfClass:[CMSAnimationTypeTableController class]])
+            {
+                [navController setViewControllers:@[subControllers[0], subControllers[2]]];
+            }
+        }
+    }
+
+    return nil;
 }
 
 @end
