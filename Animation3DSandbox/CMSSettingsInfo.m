@@ -30,7 +30,7 @@
         _anchorPoint = AnchorPointCenter;
         _useBackground = YES;
         _skewMode = SkewModeNormal;
-        _theme = Theme360iDev;
+        _theme = ThemeCocoaConf;
         _setShadowPath = YES;
         _antiAliase = YES;
     }
