@@ -300,12 +300,14 @@
     CMSTimingCurveTable *resetTable = [storyboard instantiateViewControllerWithIdentifier:@"TimingCurveDefaults"];
     resetTable.timingCurve = self.settings.timingCurve;
     resetTable.delegate = self;
-    resetTable.modalPresentationStyle = UIModalPresentationPopover;
-    resetTable.popoverPresentationController.barButtonItem = sender;
-    resetTable.popoverPresentationController.delegate = self;
-    [self presentViewController:resetTable animated:YES completion:nil];
     
-    self.resetPopover = resetTable;
+    UINavigationController *resetController = [[UINavigationController alloc] initWithRootViewController:resetTable];
+    resetController.modalPresentationStyle = UIModalPresentationPopover;
+    resetController.popoverPresentationController.barButtonItem = sender;
+    resetController.popoverPresentationController.delegate = self;
+    [self presentViewController:resetController animated:YES completion:nil];
+    
+    self.resetPopover = resetController;
 }
 
 #pragma mark - CMSTimingCurveDelegate

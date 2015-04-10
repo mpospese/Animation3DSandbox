@@ -14,6 +14,12 @@
 
 @implementation CMSTimingCurveTable
 
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    self.title = @"Reset Timing Curve";
+}
+
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     cell.accessoryType = (indexPath.row == self.timingCurve)? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
