@@ -13,7 +13,7 @@
 #import "FlipViewController.h"
 #import "CMSBallController.h"
 #import "CMSAnchorPointTable.h"
-#import "CMSTimingCurveTable.h"
+#import "CMSTimingCurveController.h"
 #import "CMSAnimationTypeTableController.h"
 
 @interface CMSAnimationController()<UISplitViewControllerDelegate>
@@ -149,7 +149,7 @@
         return NO;
     
     UIViewController *lastController = [navController.viewControllers lastObject];
-    if ([lastController isKindOfClass:[CMSAnchorPointTable class]] || [lastController isKindOfClass:[CMSTimingCurveTable class]])
+    if ([lastController isKindOfClass:[CMSAnchorPointTable class]] || [lastController isKindOfClass:[CMSTimingCurveController class]])
     {
         // if we're drilled into Anchor Point table or Timing Curve Table,
         // don't collapse the animation view on top of it
