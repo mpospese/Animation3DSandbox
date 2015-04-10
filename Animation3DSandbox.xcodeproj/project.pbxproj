@@ -7,24 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0C04301016E256370023B19B /* CocoaConfIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C04300E16E256370023B19B /* CocoaConfIcon.png */; };
-		0C04301116E256370023B19B /* CocoaConfIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C04300F16E256370023B19B /* CocoaConfIcon@2x.png */; };
 		0C04301316E3241A0023B19B /* IconC.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C04301216E3241A0023B19B /* IconC.png */; };
 		0C04301516E324200023B19B /* IconC@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C04301416E324200023B19B /* IconC@2x.png */; };
 		0C04301716E324320023B19B /* IconC-72.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C04301616E324320023B19B /* IconC-72.png */; };
 		0C04301916E324360023B19B /* IconC-72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C04301816E324350023B19B /* IconC-72@2x.png */; };
-		0C0FEC4016AA07C300C482CC /* Background.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C0FEC3F16AA07C300C482CC /* Background.png */; };
 		0C4709BF16A79ECC001CA999 /* FlipViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C4709BE16A79ECC001CA999 /* FlipViewController.m */; };
-		0C707C2F16A333DB004A1657 /* RedBall.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C707C2D16A333DB004A1657 /* RedBall.png */; };
-		0C707C3016A333DB004A1657 /* RedBall@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C707C2E16A333DB004A1657 /* RedBall@2x.png */; };
 		0C707C3816A37E28004A1657 /* CMSAnimationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C707C3716A37E28004A1657 /* CMSAnimationController.m */; };
 		0C707C3B16A3A5EA004A1657 /* CMSBaseAnimationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C707C3A16A3A5EA004A1657 /* CMSBaseAnimationController.m */; };
 		0C707C3E16A3A67D004A1657 /* CMSBallController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C707C3D16A3A67D004A1657 /* CMSBallController.m */; };
 		0C750B5B16A202B200095CA1 /* CMSAnchorPointTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C750B5A16A202B200095CA1 /* CMSAnchorPointTable.m */; };
 		0C750B6616A21EF700095CA1 /* CMSTimingCurveTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C750B6516A21EF700095CA1 /* CMSTimingCurveTable.m */; };
 		0C9C16C616AB515900C86A63 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 0C9C16C516AB515900C86A63 /* README.md */; };
-		0CB5D9FB17E0DFDA00EFAE1C /* logo360.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CB5D9F917E0DFDA00EFAE1C /* logo360.png */; };
-		0CB5D9FC17E0DFDA00EFAE1C /* logo360@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CB5D9FA17E0DFDA00EFAE1C /* logo360@2x.png */; };
 		0CB5DA0117E0E06300EFAE1C /* Icon360-72.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CB5D9FD17E0E06200EFAE1C /* Icon360-72.png */; };
 		0CB5DA0217E0E06300EFAE1C /* Icon360-72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CB5D9FE17E0E06200EFAE1C /* Icon360-72@2x.png */; };
 		0CB5DA0317E0E06300EFAE1C /* Icon360.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CB5D9FF17E0E06300EFAE1C /* Icon360.png */; };
@@ -49,24 +42,17 @@
 		0CEF496F16A05B240091E9EF /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CEF496E16A05B240091E9EF /* QuartzCore.framework */; };
 		0CEF497416A05B980091E9EF /* FoldViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CEF497316A05B980091E9EF /* FoldViewController.m */; };
 		0CEF497516A05B9E0091E9EF /* MPAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CEF497116A05B8A0091E9EF /* MPAnimation.m */; };
-		0CEF497E16A062250091E9EF /* RenaissanceIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CEF497C16A062250091E9EF /* RenaissanceIcon.png */; };
-		0CEF497F16A062250091E9EF /* RenaissanceIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0CEF497D16A062250091E9EF /* RenaissanceIcon@2x.png */; };
 		809C99E11AD7C7120066467D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 809C99E01AD7C7120066467D /* Images.xcassets */; };
 		809C99E41AD7D12B0066467D /* CMSAnimationTypeTableController.m in Sources */ = {isa = PBXBuildFile; fileRef = 809C99E31AD7D12B0066467D /* CMSAnimationTypeTableController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0C04300E16E256370023B19B /* CocoaConfIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CocoaConfIcon.png; sourceTree = "<group>"; };
-		0C04300F16E256370023B19B /* CocoaConfIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "CocoaConfIcon@2x.png"; sourceTree = "<group>"; };
 		0C04301216E3241A0023B19B /* IconC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = IconC.png; sourceTree = "<group>"; };
 		0C04301416E324200023B19B /* IconC@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "IconC@2x.png"; sourceTree = "<group>"; };
 		0C04301616E324320023B19B /* IconC-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "IconC-72.png"; sourceTree = "<group>"; };
 		0C04301816E324350023B19B /* IconC-72@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "IconC-72@2x.png"; sourceTree = "<group>"; };
-		0C0FEC3F16AA07C300C482CC /* Background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Background.png; sourceTree = "<group>"; };
 		0C4709BD16A79ECC001CA999 /* FlipViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlipViewController.h; sourceTree = "<group>"; };
 		0C4709BE16A79ECC001CA999 /* FlipViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FlipViewController.m; sourceTree = "<group>"; };
-		0C707C2D16A333DB004A1657 /* RedBall.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = RedBall.png; sourceTree = "<group>"; };
-		0C707C2E16A333DB004A1657 /* RedBall@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "RedBall@2x.png"; sourceTree = "<group>"; };
 		0C707C3616A37E28004A1657 /* CMSAnimationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMSAnimationController.h; sourceTree = "<group>"; };
 		0C707C3716A37E28004A1657 /* CMSAnimationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMSAnimationController.m; sourceTree = "<group>"; };
 		0C707C3916A3A5EA004A1657 /* CMSBaseAnimationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMSBaseAnimationController.h; sourceTree = "<group>"; };
@@ -78,8 +64,6 @@
 		0C750B6416A21EF700095CA1 /* CMSTimingCurveTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMSTimingCurveTable.h; sourceTree = "<group>"; };
 		0C750B6516A21EF700095CA1 /* CMSTimingCurveTable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMSTimingCurveTable.m; sourceTree = "<group>"; };
 		0C9C16C516AB515900C86A63 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
-		0CB5D9F917E0DFDA00EFAE1C /* logo360.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo360.png; sourceTree = "<group>"; };
-		0CB5D9FA17E0DFDA00EFAE1C /* logo360@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo360@2x.png"; sourceTree = "<group>"; };
 		0CB5D9FD17E0E06200EFAE1C /* Icon360-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon360-72.png"; sourceTree = "<group>"; };
 		0CB5D9FE17E0E06200EFAE1C /* Icon360-72@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon360-72@2x.png"; sourceTree = "<group>"; };
 		0CB5D9FF17E0E06300EFAE1C /* Icon360.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon360.png; sourceTree = "<group>"; };
@@ -114,8 +98,6 @@
 		0CEF497216A05B980091E9EF /* FoldViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FoldViewController.h; sourceTree = "<group>"; };
 		0CEF497316A05B980091E9EF /* FoldViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FoldViewController.m; sourceTree = "<group>"; };
 		0CEF497616A05BC80091E9EF /* Enumerations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Enumerations.h; sourceTree = "<group>"; };
-		0CEF497C16A062250091E9EF /* RenaissanceIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = RenaissanceIcon.png; sourceTree = "<group>"; };
-		0CEF497D16A062250091E9EF /* RenaissanceIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "RenaissanceIcon@2x.png"; sourceTree = "<group>"; };
 		4D69507A1833C4DE00C8BA1E /* Source Code License.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = "Source Code License.rtf"; sourceTree = "<group>"; };
 		809C99E01AD7C7120066467D /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		809C99E21AD7D12B0066467D /* CMSAnimationTypeTableController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMSAnimationTypeTableController.h; sourceTree = "<group>"; };
@@ -234,15 +216,6 @@
 		0CEF497716A05D0E0091E9EF /* images */ = {
 			isa = PBXGroup;
 			children = (
-				0C04300E16E256370023B19B /* CocoaConfIcon.png */,
-				0C04300F16E256370023B19B /* CocoaConfIcon@2x.png */,
-				0CEF497C16A062250091E9EF /* RenaissanceIcon.png */,
-				0CEF497D16A062250091E9EF /* RenaissanceIcon@2x.png */,
-				0CB5D9F917E0DFDA00EFAE1C /* logo360.png */,
-				0CB5D9FA17E0DFDA00EFAE1C /* logo360@2x.png */,
-				0C707C2D16A333DB004A1657 /* RedBall.png */,
-				0C707C2E16A333DB004A1657 /* RedBall@2x.png */,
-				0C0FEC3F16AA07C300C482CC /* Background.png */,
 			);
 			name = images;
 			sourceTree = "<group>";
@@ -304,24 +277,15 @@
 				0CEF495D16A05B030091E9EF /* Default@2x.png in Resources */,
 				0CEF495F16A05B040091E9EF /* Default-568h@2x.png in Resources */,
 				0CEF496516A05B040091E9EF /* MainStoryboard_iPad.storyboard in Resources */,
-				0CEF497E16A062250091E9EF /* RenaissanceIcon.png in Resources */,
-				0CEF497F16A062250091E9EF /* RenaissanceIcon@2x.png in Resources */,
 				0CD8518216A1A07500020B42 /* IconR-72.png in Resources */,
 				0CD8518416A1A07900020B42 /* IconR-72@2x.png in Resources */,
 				0CD8518616A1A08E00020B42 /* IconR.png in Resources */,
 				0CD8518816A1A09200020B42 /* IconR@2x.png in Resources */,
-				0C707C2F16A333DB004A1657 /* RedBall.png in Resources */,
-				0C707C3016A333DB004A1657 /* RedBall@2x.png in Resources */,
-				0C0FEC4016AA07C300C482CC /* Background.png in Resources */,
 				0C9C16C616AB515900C86A63 /* README.md in Resources */,
-				0C04301016E256370023B19B /* CocoaConfIcon.png in Resources */,
-				0C04301116E256370023B19B /* CocoaConfIcon@2x.png in Resources */,
 				0C04301316E3241A0023B19B /* IconC.png in Resources */,
 				0C04301516E324200023B19B /* IconC@2x.png in Resources */,
 				0C04301716E324320023B19B /* IconC-72.png in Resources */,
 				0C04301916E324360023B19B /* IconC-72@2x.png in Resources */,
-				0CB5D9FB17E0DFDA00EFAE1C /* logo360.png in Resources */,
-				0CB5D9FC17E0DFDA00EFAE1C /* logo360@2x.png in Resources */,
 				0CB5DA0117E0E06300EFAE1C /* Icon360-72.png in Resources */,
 				0CB5DA0217E0E06300EFAE1C /* Icon360-72@2x.png in Resources */,
 				809C99E11AD7C7120066467D /* Images.xcassets in Resources */,
