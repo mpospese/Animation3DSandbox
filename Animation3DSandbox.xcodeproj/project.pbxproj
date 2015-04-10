@@ -44,6 +44,7 @@
 		0CEF497516A05B9E0091E9EF /* MPAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CEF497116A05B8A0091E9EF /* MPAnimation.m */; };
 		809C99E11AD7C7120066467D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 809C99E01AD7C7120066467D /* Images.xcassets */; };
 		809C99E41AD7D12B0066467D /* CMSAnimationTypeTableController.m in Sources */ = {isa = PBXBuildFile; fileRef = 809C99E31AD7D12B0066467D /* CMSAnimationTypeTableController.m */; };
+		80F971DB1AD8191600034B6A /* UIView+LayoutConstraints.m in Sources */ = {isa = PBXBuildFile; fileRef = 80F971DA1AD8191600034B6A /* UIView+LayoutConstraints.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -102,6 +103,8 @@
 		809C99E01AD7C7120066467D /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		809C99E21AD7D12B0066467D /* CMSAnimationTypeTableController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMSAnimationTypeTableController.h; sourceTree = "<group>"; };
 		809C99E31AD7D12B0066467D /* CMSAnimationTypeTableController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMSAnimationTypeTableController.m; sourceTree = "<group>"; };
+		80F971D91AD8191600034B6A /* UIView+LayoutConstraints.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+LayoutConstraints.h"; sourceTree = "<group>"; };
+		80F971DA1AD8191600034B6A /* UIView+LayoutConstraints.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+LayoutConstraints.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -192,6 +195,8 @@
 				0C750B5A16A202B200095CA1 /* CMSAnchorPointTable.m */,
 				809C99E21AD7D12B0066467D /* CMSAnimationTypeTableController.h */,
 				809C99E31AD7D12B0066467D /* CMSAnimationTypeTableController.m */,
+				80F971D91AD8191600034B6A /* UIView+LayoutConstraints.h */,
+				80F971DA1AD8191600034B6A /* UIView+LayoutConstraints.m */,
 				0CEF497716A05D0E0091E9EF /* images */,
 				809C99E01AD7C7120066467D /* Images.xcassets */,
 				0CEF494F16A05B030091E9EF /* Supporting Files */,
@@ -312,6 +317,7 @@
 				0C750B5B16A202B200095CA1 /* CMSAnchorPointTable.m in Sources */,
 				0C750B6616A21EF700095CA1 /* CMSTimingCurveTable.m in Sources */,
 				0C707C3816A37E28004A1657 /* CMSAnimationController.m in Sources */,
+				80F971DB1AD8191600034B6A /* UIView+LayoutConstraints.m in Sources */,
 				0C707C3B16A3A5EA004A1657 /* CMSBaseAnimationController.m in Sources */,
 				0C707C3E16A3A67D004A1657 /* CMSBallController.m in Sources */,
 				0C4709BF16A79ECC001CA999 /* FlipViewController.m in Sources */,

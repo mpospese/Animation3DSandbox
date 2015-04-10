@@ -13,6 +13,63 @@
     {
       "idiom" : "universal",
       "scale" : "3x"
+    },
+    {
+      "heightClass" : "compact",
+      "idiom" : "universal",
+      "filename" : "RedBall_small.png",
+      "scale" : "1x"
+    },
+    {
+      "heightClass" : "compact",
+      "idiom" : "universal",
+      "filename" : "RedBall_small@2x.png",
+      "scale" : "2x"
+    },
+    {
+      "heightClass" : "compact",
+      "idiom" : "universal",
+      "filename" : "RedBall_small@3x-2.png",
+      "scale" : "3x"
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "RedBall_small-1.png",
+      "widthClass" : "compact",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "RedBall_small@2x-1.png",
+      "widthClass" : "compact",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "RedBall_small@3x-1.png",
+      "widthClass" : "compact",
+      "scale" : "3x"
+    },
+    {
+      "heightClass" : "compact",
+      "idiom" : "universal",
+      "filename" : "RedBall_small-2.png",
+      "widthClass" : "compact",
+      "scale" : "1x"
+    },
+    {
+      "heightClass" : "compact",
+      "idiom" : "universal",
+      "filename" : "RedBall_small@2x-2.png",
+      "widthClass" : "compact",
+      "scale" : "2x"
+    },
+    {
+      "heightClass" : "compact",
+      "idiom" : "universal",
+      "filename" : "RedBall_small@3x.png",
+      "widthClass" : "compact",
+      "scale" : "3x"
     }
   ],
   "info" : {

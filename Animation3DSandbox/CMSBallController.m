@@ -8,11 +8,13 @@
 
 #import "CMSBallController.h"
 #import <QuartzCore/QuartzCore.h>
+#import "UIView+LayoutConstraints.h"
 
 @interface CMSBallController()
 
 @property (weak, nonatomic) IBOutlet UIImageView *redBall;
 @property (nonatomic, assign, getter = isLeft) BOOL left;
+@property (nonatomic, strong) NSLayoutConstraint *horizConstraint;
 
 @end
 
@@ -58,37 +60,41 @@
     [super viewDidLoad];
     self.title = @"Ball";
     
-    self.redBall.layer.shadowPath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(20, CGRectGetHeight(self.redBall.bounds) - 13, CGRectGetWidth(self.redBall.bounds) - 40, 25)].CGPath;
-    self.redBall.layer.shadowOffset = CGSizeMake(0, 0);
-    self.redBall.layer.shadowRadius = 10;
-    [self updateDropShadow:NO];
+    [self.redBall pinCenterYToSuperview];
+    self.horizConstraint = [self.redBall pinLeadingSpaceToSuperviewWithInset:50];
+    [self.view layoutIfNeeded];
+    
+//    self.redBall.layer.shadowPath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(20, CGRectGetHeight(self.redBall.bounds) - 13, CGRectGetWidth(self.redBall.bounds) - 40, 25)].CGPath;
+//    self.redBall.layer.shadowOffset = CGSizeMake(0, 0);
+//    self.redBall.layer.shadowRadius = 10;
+//    [self updateDropShadow:NO];
     
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
-    [self.redBall addGestureRecognizer:tap];
+    [self.view addGestureRecognizer:tap];
 }
 
 - (void)updateDropShadow:(BOOL)animated
 {
-    CGFloat shadowOpacity = self.settings.useDropShadows? 0.5 : 0;
-    if (!animated)
-    {
-        [self.redBall.layer setShadowOpacity:shadowOpacity];
-        return;
-    }
-    
-    [CATransaction begin];
-    
-    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"shadowOpacity"];
-    CALayer *presentationLayer = self.redBall.layer.presentationLayer;
-    animation.fromValue = @(presentationLayer.shadowOpacity);
-    animation.toValue = @(shadowOpacity);
-    [self.redBall.layer addAnimation:animation forKey:@"shadowOpacity"];
-    
-    [CATransaction setCompletionBlock:^{
-        [self.redBall.layer setShadowOpacity:shadowOpacity];
-    }];
-    
-    [CATransaction commit];
+//    CGFloat shadowOpacity = self.settings.useDropShadows? 0.5 : 0;
+//    if (!animated)
+//    {
+//        [self.redBall.layer setShadowOpacity:shadowOpacity];
+//        return;
+//    }
+//    
+//    [CATransaction begin];
+//    
+//    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"shadowOpacity"];
+//    CALayer *presentationLayer = self.redBall.layer.presentationLayer;
+//    animation.fromValue = @(presentationLayer.shadowOpacity);
+//    animation.toValue = @(shadowOpacity);
+//    [self.redBall.layer addAnimation:animation forKey:@"shadowOpacity"];
+//    
+//    [CATransaction setCompletionBlock:^{
+//        [self.redBall.layer setShadowOpacity:shadowOpacity];
+//    }];
+//    
+//    [CATransaction commit];
 }
 
 - (void)updateAnchorPoint:(BOOL)animated
@@ -183,15 +189,13 @@
     
 	[CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithControlPoints:self.settings.cp1.x :self.settings.cp1.y :self.settings.cp2.x :self.settings.cp2.y]];
     
-    CGFloat targetX = self.isLeft? CGRectGetWidth(self.view.bounds) - 50 - (CGRectGetWidth(self.redBall.bounds)/2) : 50 + (CGRectGetWidth(self.redBall.bounds)/2);
+//    CGFloat targetX = self.isLeft? CGRectGetWidth(self.view.bounds) - 50 - (CGRectGetWidth(self.redBall.bounds)/2) : 50 + (CGRectGetWidth(self.redBall.bounds)/2);
     CGFloat targetOpacity = self.isLeft? 0.5 : 1;
     
     CALayer *presentationLayer = self.redBall.layer.presentationLayer;
     CATransform3D targetTransform = self.isLeft? CATransform3DMakeScale(0.50, 0.50, 0) : CATransform3DIdentity;
     
 	[CATransaction setCompletionBlock:^{
-        if (self.settings.ballComponents & BallComponentMove)
-            self.redBall.center = CGPointMake(targetX, self.redBall.center.y);
         if (self.settings.ballComponents & BallComponentScale)
             self.redBall.transform = CATransform3DGetAffineTransform(targetTransform);
         if (self.settings.ballComponents & BallComponentOpacity)
@@ -203,16 +207,16 @@
     
     CABasicAnimation *animation;
     
-    if (self.settings.ballComponents & BallComponentMove)
-    {
-        CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"position.x"];
-        animation.fromValue = @(self.redBall.layer.position.x);
-        animation.toValue = @(targetX);
-        animation.fillMode = kCAFillModeForwards;
-        [self.redBall.layer addAnimation:animation forKey:@"position"];
-        self.redBall.layer.position = CGPointMake(targetX, self.redBall.layer.position.y);
-    }
-    
+//    if (self.settings.ballComponents & BallComponentMove)
+//    {
+//        CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"position.x"];
+//        animation.fromValue = @(self.redBall.layer.position.x);
+//        animation.toValue = @(targetX);
+//        animation.fillMode = kCAFillModeForwards;
+//        [self.redBall.layer addAnimation:animation forKey:@"position"];
+//        self.redBall.layer.position = CGPointMake(targetX, self.redBall.layer.position.y);
+//    }
+
     if (self.settings.ballComponents & BallComponentScale)
     {
         animation = [CABasicAnimation animationWithKeyPath:@"transform"];
@@ -234,6 +238,30 @@
     }
     
     [CATransaction commit];
+
+    if (self.settings.ballComponents & BallComponentMove)
+    {
+        if (self.horizConstraint)
+        {
+            [self.view removeConstraint:self.horizConstraint];
+            self.horizConstraint = nil;
+        }
+        
+        if (self.isLeft)
+        {
+            self.horizConstraint = [self.redBall pinTrailingSpaceToSuperviewWithInset:50];
+        }
+        else
+        {
+            self.horizConstraint = [self.redBall pinLeadingSpaceToSuperviewWithInset:50];
+        }
+    }
+    
+    [UIView animateWithDuration:self.settings.duration animations:^{
+        [self.view layoutIfNeeded];
+    } completion:^(BOOL finished) {
+        //self.left = !self.isLeft;
+    }];
 }
 
 #pragma mark - Class Methods
