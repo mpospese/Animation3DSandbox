@@ -93,7 +93,8 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
-	
+	self.title = @"Fold";
+    
 	// Set drop shadows and shadow path
     [self.contentView layer].shadowOffset = CGSizeMake(0, 3);
     [self updateDropShadow:NO];

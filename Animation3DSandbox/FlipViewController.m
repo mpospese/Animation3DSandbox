@@ -90,6 +90,7 @@ typedef enum {
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
+    self.title = @"Flip";
     
 	UISwipeGestureRecognizer *left = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipe:)];
 	left.direction = UISwipeGestureRecognizerDirectionLeft;

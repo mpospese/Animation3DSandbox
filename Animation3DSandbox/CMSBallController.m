@@ -56,6 +56,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.title = @"Ball";
     
     self.redBall.layer.shadowPath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(20, CGRectGetHeight(self.redBall.bounds) - 13, CGRectGetWidth(self.redBall.bounds) - 40, 25)].CGPath;
     self.redBall.layer.shadowOffset = CGSizeMake(0, 0);
