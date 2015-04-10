@@ -51,12 +51,17 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [self updateData];
 }
 
 - (void)reloadData
 {
     [self.tableView reloadData];
-    
+    [self updateData];
+}
+
+- (void)updateData
+{
     [self updateTypeLabel];
     [self updateDurationLabel];
     [self updateTimingCurveLabel];
@@ -240,37 +245,6 @@
             break;
             
         default:
-            break;
-    }
-}
-
-- (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    switch (indexPath.section) {
-        case CMSSettingsSectionAnimation:
-            switch (indexPath.row) {
-                case CMSSettingsAnimationRowType:
-                    [self updateTypeLabel];
-                    break;
-                    
-                /*case CMSSettingsAnimationRowDuration:
-                    break;*/
-                    
-                case CMSSettingsAnimationRowTimingCurve:
-                    [self updateTimingCurveLabel];
-                    break;
-            }
-            break;
-            
-        case CMSSettingsSectionView:
-            switch (indexPath.row) {
-                case CMSSettingsViewRowDropShadow:
-                    break;
-                    
-                case CMSSettingsViewRowAnchorPoint:
-                    [self updateAnchorPointLabel];
-                    break;
-            }
             break;
     }
 }

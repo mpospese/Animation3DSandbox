@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface CMSAnimationController : UIViewController
+@interface CMSAnimationController : UISplitViewController
 
 @end

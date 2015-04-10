@@ -57,6 +57,16 @@
     }
 }
 
+- (void)didMoveToParentViewController:(UIViewController *)parent
+{
+    [super didMoveToParentViewController:parent];
+    
+    if (!parent)
+    {
+        [self setSettings:nil];
+    }
+}
+
 #pragma mark - KVO
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
