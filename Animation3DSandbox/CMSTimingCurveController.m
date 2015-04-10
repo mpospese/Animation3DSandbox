@@ -10,7 +10,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "CMSTimingCurveTable.h"
 
-@interface CMSTimingCurveController()<CMSTimingCurveDelegate>
+@interface CMSTimingCurveController()<CMSTimingCurveDelegate, UIPopoverPresentationControllerDelegate>
 
 @property (nonatomic, strong) CAShapeLayer *curve;
 @property (nonatomic, strong) CAShapeLayer *graphInner;
@@ -22,7 +22,7 @@
 @property (weak, nonatomic) IBOutlet UIView *curveContainer;
 @property (weak, nonatomic) IBOutlet UILabel *propertyLabel;
 @property (weak, nonatomic) IBOutlet UILabel *timeLabel;
-@property (nonatomic, strong) UIPopoverController *resetPopover;
+@property (nonatomic, strong) UIViewController *resetPopover;
 @property (weak, nonatomic) IBOutlet UILabel *controlPoint1Label;
 @property (weak, nonatomic) IBOutlet UILabel *controlPoint2Label;
 @property (nonatomic, strong) NSNumberFormatter *numberFormatter;
@@ -291,7 +291,7 @@
 - (IBAction)resetTimingCurve:(id)sender {
     if (self.resetPopover)
     {
-        [self.resetPopover dismissPopoverAnimated:YES];
+        [self.resetPopover dismissViewControllerAnimated:YES completion:nil];
         self.resetPopover = nil;
         return;
     }
@@ -300,9 +300,12 @@
     CMSTimingCurveTable *resetTable = [storyboard instantiateViewControllerWithIdentifier:@"TimingCurveDefaults"];
     resetTable.timingCurve = self.settings.timingCurve;
     resetTable.delegate = self;
+    resetTable.modalPresentationStyle = UIModalPresentationPopover;
+    resetTable.popoverPresentationController.barButtonItem = sender;
+    resetTable.popoverPresentationController.delegate = self;
+    [self presentViewController:resetTable animated:YES completion:nil];
     
-    self.resetPopover = [[UIPopoverController alloc] initWithContentViewController:resetTable];
-    [self.resetPopover presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+    self.resetPopover = resetTable;
 }
 
 #pragma mark - CMSTimingCurveDelegate
@@ -313,9 +316,16 @@
     [self updatePaths:0.25 animateLines:YES];
     if (self.resetPopover)
     {
-        [self.resetPopover dismissPopoverAnimated:YES];
+        [self.resetPopover dismissViewControllerAnimated:YES completion:nil];
         self.resetPopover = nil;
     }
+}
+
+#pragma mark - UIPopoverPresentationControllerDelegate
+
+- (void)popoverPresentationControllerDidDismissPopover:(UIPopoverPresentationController *)popoverPresentationController
+{
+    self.resetPopover = nil;
 }
 
 #pragma mark - KVO
